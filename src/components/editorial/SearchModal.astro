@@ -1,0 +1,1033 @@
+---
+import { getCollection } from 'astro:content';
+import { Search, X, CornerDownLeft } from 'lucide-astro';
+
+// 获取全部可检索内容构建轻量搜索索引（包含文章与说说）
+const allPosts = await getCollection('posts');
+const allTalks = await getCollection('talks');
+
+const searchItems = [
+  ...allPosts.map((p) => ({
+    type: 'post',
+    typeLabel: '文章',
+    title: p.data.title || '无标题',
+    subtitle: p.data.description || '',
+    category: p.data.category || '文卷',
+    tags: p.data.tags || [],
+    date: p.data.date ? new Date(p.data.date).toISOString().slice(0, 10) : '',
+    url: `/posts/${encodeURIComponent(p.slug || p.id)}/`,
+    keywords: [p.data.title, p.data.description, p.data.category, ...(p.data.tags || [])].filter(Boolean).join(' ').toLowerCase(),
+  })),
+  ...allTalks.map((t) => {
+    const rawBody = (t.body || '').replace(/<[^>]+>/g, '').trim();
+    const title = rawBody.slice(0, 36) + (rawBody.length > 36 ? '…' : '') || '说说碎语';
+    return {
+      type: 'talk',
+      typeLabel: '说说',
+      title,
+      subtitle: rawBody.length > 36 ? rawBody.slice(36, 120) + '…' : '',
+      category: '说说',
+      tags: ['说说'],
+      date: t.data.date ? new Date(t.data.date).toISOString().slice(0, 10) : '',
+      url: `/talk/${encodeURIComponent(t.slug || t.id)}/`,
+      keywords: [rawBody, '说说'].filter(Boolean).join(' ').toLowerCase(),
+    };
+  })
+];
+
+// 提取主要分类用于快速筛选 Chips
+const categories = ['全部', ...Array.from(new Set(searchItems.map((i) => i.category))).filter(Boolean)].slice(0, 6);
+---
+
+<dialog id="editorial-search-dialog" class="editorial-search-dialog" aria-label="全站搜索">
+  <div class="search-modal-container font-sans">
+    <!-- 顶部搜索输入栏 -->
+    <div class="search-modal-header">
+      <div class="search-input-prefix">
+        <Search size={18} class="search-input-icon text-[#9e2a2b] dark:text-[#d9534f]" />
+      </div>
+      <input
+        type="search"
+        id="editorial-search-input"
+        class="search-input"
+        placeholder="搜索文章、说说、标签与关键词..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <div class="search-header-actions">
+        <button type="button" id="search-clear-btn" class="search-clear-btn hidden" aria-label="清空搜索词" title="清空">
+          <X size={15} />
+        </button>
+        <button type="button" id="search-close-btn" class="search-close-btn" aria-label="关闭搜索 (ESC)" title="关闭 (ESC)">
+          <kbd class="esc-badge font-mono">ESC</kbd>
+        </button>
+      </div>
+    </div>
+
+    <!-- 快捷分类筛选栏 -->
+    <div class="search-filter-bar font-mono">
+      <span class="filter-label">分类筛选:</span>
+      <div class="filter-chips-list" id="search-filter-chips">
+        {categories.map((cat, idx) => (
+          <button
+            type="button"
+            class={`filter-chip ${idx === 0 ? 'active' : ''}`}
+            data-category={cat}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- 搜索结果列表主体 -->
+    <div class="search-modal-body custom-scrollbar">
+      <div id="search-results-list" class="search-results-list" role="listbox" aria-label="搜索结果">
+        <!-- 动态搜索结果插入位置 -->
+      </div>
+      <div id="search-empty-state" class="search-empty-state hidden">
+        <div class="empty-icon-box">
+          <Search size={26} class="text-[#9e2a2b] dark:text-[#d9534f]" />
+        </div>
+        <p class="empty-title font-serif">未检索到匹配的归档内容</p>
+        <p class="empty-desc font-sans">请尝试更换检索关键词，或点击上方分类快速浏览</p>
+      </div>
+    </div>
+
+    <!-- 底部状态指引栏 -->
+    <div class="search-modal-footer font-mono">
+      <div class="footer-tips-left">
+        <div class="footer-tip">
+          <span class="key-cap">↑</span>
+          <span class="key-cap">↓</span>
+          <span>导航</span>
+        </div>
+        <div class="footer-tip">
+          <span class="key-cap"><CornerDownLeft size={11} class="inline-icon" /></span>
+          <span>访问</span>
+        </div>
+        <div class="footer-tip">
+          <span class="key-cap">ESC</span>
+          <span>关闭</span>
+        </div>
+      </div>
+      <div class="footer-stats-right" id="search-footer-stats">
+        共 <span id="search-total-count" class="font-bold">{searchItems.length}</span> 条归档
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<!-- 客户端搜索与平滑开关动画控制器 -->
+<script define:vars={{ searchItems }}>
+  const dialog = document.getElementById('editorial-search-dialog');
+  const input = document.getElementById('editorial-search-input');
+  const resultsList = document.getElementById('search-results-list');
+  const emptyState = document.getElementById('search-empty-state');
+  const closeBtn = document.getElementById('search-close-btn');
+  const clearBtn = document.getElementById('search-clear-btn');
+  const filterChips = document.getElementById('search-filter-chips');
+  const statsEl = document.getElementById('search-footer-stats');
+
+  let activeIndex = -1;
+  let currentResults = [];
+  let selectedCategory = '全部';
+  let isClosing = false;
+
+  function openSearch() {
+    if (!dialog || dialog.open) return;
+    isClosing = false;
+    dialog.classList.remove('modal-closing');
+    dialog.showModal();
+    document.body.style.overflow = 'hidden';
+
+    // 触发平滑进场动画
+    requestAnimationFrame(() => {
+      dialog.classList.add('modal-open');
+    });
+
+    input.value = '';
+    clearBtn?.classList.add('hidden');
+    selectedCategory = '全部';
+    updateActiveFilterChip();
+    performSearch('');
+    setTimeout(() => input?.focus(), 60);
+  }
+
+  function closeSearch() {
+    if (!dialog || !dialog.open || isClosing) return;
+    isClosing = true;
+    dialog.classList.remove('modal-open');
+    dialog.classList.add('modal-closing');
+
+    // 待平滑出场动画完成后再调用原生 close
+    setTimeout(() => {
+      dialog.close();
+      dialog.classList.remove('modal-closing');
+      document.body.style.overflow = '';
+      isClosing = false;
+    }, 180);
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function highlightMatch(text, query) {
+    if (!text) return '';
+    const safeText = escapeHtml(text);
+    if (!query || !query.trim()) return safeText;
+    const cleanQ = query.trim();
+    try {
+      const escapedQ = cleanQ.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${escapedQ})`, 'gi');
+      return safeText.replace(regex, '<mark class="search-highlight">$1</mark>');
+    } catch {
+      return safeText;
+    }
+  }
+
+  function updateActiveFilterChip() {
+    if (!filterChips) return;
+    const chips = filterChips.querySelectorAll('.filter-chip');
+    chips.forEach((chip) => {
+      if (chip.getAttribute('data-category') === selectedCategory) {
+        chip.classList.add('active');
+      } else {
+        chip.classList.remove('active');
+      }
+    });
+  }
+
+  function performSearch(query) {
+    const q = (query || '').trim().toLowerCase();
+    let filtered = searchItems;
+
+    if (selectedCategory && selectedCategory !== '全部') {
+      filtered = filtered.filter((i) => i.category === selectedCategory);
+    }
+
+    if (q) {
+      filtered = filtered.filter((item) => {
+        return (
+          item.keywords.includes(q) ||
+          item.title.toLowerCase().includes(q) ||
+          item.subtitle.toLowerCase().includes(q)
+        );
+      });
+    }
+
+    const isInitial = !q && selectedCategory === '全部';
+    const headerTitle = isInitial
+      ? '最新归档与精选推荐'
+      : `检索结果 (${filtered.length} 条)`;
+
+    renderResults(isInitial ? filtered.slice(0, 7) : filtered, headerTitle, q);
+  }
+
+  function renderResults(items, headerText = '', query = '') {
+    currentResults = items || [];
+    activeIndex = currentResults.length > 0 ? 0 : -1;
+
+    if (!items || items.length === 0) {
+      resultsList.innerHTML = '';
+      if (emptyState) {
+        emptyState.classList.remove('hidden');
+        const emptyTitle = emptyState.querySelector('.empty-title');
+        const emptyDesc = emptyState.querySelector('.empty-desc');
+        if (query) {
+          if (emptyTitle) emptyTitle.textContent = `未检索到与「${query}」匹配的内容`;
+          if (emptyDesc) emptyDesc.textContent = '尝试更换检索词，或点击上方分类快速浏览';
+        } else {
+          if (emptyTitle) emptyTitle.textContent = '该分类下暂无归档记录';
+          if (emptyDesc) emptyDesc.textContent = '点击上方其他分类标签查看更多内容';
+        }
+      }
+      if (statsEl) statsEl.innerHTML = `未找到匹配记录`;
+      return;
+    }
+
+    emptyState?.classList.add('hidden');
+    if (statsEl) statsEl.innerHTML = `匹配 <span class="font-bold text-[#9e2a2b] dark:text-[#d9534f]">${items.length}</span> 条归档`;
+
+    let html = '';
+    if (headerText) {
+      html += `<div class="results-header-title font-mono"><span class="header-dot"></span>${escapeHtml(headerText)}</div>`;
+    }
+
+    items.forEach((item, idx) => {
+      const isSelected = idx === activeIndex ? ' selected' : '';
+      const isTalk = item.type === 'talk';
+      const badgeClass = isTalk ? 'badge-talk' : 'badge-post';
+
+      html += `
+        <a href="${item.url}" class="search-result-card${isSelected}" data-index="${idx}" role="option">
+          <div class="card-main-content">
+            <div class="card-meta-row font-mono">
+              <span class="card-type-badge ${badgeClass}">${item.typeLabel}</span>
+              <span class="card-cat-pill">${escapeHtml(item.category)}</span>
+              ${item.date ? `<span class="card-date">${escapeHtml(item.date)}</span>` : ''}
+            </div>
+            <div class="card-title font-serif">
+              ${highlightMatch(item.title, query)}
+            </div>
+            ${item.subtitle ? `
+              <div class="card-desc font-sans">
+                ${highlightMatch(item.subtitle, query)}
+              </div>
+            ` : ''}
+          </div>
+          <div class="card-enter-badge font-mono" aria-hidden="true">
+            <span>打开</span>
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+        </a>
+      `;
+    });
+
+    resultsList.innerHTML = html;
+  }
+
+  function updateSelection() {
+    const items = resultsList.querySelectorAll('.search-result-card');
+    items.forEach((el, idx) => {
+      if (idx === activeIndex) {
+        el.classList.add('selected');
+        el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      } else {
+        el.classList.remove('selected');
+      }
+    });
+  }
+
+  // 输入监听
+  if (input) {
+    input.addEventListener('input', (e) => {
+      const val = e.target.value;
+      if (val) {
+        clearBtn?.classList.remove('hidden');
+      } else {
+        clearBtn?.classList.add('hidden');
+      }
+      performSearch(val);
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (currentResults.length > 0) {
+          activeIndex = (activeIndex + 1) % currentResults.length;
+          updateSelection();
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (currentResults.length > 0) {
+          activeIndex = (activeIndex - 1 + currentResults.length) % currentResults.length;
+          updateSelection();
+        }
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (activeIndex >= 0 && currentResults[activeIndex]) {
+          window.location.href = currentResults[activeIndex].url;
+        }
+      }
+    });
+  }
+
+  // 清空按钮
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      clearBtn.classList.add('hidden');
+      input.focus();
+      performSearch('');
+    });
+  }
+
+  // 分类筛选 Chip 点击
+  if (filterChips) {
+    filterChips.addEventListener('click', (e) => {
+      const chip = e.target.closest('.filter-chip');
+      if (!chip) return;
+      selectedCategory = chip.getAttribute('data-category') || '全部';
+      updateActiveFilterChip();
+      performSearch(input.value);
+    });
+  }
+
+  // 鼠标悬停列表卡片时同步 activeIndex
+  if (resultsList) {
+    resultsList.addEventListener('mouseover', (e) => {
+      const card = e.target.closest('.search-result-card');
+      if (!card) return;
+      const idx = Number(card.getAttribute('data-index'));
+      if (!isNaN(idx) && idx !== activeIndex) {
+        activeIndex = idx;
+        const items = resultsList.querySelectorAll('.search-result-card');
+        items.forEach((el, i) => el.classList.toggle('selected', i === activeIndex));
+      }
+    });
+  }
+
+  // 原生 ESC 拦截与平滑退出
+  if (dialog) {
+    dialog.addEventListener('cancel', (e) => {
+      e.preventDefault();
+      closeSearch();
+    });
+
+    // 点击蒙层关闭
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) {
+        closeSearch();
+      }
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeSearch);
+  }
+
+  // 全局快捷键 Cmd+K / Ctrl+K 监听
+  window.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      if (dialog && dialog.open) {
+        closeSearch();
+      } else {
+        openSearch();
+      }
+    }
+  });
+
+  // 挂载全局调用方法供 NavBar 等组件直接调用
+  window.openGlobalSearch = openSearch;
+  window.closeGlobalSearch = closeSearch;
+</script>
+
+<style is:global>
+  /* ==========================================================================
+     全站搜索模态弹窗（Neo-Brutalist + Editorial 出版物专属设计规范）
+     ========================================================================== */
+
+  /* 基础与进退场动画控制 */
+  .editorial-search-dialog {
+    display: block;
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    top: 10vh;
+    padding: 0;
+    width: 92vw;
+    max-width: 660px;
+    height: fit-content;
+    max-height: 82vh;
+    border: 2.5px solid #1a1a1a;
+    border-radius: 4px;
+    background: #fbfbf9;
+    color: #1a1a1a;
+    box-shadow: 8px 8px 0px 0px #1a1a1a;
+    overflow: hidden;
+    z-index: 2147483640;
+
+    /* 初始状态：缩小并上浮，透明度为 0 */
+    opacity: 0;
+    transform: translateY(-20px) scale(0.96);
+    transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+
+  :is(.dark, [data-theme="dark"]) .editorial-search-dialog {
+    border-color: #e8e6e3;
+    background: #1c1b1a;
+    color: #e8e6e3;
+    box-shadow: 8px 8px 0px 0px #e8e6e3;
+  }
+
+  /* 展开状态 */
+  .editorial-search-dialog.modal-open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  /* 退出过渡状态 */
+  .editorial-search-dialog.modal-closing {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.97);
+    transition: opacity 0.18s ease-in, transform 0.18s ease-in;
+    pointer-events: none;
+  }
+
+  /* 遮罩背景 */
+  .editorial-search-dialog::backdrop {
+    background: rgba(18, 18, 18, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .editorial-search-dialog.modal-open::backdrop {
+    opacity: 1;
+  }
+
+  .editorial-search-dialog.modal-closing::backdrop {
+    opacity: 0;
+  }
+
+  /* 整体容器 */
+  .search-modal-container {
+    display: flex;
+    flex-direction: column;
+    max-height: 82vh;
+    background: inherit;
+  }
+
+  /* 顶部搜索输入栏 */
+  .search-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: #f4efe6;
+    border-bottom: 2px solid #1a1a1a;
+  }
+
+  :is(.dark, [data-theme="dark"]) .search-modal-header {
+    background: #242220;
+    border-color: #e8e6e3;
+  }
+
+  .search-input-prefix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+    padding: 0;
+  }
+
+  :is(.dark, [data-theme="dark"]) .search-input {
+    color: #e8e6e3;
+  }
+
+  .search-input::placeholder {
+    color: #8c877d;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  :is(.dark, [data-theme="dark"]) .search-input::placeholder {
+    color: #78736d;
+  }
+
+  .search-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .search-action-btn,
+  .search-clear-btn,
+  .search-close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: none;
+    padding: 4px;
+    color: #736f68;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.15s ease;
+  }
+
+  :is(.dark, [data-theme="dark"]) .search-action-btn,
+  :is(.dark, [data-theme="dark"]) .search-clear-btn,
+  :is(.dark, [data-theme="dark"]) .search-close-btn {
+    color: #a8a29e;
+  }
+
+  .search-clear-btn:hover {
+    color: #9e2a2b;
+    background: rgba(158, 42, 43, 0.1);
+  }
+
+  .esc-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    border: 1.5px solid #1a1a1a;
+    border-radius: 2px;
+    background: #ffffff;
+    color: #1a1a1a;
+    box-shadow: 1.5px 1.5px 0px 0px #1a1a1a;
+    transition: all 0.15s ease;
+  }
+
+  :is(.dark, [data-theme="dark"]) .esc-badge {
+    border-color: #e8e6e3;
+    background: #1c1b1a;
+    color: #e8e6e3;
+    box-shadow: 1.5px 1.5px 0px 0px #e8e6e3;
+  }
+
+  .search-close-btn:hover .esc-badge {
+    background: #9e2a2b;
+    border-color: #9e2a2b;
+    color: #ffffff;
+    box-shadow: 2px 2px 0px 0px #1a1a1a;
+  }
+
+  /* 快捷分类筛选栏 */
+  .search-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    background: #fbfbf9;
+    border-bottom: 1.5px solid rgba(26, 26, 26, 0.12);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  :is(.dark, [data-theme="dark"]) .search-filter-bar {
+    background: #1c1b1a;
+    border-color: rgba(232, 230, 227, 0.12);
+  }
+
+  .filter-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8c877d;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  :is(.dark, [data-theme="dark"]) .filter-label {
+    color: #78736d;
+  }
+
+  .filter-chips-list {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+  }
+
+  .filter-chip {
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1.5px solid rgba(26, 26, 26, 0.25);
+    border-radius: 2px;
+    background: #ffffff;
+    color: #524f4a;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.12s ease;
+  }
+
+  :is(.dark, [data-theme="dark"]) .filter-chip {
+    border-color: rgba(232, 230, 227, 0.25);
+    background: #242220;
+    color: #a8a29e;
+  }
+
+  .filter-chip:hover {
+    border-color: #1a1a1a;
+    color: #1a1a1a;
+    background: #f4efe6;
+  }
+
+  :is(.dark, [data-theme="dark"]) .filter-chip:hover {
+    border-color: #e8e6e3;
+    color: #e8e6e3;
+    background: #2e2a27;
+  }
+
+  .filter-chip.active {
+    border-color: #9e2a2b;
+    background: #9e2a2b;
+    color: #ffffff;
+    box-shadow: 1.5px 1.5px 0px 0px #1a1a1a;
+  }
+
+  :is(.dark, [data-theme="dark"]) .filter-chip.active {
+    border-color: #d9534f;
+    background: #d9534f;
+    color: #ffffff;
+    box-shadow: 1.5px 1.5px 0px 0px #e8e6e3;
+  }
+
+  /* 搜索结果主体区域 */
+  .search-modal-body {
+    padding: 10px 8px;
+    overflow-y: auto;
+    max-height: 460px;
+    min-height: 180px;
+  }
+
+  .results-header-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #8c877d;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  :is(.dark, [data-theme="dark"]) .results-header-title {
+    color: #78736d;
+  }
+
+  .header-dot {
+    width: 6px;
+    height: 6px;
+    background: #9e2a2b;
+    border-radius: 1px;
+  }
+
+  :is(.dark, [data-theme="dark"]) .header-dot {
+    background: #d9534f;
+  }
+
+  .search-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  /* 每一张精巧结果卡片（新粗野主义 + 出版物双重风格） */
+  .search-result-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    text-decoration: none;
+    border: 2px solid rgba(26, 26, 26, 0.1);
+    border-radius: 4px;
+    background: #ffffff;
+    color: #1a1a1a;
+    box-shadow: 1.5px 1.5px 0px rgba(26, 26, 26, 0.05);
+    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+  }
+
+  :is(.dark, [data-theme="dark"]) .search-result-card {
+    border-color: rgba(232, 230, 227, 0.1);
+    background: #242220;
+    color: #e8e6e3;
+    box-shadow: 1.5px 1.5px 0px rgba(0, 0, 0, 0.2);
+  }
+
+  /* 选中 / 悬停态：高对比突显与微位移 */
+  .search-result-card:hover,
+  .search-result-card.selected {
+    border-color: #1a1a1a;
+    background: #f4efe6;
+    box-shadow: 3px 3px 0px 0px #1a1a1a;
+    transform: translateY(-1.5px);
+  }
+
+  :is(.dark, [data-theme="dark"]) .search-result-card:hover,
+  :is(.dark, [data-theme="dark"]) .search-result-card.selected {
+    border-color: #e8e6e3;
+    background: #2c2825;
+    box-shadow: 3px 3px 0px 0px #e8e6e3;
+    transform: translateY(-1.5px);
+  }
+
+  .card-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .card-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #736f68;
+  }
+
+  :is(.dark, [data-theme="dark"]) .card-meta-row {
+    color: #a8a29e;
+  }
+
+  .card-type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 5px;
+    font-size: 10px;
+    font-weight: 800;
+    border-radius: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-post {
+    background: rgba(158, 42, 43, 0.1);
+    color: #9e2a2b;
+    border: 1px solid #9e2a2b;
+  }
+
+  :is(.dark, [data-theme="dark"]) .badge-post {
+    background: rgba(217, 83, 79, 0.15);
+    color: #ff7b72;
+    border-color: #ff7b72;
+  }
+
+  .badge-talk {
+    background: rgba(43, 108, 176, 0.1);
+    color: #2b6cb0;
+    border: 1px solid #2b6cb0;
+  }
+
+  :is(.dark, [data-theme="dark"]) .badge-talk {
+    background: rgba(99, 179, 237, 0.15);
+    color: #7dd3fc;
+    border-color: #7dd3fc;
+  }
+
+  .card-cat-pill {
+    padding: 0 4px;
+    background: rgba(26, 26, 26, 0.05);
+    border-radius: 2px;
+  }
+
+  :is(.dark, [data-theme="dark"]) .card-cat-pill {
+    background: rgba(232, 230, 227, 0.08);
+  }
+
+  .card-date {
+    margin-left: 2px;
+  }
+
+  .card-title {
+    font-size: 14.5px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #1a1a1a;
+  }
+
+  :is(.dark, [data-theme="dark"]) .card-title {
+    color: #e8e6e3;
+  }
+
+  .card-desc {
+    font-size: 12px;
+    color: #5c5852;
+    line-height: 1.45;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  :is(.dark, [data-theme="dark"]) .card-desc {
+    color: #a8a29e;
+  }
+
+  .card-enter-badge {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #8c877d;
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1.5px solid transparent;
+    opacity: 0.3;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  :is(.dark, [data-theme="dark"]) .card-enter-badge {
+    color: #78736d;
+  }
+
+  .search-result-card:hover .card-enter-badge,
+  .search-result-card.selected .card-enter-badge {
+    opacity: 1;
+    color: #9e2a2b;
+    border-color: #9e2a2b;
+    background: #ffffff;
+    box-shadow: 1.5px 1.5px 0px 0px #1a1a1a;
+  }
+
+  :is(.dark, [data-theme="dark"]) .search-result-card:hover .card-enter-badge,
+  :is(.dark, [data-theme="dark"]) .search-result-card.selected .card-enter-badge {
+    color: #d9534f;
+    border-color: #d9534f;
+    background: #1c1b1a;
+    box-shadow: 1.5px 1.5px 0px 0px #e8e6e3;
+  }
+
+  /* 关键词高亮 */
+  .search-highlight {
+    background: #fef08a;
+    color: #1a1a1a;
+    padding: 0 3px;
+    border-radius: 2px;
+    font-weight: 800;
+  }
+
+  :is(.dark, [data-theme="dark"]) .search-highlight {
+    background: #854d0e;
+    color: #fef08a;
+  }
+
+  /* 空白缺省态 */
+  .search-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 18px;
+    text-align: center;
+  }
+
+  .search-empty-state.hidden {
+    display: none !important;
+  }
+
+  .empty-icon-box {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f4efe6;
+    border: 2px solid #1a1a1a;
+    box-shadow: 3px 3px 0px 0px #1a1a1a;
+    border-radius: 6px;
+    margin-bottom: 14px;
+  }
+
+  :is(.dark, [data-theme="dark"]) .empty-icon-box {
+    background: #242220;
+    border-color: #e8e6e3;
+    box-shadow: 3px 3px 0px 0px #e8e6e3;
+  }
+
+  .empty-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+  }
+
+  :is(.dark, [data-theme="dark"]) .empty-title {
+    color: #e8e6e3;
+  }
+
+  .empty-desc {
+    font-size: 12.5px;
+    color: #736f68;
+    max-width: 320px;
+  }
+
+  :is(.dark, [data-theme="dark"]) .empty-desc {
+    color: #a8a29e;
+  }
+
+  /* 底部状态指引栏 */
+  .search-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 18px;
+    border-top: 2px solid #1a1a1a;
+    background: #f4efe6;
+    font-size: 11px;
+    color: #736f68;
+  }
+
+  :is(.dark, [data-theme="dark"]) .search-modal-footer {
+    border-color: #e8e6e3;
+    background: #242220;
+    color: #a8a29e;
+  }
+
+  .footer-tips-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .footer-tip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .key-cap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5px 5px;
+    border: 1.5px solid #1a1a1a;
+    border-radius: 2px;
+    background: #ffffff;
+    box-shadow: 1.5px 1.5px 0px 0px #1a1a1a;
+    font-size: 10px;
+    font-weight: 800;
+    color: #1a1a1a;
+  }
+
+  :is(.dark, [data-theme="dark"]) .key-cap {
+    border-color: #e8e6e3;
+    background: #1c1b1a;
+    box-shadow: 1.5px 1.5px 0px 0px #e8e6e3;
+    color: #e8e6e3;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(26, 26, 26, 0.2);
+    border-radius: 3px;
+  }
+
+  :is(.dark, [data-theme="dark"]) .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(232, 230, 227, 0.2);
+  }
+</style>

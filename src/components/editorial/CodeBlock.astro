@@ -1,0 +1,80 @@
+---
+import { Code } from 'astro:components';
+
+interface Props {
+  code?: string;
+  language?: string;
+  lang?: string;
+  title?: string;
+  filename?: string;
+  wrap?: boolean;
+  class?: string;
+}
+
+const {
+  code = '',
+  language = '',
+  lang = '',
+  title = '',
+  filename = '',
+  wrap = false,
+  class: className = '',
+} = Astro.props;
+
+const actualLang = language || lang || 'text';
+const headerTitle = title || filename;
+const langTag = actualLang.toUpperCase();
+const safeLang = actualLang.toLowerCase();
+---
+
+<div class={`editorial-codeblock-wrapper not-prose my-6 ${className}`} data-codeblock="true">
+  <div class="border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] overflow-hidden bg-[#faf8f5] dark:bg-[#141413]">
+    {/* 顶部标题栏 / Header */}
+    <div class="flex items-center justify-between px-3.5 py-2 bg-[#f0ebe1] dark:bg-[#242220] border-b-2 sm:border-b-3 border-[#1a1a1a] dark:border-[#e8e6e3] text-xs font-mono select-none">
+      <div class="flex items-center gap-2 min-w-0">
+        <div class="flex items-center gap-1.5 shrink-0">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#ef4444] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-[#eab308] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-[#22c55e] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30"></span>
+        </div>
+        {headerTitle && (
+          <span class="font-bold text-[#1a1a1a] dark:text-[#e8e6e3] truncate px-1.5 border-l-2 border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 text-[11px]">
+            {headerTitle}
+          </span>
+        )}
+        <span class="font-bold px-1.5 py-0.5 rounded-xs bg-[#1a1a1a] dark:bg-[#e8e6e3] text-white dark:text-[#1a1a1a] text-[10px] tracking-wider uppercase font-mono">
+          {langTag}
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <button
+          type="button"
+          class="code-wrap-btn px-2 py-0.5 border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30 rounded-xs bg-white/70 dark:bg-transparent hover:bg-[#1a1a1a] hover:text-white dark:hover:bg-[#e8e6e3] dark:hover:text-[#1a1a1a] transition-colors text-[10px] font-bold text-[#1a1a1a] dark:text-[#e8e6e3] cursor-pointer"
+          title="切换自动换行"
+        >
+          {wrap ? '不换行' : '换行'}
+        </button>
+        <button
+          type="button"
+          class="code-copy-btn px-2.5 py-0.5 border border-[#1a1a1a] dark:border-[#e8e6e3] rounded-xs bg-white dark:bg-[#1c1b1a] hover:bg-[#9e2a2b] hover:text-white dark:hover:bg-[#d9534f] transition-all text-[11px] font-bold text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center gap-1"
+          title="复制代码"
+        >
+          <svg class="copy-icon w-3 h-3 stroke-[2.5]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+          <span class="copy-text">复制</span>
+        </button>
+      </div>
+    </div>
+
+    {/* 代码正文区域 */}
+    <div class={`code-content-box p-4 text-sm font-mono overflow-x-auto text-[#24292e] dark:text-[#e1e4e8] leading-relaxed custom-scrollbar relative ${wrap ? 'whitespace-pre-wrap' : 'whitespace-pre'}`}>
+      {code ? (
+        <Code code={code.trim()} lang={safeLang as any} themes={{ light: 'github-light', dark: 'github-dark' }} data-enhanced="true" />
+      ) : (
+        <slot />
+      )}
+    </div>
+  </div>
+</div>

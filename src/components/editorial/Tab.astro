@@ -1,0 +1,41 @@
+---
+interface Props {
+  label?: string;
+  title?: string;
+  active?: boolean;
+}
+
+const { label: propLabel, title: propTitle, active = false } = Astro.props;
+const label = propLabel || propTitle || '标签';
+---
+
+<div
+  class={`tab-pane ${active ? 'active' : ''}`}
+  data-tab-pane
+  data-tab-label={label}
+  role="tabpanel"
+>
+  <slot />
+</div>
+
+<style>
+  .tab-pane {
+    display: none;
+    animation: tabFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .tab-pane.active {
+    display: block;
+  }
+
+  @keyframes tabFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

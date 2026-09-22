@@ -1,0 +1,143 @@
+---
+import { siteConfig, welcomeConfig } from '../config/site';
+
+const toastCfg = {
+  sessionKey: welcomeConfig?.sessionKey || "blog_visit_flag",
+  duration: welcomeConfig?.duration || 5000,
+  weatherApi: welcomeConfig?.weatherApi || "https://uapis.cn/api/v1/misc/weather",
+  fallbackMessage: welcomeConfig?.fallbackMessage || "Hi！远方的朋友",
+  qqGroup: siteConfig.socials?.qqGroup || "",
+  subscribe: siteConfig.socials?.subscribe || `${siteConfig.url}/rss.xml`,
+  statsApi: siteConfig.analytics?.statsApi?.alltime || "",
+  author: siteConfig.author || "示例作者",
+};
+---
+
+<script define:vars={{ toastCfg }}>
+(function() {
+  var CFG = toastCfg;
+  var VISIT_SESSION_KEY = CFG.sessionKey;
+  var autoCloseTimer = null;
+  var hasShownToast = false;
+
+  function createWelcomeToast() {
+    var toast = document.createElement('div');
+    toast.id = 'welcome-toast';
+    toast.setAttribute('data-nosnippet', 'true');
+    toast.setAttribute('aria-hidden', 'true');
+    toast.className = 'fixed bottom-4 left-2 right-2 sm:left-4 sm:right-auto z-[2000] translate-y-[calc(100%+20px)] opacity-0 transition-all duration-500 ease-out';
+
+    var groupBanner = CFG.qqGroup ? [
+      '  <div class="bg-[#9e2a2b] text-white text-[10px] sm:text-xs font-black text-center px-2 py-1.5 rounded-sm mb-1.5">',
+      '    <a href="' + CFG.qqGroup + '" target="_blank" rel="noopener noreferrer" class="hover:underline">欢迎加入 ' + CFG.author + ' 的交流群</a>',
+      '  </div>',
+    ].join('\n') : '';
+
+    var groupLink = CFG.qqGroup ? [
+      '      <a href="' + CFG.qqGroup + '" target="_blank" rel="noopener noreferrer" class="text-[10px] font-black text-[#1a1a1a] dark:text-[#e8e6e3] hover:text-[#9e2a2b] dark:hover:text-[#d9534f] transition-colors shrink-0 uppercase tracking-wider">QQ群</a>',
+      '      <span class="text-slate-300 dark:text-slate-600 text-[10px] font-black">|</span>',
+    ].join('\n') : '';
+
+    toast.innerHTML = [
+      '<div class="bg-[#fbfbf9] dark:bg-[#1c1b1a] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] rounded-sm p-2 sm:p-0">',
+      groupBanner,
+      '  <div class="flex flex-wrap items-center gap-x-2 gap-y-1 px-2 sm:px-3 py-1.5 sm:py-0 sm:h-9">',
+      '    <span class="inline-flex items-center justify-center w-5 h-5 rounded-sm bg-[#9e2a2b]/10 dark:bg-[#d9534f]/20 text-[#9e2a2b] dark:text-[#d9534f] shrink-0 border border-[#9e2a2b]/30"><svg class="w-3 h-3 stroke-[2.5]" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z"/></svg></span>',
+      '    <span id="welcome-message" class="text-xs font-bold text-[#1a1a1a] dark:text-[#e8e6e3]">加载中...</span>',
+      CFG.statsApi ? '    <span class="text-slate-300 dark:text-slate-600 text-xs font-black hidden sm:inline">|</span>' : '',
+      '    <span id="welcome-stats" class="text-xs font-bold text-slate-500 dark:text-slate-400"></span>',
+      '    <div class="flex items-center gap-1.5 ml-auto sm:ml-1 shrink-0">',
+      groupLink,
+      '      <a href="' + CFG.subscribe + '" class="text-[10px] font-black text-[#1a1a1a] dark:text-[#e8e6e3] hover:text-[#9e2a2b] dark:hover:text-[#d9534f] transition-colors shrink-0 uppercase tracking-wider">订阅</a>',
+      '      <span class="text-slate-300 dark:text-slate-600 text-[10px] font-black">|</span>',
+      '      <a href="javascript:void(0)" class="js-copy-rss text-[10px] font-black text-[#1a1a1a] dark:text-[#e8e6e3] hover:text-[#9e2a2b] dark:hover:text-[#d9534f] transition-colors shrink-0 uppercase tracking-wider">RSS</a>',
+      '      <button class="js-close-toast text-slate-400 hover:text-[#9e2a2b] dark:hover:text-white transition-colors shrink-0 ml-1 cursor-pointer" aria-label="关闭">',
+      '        <svg class="w-3 h-3 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>',
+      '      </button>',
+      '    </div>',
+      '  </div>',
+      '</div>'
+    ].join('\n');
+    document.body.appendChild(toast);
+
+    var closeBtn = toast.querySelector('.js-close-toast');
+    if (closeBtn) closeBtn.addEventListener('click', closeWelcomeToast);
+
+    var rssBtn = toast.querySelector('.js-copy-rss');
+    if (rssBtn) rssBtn.addEventListener('click', copyRssLink);
+
+    return toast;
+  }
+
+  function closeWelcomeToast() {
+    if (autoCloseTimer) { clearTimeout(autoCloseTimer); autoCloseTimer = null; }
+    var toast = document.getElementById('welcome-toast');
+    if (toast) {
+      toast.classList.remove('translate-y-0', 'opacity-100');
+      toast.classList.add('translate-y-[calc(100%+20px)]', 'opacity-0');
+      setTimeout(function() { toast.remove(); }, 500);
+    }
+  }
+
+  async function fetchLocationAndWeather() {
+    try {
+      var res = await fetch(CFG.weatherApi);
+      var data = await res.json();
+      var msgEl = document.getElementById('welcome-message');
+      if (!msgEl) return;
+      var loc = (data.district ? data.city + data.district : data.city) || '远方';
+      var weatherText = data.weather ? data.weather + ' ' + data.temperature + '°C' : '';
+      var parts = ['Hi！来自' + loc + '的朋友'];
+      if (weatherText) parts.push(weatherText);
+      msgEl.textContent = parts.join(' · ');
+    } catch {
+      var msgEl = document.getElementById('welcome-message');
+      if (msgEl) msgEl.textContent = CFG.fallbackMessage;
+    }
+  }
+
+  async function fetchStats() {
+    if (!CFG.statsApi) return;
+    try {
+      var alltimeRes = await fetch(CFG.statsApi);
+      var alltimeData = await alltimeRes.json();
+      var pv = alltimeData ? (typeof alltimeData.pageviews === 'object' ? (alltimeData.pageviews?.value ?? 0) : (alltimeData.pageviews ?? 0)) : 0;
+      var text = pv ? '你是第 ' + pv.toLocaleString() + ' 位访客' : '';
+      var statsEl = document.getElementById('welcome-stats');
+      if (statsEl) statsEl.textContent = text;
+    } catch {}
+  }
+
+  async function showWelcomeToast() {
+    if (hasShownToast) return;
+    var toast = createWelcomeToast();
+    setTimeout(function() {
+      toast.classList.remove('translate-y-[calc(100%+20px)]', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+    }, 100);
+    hasShownToast = true;
+    autoCloseTimer = setTimeout(closeWelcomeToast, CFG.duration);
+    Promise.allSettled([fetchLocationAndWeather(), fetchStats()]);
+  }
+
+  function init() {
+    if (sessionStorage.getItem(VISIT_SESSION_KEY)) return;
+    sessionStorage.setItem(VISIT_SESSION_KEY, 'true');
+    showWelcomeToast();
+  }
+
+  // Defer init to avoid blocking initial page load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(init, 1000); });
+  } else {
+    setTimeout(init, 1000);
+  }
+
+  window.closeWelcomeToast = closeWelcomeToast;
+
+  function copyRssLink() {
+    try { navigator.clipboard.writeText(window.location.origin + '/rss.xml'); } catch { }
+  }
+  window.copyRssLink = copyRssLink;
+})();
+</script>

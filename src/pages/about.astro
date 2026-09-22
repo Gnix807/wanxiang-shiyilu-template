@@ -1,0 +1,411 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Wrench, Film } from 'lucide-astro';
+import { siteConfig, aboutConfig } from '../config/site';
+import { Content } from '../config/about.md';
+
+const BILIBILI_MID = siteConfig.socials.bilibiliMid;
+const BILIBILI_SPACE = siteConfig.socials.bilibili;
+
+interface BiliVideo {
+  bvid: string;
+  title: string;
+  cover: string;
+  duration: number;
+  play_count: number;
+  publish_time: number;
+}
+
+let biliVideos: BiliVideo[] = [];
+if (BILIBILI_MID && process.env.BUILD_OFFLINE !== '1') try {
+  const firstRes = await fetch(`https://uapis.cn/api/v1/social/bilibili/archives?mid=${BILIBILI_MID}&ps=30`, { signal: AbortSignal.timeout(8000) });
+  if (firstRes.ok) {
+    const firstData = await firstRes.json();
+    const total = firstData.total || 0;
+    const firstBatch: BiliVideo[] = (firstData.videos || []).map((v: any) => ({
+      bvid: v.bvid,
+      title: v.title,
+      cover: v.cover,
+      duration: v.duration,
+      play_count: v.play_count,
+      publish_time: v.publish_time,
+    }));
+    biliVideos = firstBatch;
+    const totalPages = Math.ceil(total / 30);
+    for (let p = 2; p <= totalPages; p++) {
+      const res = await fetch(`https://uapis.cn/api/v1/social/bilibili/archives?mid=${BILIBILI_MID}&ps=30&pn=${p}`, { signal: AbortSignal.timeout(8000) });
+      if (res.ok) {
+        const data = await res.json();
+        const more: BiliVideo[] = (data.videos || []).map((v: any) => ({
+          bvid: v.bvid,
+          title: v.title,
+          cover: v.cover,
+          duration: v.duration,
+          play_count: v.play_count,
+          publish_time: v.publish_time,
+        }));
+        biliVideos = biliVideos.concat(more);
+      }
+    }
+  }
+} catch (e) {
+  console.error('Failed to fetch Bilibili videos', e);
+}
+
+function fmtDuration(sec: number): string {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function fmtPlayCount(n: number): string {
+  if (n >= 10000) return (n / 10000).toFixed(1) + '万';
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+  return String(n);
+}
+---
+
+<Layout 
+  title={aboutConfig.title}
+  description={aboutConfig.description}
+  keywords={[siteConfig.author, siteConfig.title, '关于', '个人博客', '独立创作者']}
+  isAboutPage={true}
+>
+  <div class="max-w-[1440px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <div class="max-w-5xl mx-auto space-y-10 animate-card-entrance">
+      
+      {/* ========================================================================= */}
+      {/* § 01 / 著者档案 · AUTHOR PROFILE                                          */}
+      {/* ========================================================================= */}
+      <section class="space-y-3">
+        <div class="flex items-center gap-3 px-1">
+          <span class="font-mono text-xs font-bold text-[#9e2a2b] dark:text-[#d9534f] tracking-widest uppercase">§ 01 / COLOPHON</span>
+          <span class="h-px flex-1 bg-[#1a1a1a]/20 dark:bg-[#e8e6e3]/20"></span>
+          <span class="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">DOSSIER NO. 01</span>
+        </div>
+
+        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 sm:p-8 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm relative overflow-hidden">
+          {/* 复古期刊背景水印印记 */}
+          <div class="absolute -right-8 -bottom-8 select-none pointer-events-none opacity-[0.03] dark:opacity-[0.05] text-[#1a1a1a] dark:text-white font-serif font-black text-9xl leading-none">
+            {siteConfig.enTitle.split(' ')[0] || 'BLOG'}
+          </div>
+
+          <div class="flex flex-col md:flex-row items-center md:items-start gap-6 sm:gap-8 relative z-10">
+            {/* 头像封套 */}
+            <div class="relative shrink-0">
+              <div class="w-32 h-32 md:w-40 md:h-40 rounded-sm bg-[#f4efe6] dark:bg-[#242220] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] overflow-hidden flex items-center justify-center">
+                <img 
+                  src={siteConfig.avatar} 
+                  alt={siteConfig.author} 
+                  width="160" 
+                  height="160" 
+                  loading="eager" 
+                  class="w-full h-full object-cover" 
+                />
+              </div>
+              <div class="absolute -bottom-2 -right-2 bg-[#9e2a2b] dark:bg-[#d9534f] text-white border-2 border-[#1a1a1a] dark:border-[#e8e6e3] px-2 py-0.5 text-[10px] font-mono font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3]">
+                VERIFIED
+              </div>
+            </div>
+
+            {/* 个人详述 */}
+            <div class="text-center md:text-left flex-1 min-w-0">
+              <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-3">
+                <h1 class="text-3xl sm:text-4xl font-black text-[#1a1a1a] dark:text-[#e8e6e3] tracking-wide font-serif">
+                  {siteConfig.author}
+                </h1>
+                <span class="inline-flex items-center bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] text-[#9e2a2b] dark:text-[#d9534f] px-2.5 py-0.5 text-xs font-mono font-black shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3]">
+                  {aboutConfig.role}
+                </span>
+              </div>
+
+              {/* 座右铭印章 */}
+              <div class="inline-flex items-center gap-2 mb-4 px-3 py-1 bg-[#fbfbf9] dark:bg-[#242220] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30 rounded-sm">
+                <span class="text-xs text-[#9e2a2b] dark:text-[#d9534f] font-serif">✦</span>
+                <span class="text-xs font-serif font-bold text-neutral-700 dark:text-neutral-300 italic">
+                  “{siteConfig.signature}”
+                </span>
+              </div>
+
+              {/* 简介正文 */}
+              <p class="text-sm sm:text-base text-neutral-700 dark:text-neutral-300 leading-relaxed font-serif whitespace-pre-line">
+                {aboutConfig.intro}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* § 02 / 个人陈述 · ABOUT ME (来自 Markdown)                                */}
+      {/* ========================================================================= */}
+      <section class="space-y-3">
+        <div class="flex items-center gap-3 px-1">
+          <span class="font-mono text-xs font-bold text-[#9e2a2b] dark:text-[#d9534f] tracking-widest uppercase">§ 02 / NARRATIVE</span>
+          <span class="h-px flex-1 bg-[#1a1a1a]/20 dark:bg-[#e8e6e3]/20"></span>
+          <span class="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">ABOUT ME STATEMENT</span>
+        </div>
+
+        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 sm:p-10 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm">
+          <div class="prose max-w-none text-[#1a1a1a] dark:text-[#e8e6e3] leading-relaxed">
+            <Content />
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 双栏组合：§ 03 坐标与装备 + § 04 公开通讯名录                             */}
+      {/* ========================================================================= */}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+        
+        {/* § 03 / 关注领域与主力装备 */}
+        <section class="space-y-3 flex flex-col">
+          <div class="flex items-center gap-3 px-1">
+            <span class="font-mono text-xs font-bold text-[#9e2a2b] dark:text-[#d9534f] tracking-widest uppercase">§ 03 / ARSENAL</span>
+            <span class="h-px flex-1 bg-[#1a1a1a]/20 dark:bg-[#e8e6e3]/20"></span>
+            <span class="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">TOPICS & GEAR</span>
+          </div>
+
+          <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm flex-1 flex flex-col justify-between space-y-6">
+            
+            {/* 上半部：关注领域 */}
+            <div>
+              <div class="flex items-center justify-between mb-3 border-b-2 border-[#1a1a1a]/10 dark:border-[#e8e6e3]/10 pb-2">
+                <h3 class="font-serif font-black text-base text-[#1a1a1a] dark:text-[#e8e6e3] tracking-wide flex items-center gap-2">
+                  <span>✦</span> 关注领域 · Focus Areas
+                </h3>
+                <span class="font-mono text-[10px] text-neutral-400">INTERESTS</span>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                {aboutConfig.focusAreas.map(tag => (
+                  <span class="bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] px-3 py-1 font-bold text-xs text-neutral-800 dark:text-neutral-200 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#9e2a2b] hover:border-[#9e2a2b] hover:text-white transition-colors cursor-default select-none font-serif">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* 下半部：主力装备 */}
+            <div>
+              <div class="flex items-center justify-between mb-3 border-b-2 border-[#1a1a1a]/10 dark:border-[#e8e6e3]/10 pb-2">
+                <h3 class="font-serif font-black text-base text-[#1a1a1a] dark:text-[#e8e6e3] tracking-wide flex items-center gap-2">
+                  <Wrench class="w-4 h-4 text-[#9e2a2b] dark:text-[#d9534f] stroke-[2.2]" />
+                  <span>主力工具 · Daily Drivers</span>
+                </h3>
+                <span class="font-mono text-[10px] text-neutral-400">TOOLKIT</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                {aboutConfig.dailyGear.map(gear => (
+                  <div class="p-2.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#fbfbf9] dark:bg-[#242220] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3]">
+                    <div class="text-[10px] font-mono text-neutral-400 dark:text-neutral-400 uppercase leading-none mb-1">
+                      {gear.category}
+                    </div>
+                    <div class="text-xs font-black text-neutral-800 dark:text-neutral-200 font-mono truncate">
+                      {gear.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* § 04 / 公开通讯目录 (无私人微信/QQ) */}
+        <section class="space-y-3 flex flex-col">
+          <div class="flex items-center gap-3 px-1">
+            <span class="font-mono text-xs font-bold text-[#9e2a2b] dark:text-[#d9534f] tracking-widest uppercase">§ 04 / DIRECTORY</span>
+            <span class="h-px flex-1 bg-[#1a1a1a]/20 dark:bg-[#e8e6e3]/20"></span>
+            <span class="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">PUBLIC CHANNELS</span>
+          </div>
+
+          <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm flex-1 flex flex-col justify-between">
+            <div class="space-y-2.5">
+              {aboutConfig.directory.map(item => (
+                <a 
+                  href={item.url} 
+                  target={item.url.startsWith('http') ? '_blank' : undefined}
+                  rel={item.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  class="flex items-center justify-between p-2.5 sm:p-3 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#f4efe6] dark:bg-[#242220] hover:bg-[#9e2a2b] hover:border-[#9e2a2b] hover:text-white transition-colors shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] group"
+                >
+                  <div class="min-w-0 pr-2">
+                    <div class="font-black text-sm text-neutral-900 dark:text-neutral-100 group-hover:text-white flex items-center gap-2">
+                      <span>{item.name}</span>
+                      <span class="text-[10px] font-normal opacity-60 hidden sm:inline group-hover:opacity-90">· {item.label}</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    <span class="font-mono text-xs opacity-75 group-hover:opacity-100 text-neutral-700 dark:text-neutral-300 group-hover:text-white font-bold">
+                      {item.handle}
+                    </span>
+                    <span class="text-xs group-hover:translate-x-0.5 transition-transform">↗</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+
+            <div class="mt-4 pt-3 border-t-2 border-[#1a1a1a]/10 dark:border-[#e8e6e3]/10 flex items-center justify-between text-[11px] font-mono text-neutral-400">
+              <span>SECURITY: PRIVACY FIRST</span>
+              <span>NO PRIVATE MESSENGERS</span>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      {/* ========================================================================= */}
+      {/* § 05 / 正在进行时 · WHAT I'M DOING NOW (/now)                             */}
+      {/* ========================================================================= */}
+      <section class="space-y-3">
+        <div class="flex items-center gap-3 px-1">
+          <span class="font-mono text-xs font-bold text-[#9e2a2b] dark:text-[#d9534f] tracking-widest uppercase">§ 05 / CURRENT STATUS</span>
+          <span class="h-px flex-1 bg-[#1a1a1a]/20 dark:bg-[#e8e6e3]/20"></span>
+          <span class="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">WHAT I'M DOING NOW</span>
+        </div>
+
+        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 sm:p-8 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 border-b-2 border-[#1a1a1a]/10 dark:border-[#e8e6e3]/10 pb-3">
+            <div>
+              <h2 class="text-xl sm:text-2xl font-black text-[#1a1a1a] dark:text-[#e8e6e3] tracking-wider font-serif">
+                正在进行时 · /now
+              </h2>
+              <p class="text-xs text-neutral-500 dark:text-neutral-400 font-serif mt-0.5">
+                记录当下阶段的核心重心、项目进展与探索方向
+              </p>
+            </div>
+            <div class="inline-flex items-center gap-1.5 self-start sm:self-auto bg-[#f4efe6] dark:bg-[#242220] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30 px-2.5 py-1 text-[11px] font-mono font-bold text-neutral-600 dark:text-neutral-300">
+              <span class="w-2 h-2 rounded-full bg-[#10b981] animate-pulse"></span>
+              <span>LIVE UPDATES</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            {aboutConfig.nowCards.map(item => (
+              <div class="border-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#fbfbf9] dark:bg-[#242220] p-4 sm:p-5 shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3] flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between gap-2 mb-2">
+                    <span class="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-wider">
+                      {item.section}
+                    </span>
+                    <span class={`text-[10px] font-mono font-black px-1.5 py-0.5 border border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3] ${
+                      item.statusColor === 'red' 
+                        ? 'bg-[#9e2a2b] text-white' 
+                        : 'bg-[#1a1a1a] dark:bg-[#e8e6e3] text-white dark:text-[#1a1a1a]'
+                    }`}>
+                      {item.status}
+                    </span>
+                  </div>
+                  <h3 class="font-serif font-black text-base text-[#1a1a1a] dark:text-[#e8e6e3] mb-2 leading-snug">
+                    {item.title}
+                  </h3>
+                  <p class="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed font-serif">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* § 06 / 视听画廊 · BILIBILI MEDIA                                          */}
+      {/* ========================================================================= */}
+      <section class="space-y-3">
+        <div class="flex items-center gap-3 px-1">
+          <span class="font-mono text-xs font-bold text-[#9e2a2b] dark:text-[#d9534f] tracking-widest uppercase">§ 06 / BROADCAST</span>
+          <span class="h-px flex-1 bg-[#1a1a1a]/20 dark:bg-[#e8e6e3]/20"></span>
+          <span class="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">BILIBILI STUDIO</span>
+        </div>
+
+        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 sm:p-8 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm">
+          <div class="flex items-center justify-between mb-6 border-b-2 border-[#1a1a1a]/10 dark:border-[#e8e6e3]/10 pb-3">
+            <a 
+              href={BILIBILI_SPACE} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2.5 group"
+            >
+              <Film class="w-5 h-5 text-[#9e2a2b] dark:text-[#d9534f] stroke-[2.2] shrink-0" />
+              <h2 class="text-xl sm:text-2xl font-black text-[#1a1a1a] dark:text-[#e8e6e3] tracking-wider group-hover:text-[#9e2a2b] dark:group-hover:text-[#d9534f] transition-colors font-serif">
+                {aboutConfig.bilibiliTitle}
+              </h2>
+              <span class="text-xs font-mono text-neutral-400">
+                ({biliVideos.length} 期视频)
+              </span>
+            </a>
+            <a 
+              href={BILIBILI_SPACE} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              class="hidden sm:inline-flex items-center gap-1 text-xs font-mono font-bold text-[#9e2a2b] dark:text-[#d9534f] hover:underline"
+            >
+              访问个人空间 ↗
+            </a>
+          </div>
+
+          <div class="overflow-x-auto pb-3 custom-scrollbar">
+            <div class="flex flex-nowrap gap-4 w-max" id="bili-scroll">
+              {biliVideos.length === 0 ? (
+                <div class="p-6 text-sm text-neutral-400 font-mono">
+                  视频数据加载中或暂无发布...
+                </div>
+              ) : (
+                biliVideos.map(video => (
+                  <a 
+                    href={`https://www.bilibili.com/video/${video.bvid}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    class="w-60 shrink-0 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] hover:bg-[#9e2a2b] hover:border-[#9e2a2b] hover:text-white transition-colors shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] group bg-white dark:bg-[#242220] flex flex-col justify-between"
+                  >
+                    <div>
+                      <div class="aspect-video overflow-hidden border-b-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#f4efe6] dark:bg-[#242220] relative">
+                        <img 
+                          src={video.cover} 
+                          alt={video.title} 
+                          width="320" 
+                          height="180" 
+                          loading="lazy" 
+                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                          referrerpolicy="no-referrer" 
+                        />
+                        <div class="absolute bottom-1.5 right-1.5 bg-[#1a1a1a]/80 text-white font-mono text-[10px] px-1.5 py-0.5 rounded-xs">
+                          {fmtDuration(video.duration)}
+                        </div>
+                      </div>
+                      <div class="p-3">
+                        <p class="font-bold text-xs leading-snug line-clamp-2 text-neutral-800 dark:text-neutral-200 group-hover:text-white font-serif">
+                          {video.title}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="px-3 pb-3 pt-1 flex items-center justify-between text-[10px] font-mono text-neutral-500 dark:text-neutral-400 group-hover:text-white/80 border-t border-[#1a1a1a]/10 dark:border-[#e8e6e3]/10">
+                      <span>▶ {fmtPlayCount(video.play_count)}</span>
+                      <span class="group-hover:translate-x-0.5 transition-transform">观看 ↗</span>
+                    </div>
+                  </a>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 底部收尾印记 · COLOPHON SEAL                                              */}
+      {/* ========================================================================= */}
+      <div class="pt-4 pb-8 text-center select-none">
+        <div class="inline-flex items-center gap-3 px-4 py-2 border-2 border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30 bg-[#fbfbf9] dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a]/20 dark:shadow-[2px_2px_0px_0px_#e8e6e3]/20">
+          <span class="text-sm font-serif font-black tracking-widest uppercase">
+            {siteConfig.enTitle} · {siteConfig.author}
+          </span>
+          <span class="text-xs text-[#9e2a2b] dark:text-[#d9534f]">✦</span>
+          <span class="font-mono text-[11px] text-neutral-500 dark:text-neutral-400">
+            {siteConfig.signature}
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</Layout>

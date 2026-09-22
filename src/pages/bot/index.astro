@@ -1,0 +1,181 @@
+---
+import { getProcessedPosts, getProcessedTalks } from '../../utils/postsFetcher';
+import { siteConfig, seoConfig, i18nConfig } from '../../config/site';
+
+const posts = await getProcessedPosts();
+const talks = await getProcessedTalks();
+
+const pageTitle = `${i18nConfig.home.title}${seoConfig.titleTemplate}`;
+const pageDescription = i18nConfig.home.description;
+const canonicalURL = `${siteConfig.url}/`;
+
+const archiveMap: Record<string, typeof posts> = {};
+posts.forEach(post => {
+  const dateStr = post.date || '';
+  const match = dateStr.match(/^(\d{4}-\d{2})/);
+  let key = '未知';
+  if (match) {
+    const [year, month] = match[1].split('-');
+    key = `${year}年${month}月`;
+  }
+  if (!archiveMap[key]) archiveMap[key] = [];
+  archiveMap[key].push(post);
+});
+const archiveKeys = Object.keys(archiveMap).sort((a, b) => b.localeCompare(a));
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <meta name="keywords" content="blog, 博客, 翻译, 历史考据, 思考, 前端, Astro" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large" />
+    <meta name="bingbot" content="index, follow" />
+    <meta name="baiduspider" content="index, follow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="canonical" href={canonicalURL} />
+    <meta name="author" content={siteConfig.author} />
+    <meta name="theme-color" content="#1a1a1a" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteConfig.title} />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:locale:alternate" content="zh_CN" />
+    <meta property="og:image" content={siteConfig.avatar} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={siteConfig.avatar} />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": `${siteConfig.url}/#website`,
+      "url": siteConfig.url,
+      "name": siteConfig.title,
+      "description": siteConfig.description,
+      "inLanguage": ["zh-CN", "en"],
+      "author": {
+        "@type": "Person",
+        "name": siteConfig.author,
+        "url": siteConfig.url,
+        "sameAs": [
+          siteConfig.socials.github,
+          siteConfig.socials.bilibili
+        ].filter(Boolean)
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": siteConfig.author,
+        "image": siteConfig.avatar
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": `${siteConfig.url}/?s={search_term_string}`
+        },
+        "query-input": "required name=search_term_string"
+      }
+    })} />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "最新文章",
+      "numberOfItems": posts.length,
+      "itemListElement": posts.slice(0, 100).map((p, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "url": `${siteConfig.url}/posts/${encodeURIComponent(p.slug)}`,
+        "name": p.title
+      }))
+    })} />
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; color: #1a1a1a; }
+      h1 { color: #1a1a1a; border-bottom: 2px solid #1a1a1a; padding-bottom: 10px; }
+      h2 { color: #1a1a1a; margin-top: 30px; }
+      h3 { color: #333; }
+      a { color: #9e2a2b; text-decoration: underline; }
+      a:hover { color: #781d1e; }
+      nav { background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+      nav ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 15px; }
+      time { color: #666; font-size: 0.9em; }
+      ul { padding-left: 20px; }
+      li { margin-bottom: 8px; }
+      footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 0.9em; }
+      strong { color: #1a1a2e; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>{i18nConfig.home.title}</h1>
+      <p><strong>{pageDescription}</strong></p>
+    </header>
+
+    <nav aria-label="主导航">
+      <strong>导航：</strong>
+      <ul>
+        <li><a href={`${siteConfig.url}/`}>首页（完整版）</a></li>
+        <li><a href={`${siteConfig.url}/talks/`}>说说</a></li>
+        <li><a href={`${siteConfig.url}/posts/`}>归档</a></li>
+        <li><a href={`${siteConfig.url}/about/`}>关于</a></li>
+        <li><a href={`${siteConfig.url}/friends/`}>友链</a></li>
+        <li><a href={`${siteConfig.url}/tags/`}>标签</a></li>
+        <li><a href={`${siteConfig.url}/rss.xml`}>RSS</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <section>
+        <h2>全部文章（共 <strong>{posts.length}</strong> 篇）</h2>
+        {archiveKeys.map(key => (
+          <div key={key}>
+            <h3>{key}（{archiveMap[key].length} 篇）</h3>
+            <ul>
+              {archiveMap[key].map(p => (
+                <li key={p.slug}>
+                  {p.date && <time dateTime={p.dateISO}>{p.date}</time>} —
+                  <a href={`${siteConfig.url}/posts/${encodeURIComponent(p.slug)}/`}><strong>{p.title}</strong></a>
+                  {p.description && <p>{p.description}</p>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </section>
+
+      <section>
+        <h2>最新说说（共 <strong>{talks.length}</strong> 条）</h2>
+        <ul>
+          {talks.slice(0, 20).map(t => (
+            <li key={t.slug}>
+              {t.date && <time dateTime={t.date}>{t.date}</time>} —
+              <a href={`${siteConfig.url}/talk/${encodeURIComponent(t.slug)}/`}><strong>{t.title || t.date}</strong></a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>© {new Date().getFullYear()} <strong>{siteConfig.title}</strong></p>
+      <p>
+        <a href={siteConfig.url}>访问完整站点</a> ·
+        <a href={`${siteConfig.url}/rss.xml`}>RSS订阅</a> ·
+        <a href={`${siteConfig.url}/sitemap.xml`}>Sitemap</a>
+      </p>
+    </footer>
+  </body>
+</html>

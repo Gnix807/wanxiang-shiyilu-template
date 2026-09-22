@@ -1,0 +1,209 @@
+import { getCollection } from 'astro:content';
+import { siteConfig, seoConfig } from '../config/site';
+
+export interface PostItem {
+  id: string;
+  slug: string;
+  title: string;
+  date: string;
+  dateISO: string;
+  content: string;
+  description: string;
+  img: string;
+  tags: string[];
+  keywords: string[];
+  category: string;
+}
+
+export interface TalkItem {
+  id: string;
+  slug: string;
+  title: string;
+  date: string;
+  content: string;
+  tags: string[];
+  location: string;
+  weather: string;
+  mood: string;
+  device: string;
+}
+
+export async function getProcessedPosts(): Promise<PostItem[]> {
+  const rawPosts = await getCollection('posts');
+  
+  const processed = rawPosts.map((post: any) => {
+    const data = post.data;
+    let category = data.category || '';
+    if (!category && Array.isArray(data.categories) && data.categories.length > 0) {
+      category = data.categories[0];
+    }
+
+    let tags = [];
+    if (Array.isArray(data.tags)) {
+      tags = data.tags;
+    } else if (typeof data.tags === 'string') {
+      tags = data.tags.split(',').map((t: string) => t.trim());
+    }
+
+    let keywords: string[] = [];
+    if (Array.isArray(data.keywords)) {
+      keywords = data.keywords.map((k: string) => String(k).trim()).filter(Boolean);
+    } else if (typeof data.keywords === 'string') {
+      keywords = data.keywords.split(/[,，]/).map((k: string) => k.trim()).filter(Boolean);
+    } else if (typeof data.keyword === 'string') {
+      keywords = data.keyword.split(/[,，]/).map((k: string) => k.trim()).filter(Boolean);
+    }
+
+    let parsedDate = '未知时间';
+    const rawDate = data.date || data.published;
+    if (rawDate) {
+      const d = new Date(rawDate);
+      if (!isNaN(d.getTime())) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        const seconds = String(d.getSeconds()).padStart(2, '0');
+        parsedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      }
+    }
+
+    let customSlug = post.slug || post.id;
+    if (data.slug && typeof data.slug === 'string' && data.slug.trim() !== '') {
+      customSlug = data.slug.trim();
+    }
+    
+    // Normalize pre-encoded slugs from frontmatter (e.g. from imported Wordpress data)
+    if (customSlug.includes('%')) {
+      try {
+        customSlug = decodeURIComponent(customSlug);
+      } catch (e) {
+        // Fallback to original if not a valid encoding
+      }
+    }
+
+    // 1) frontmatter 里显式声明的封面图
+    // 2) 正文里第一张 Markdown/HTML 图片（![](...)、<img src=...>）
+    // 3) 默认兜底（通常是站长头像）
+    const firstBodyImg = (() => {
+      const body = post.body || '';
+      // 优先匹配 Markdown 图片 ![alt](url) —— 取括号里的 URL
+      const md = body.match(/!\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/);
+      if (md) return md[1];
+      // 其次匹配 HTML <img src="..."> / <img src=...>
+      const html = body.match(/<img\b[^>]*\bsrc=["']?([^"'\s>]+)/i);
+      if (html) return html[1];
+      return '';
+    })();
+
+    return {
+      id: post.id || customSlug,
+      slug: customSlug,
+      title: data.title || '无标题文章',
+      date: parsedDate,
+      dateISO: parsedDate.replace(' ', 'T'),
+      content: post.body || '',
+      description: (() => {
+        let desc = data.description || data.summary || '';
+        if (!desc && post.body) {
+          const lines = post.body.split('\n').filter(l => {
+            const t = l.trim();
+            return t && !t.startsWith('#') && !t.startsWith('![') && !t.startsWith('<') && !t.startsWith('---');
+          });
+          desc = lines[0] ? lines[0].replace(/[\[\]]/g, '').slice(0, 200) : '';
+        }
+        return desc;
+      })(),
+      img: (() => {
+        const directImg = data.img || data.image || data.cover || firstBodyImg;
+        if (directImg) return directImg;
+        if (siteConfig.assets?.defaultPostCover) return siteConfig.assets.defaultPostCover;
+        if (siteConfig.assets?.randomImage) {
+          const raw = siteConfig.assets.randomImage;
+          if (raw.includes('biturl.top') && raw.includes('index=')) {
+            // 根据 slug 做稳定哈希映射到必应壁纸库（0~7），既是官方必应每日壁纸，又避免列表页多篇无封面文章完全雷同
+            let hash = 0;
+            for (let i = 0; i < customSlug.length; i++) hash = (hash * 31 + customSlug.charCodeAt(i)) & 0xffffffff;
+            const idx = Math.abs(hash) % 8;
+            return raw.replace(/index=[^&]+/, `index=${idx}`);
+          }
+          return raw;
+        }
+        return seoConfig.defaultImage;
+      })(),
+      tags,
+      keywords,
+      category
+    };
+  });
+
+  // Sort descending by date
+  return processed.sort((a, b) => {
+    if (a.date === '未知时间') return 1;
+    if (b.date === '未知时间') return -1;
+    return b.date.localeCompare(a.date);
+  });
+}
+
+export async function getProcessedTalks(): Promise<TalkItem[]> {
+  const rawTalks = await getCollection('talks');
+
+  const processed = rawTalks.map((talk: any) => {
+    const data = talk.data;
+    let tags = [];
+    if (Array.isArray(data.tags)) {
+      tags = data.tags;
+    } else if (typeof data.tags === 'string') {
+      tags = data.tags.split(',').map((t: string) => t.trim());
+    }
+    
+    let parsedDate = '未知时间';
+    if (data.date) {
+      const d = new Date(data.date);
+      if (!isNaN(d.getTime())) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        const seconds = String(d.getSeconds()).padStart(2, '0');
+        parsedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      }
+    }
+
+    let customSlug = talk.slug || talk.id;
+    if (data.slug && typeof data.slug === 'string' && data.slug.trim() !== '') {
+      customSlug = data.slug.trim();
+    }
+
+    // Normalize pre-encoded slugs from frontmatter
+    if (customSlug.includes('%')) {
+      try {
+        customSlug = decodeURIComponent(customSlug);
+      } catch (e) {
+        // Fallback
+      }
+    }
+
+    return {
+      id: talk.id || customSlug,
+      slug: customSlug,
+      title: data.title || '日常动态',
+      date: parsedDate,
+      content: talk.body || '',
+      tags,
+      location: data.location || '',
+      weather: data.weather || '',
+      mood: data.mood || '',
+      device: data.device || ''
+    };
+  });
+
+  // Sort descending by date
+  return processed.sort((a, b) => {
+    if (a.date === '未知时间') return 1;
+    if (b.date === '未知时间') return -1;
+    return b.date.localeCompare(a.date);
+  });
+}

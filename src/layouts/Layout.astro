@@ -1,0 +1,1132 @@
+---
+import { siteConfig, footerConfig } from '../config/site';
+import { infoConfig } from '../config/info';
+import { seoConfig } from '../config/seo';
+import { ClientRouter } from 'astro:transitions';
+import NavBar from '../components/NavBar.astro';
+import PrefetchLinks from '../components/PrefetchLinks.svelte';
+import { PageBanner } from '../components/PageBanner';
+// 归档禁用：import MusicPlayer from '../components/MusicPlayer.svelte';
+import { execSync } from 'child_process';
+import { getCollection } from 'astro:content';
+import { countBodyChars } from '../utils/wordCount.mjs';
+import '../styles/fonts.css';
+import '../index.css';
+import '../styles/editorial-components.css';
+import SearchModal from '../components/editorial/SearchModal.astro';
+import AppleLightbox from '../components/editorial/AppleLightbox.astro';
+
+// 页脚字数统计：与建站统计页共用同一口径（src/utils/wordCount.mjs），
+// 否则同一个站会显示两个不同的"总字数"
+const footerPosts = await getCollection('posts');
+const footerTalks = await getCollection('talks');
+const footerChars = footerPosts.reduce((sum, p) => sum + countBodyChars(p.body || ''), 0)
+  + footerTalks.reduce((sum, t) => sum + countBodyChars(t.body || ''), 0);
+const wordCountK = (footerChars / 1000).toFixed(1);
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  categoryName?: string | null;
+  tagName?: string | null;
+  post?: { title: string; date: string; dateISO?: string; keywords?: string[] } | null;
+  keywords?: string[] | null;
+  isTalk?: boolean;
+  postsCount?: number;
+  isAboutPage?: boolean;
+  isArticle?: boolean;
+  hideFooter?: boolean;
+  hideBanner?: boolean;
+}
+
+const {
+  title,
+  description,
+  image = seoConfig.defaultImage,
+  categoryName = null,
+  tagName = null,
+  post = null,
+  keywords = null,
+  isTalk = false,
+  postsCount = 0,
+  isAboutPage = false,
+  isArticle = false,
+  hideFooter = false,
+  hideBanner = false,
+} = Astro.props;
+
+const pageTitle = title
+  ? (title === siteConfig.title || title === seoConfig.defaultTitle || title.endsWith(seoConfig.titleTemplate)
+      ? title
+      : `${title}${seoConfig.titleTemplate}`)
+  : siteConfig.title;
+const pageDescription = (description || seoConfig.defaultDescription).length < 10 
+  ? seoConfig.defaultDescription 
+  : (description || seoConfig.defaultDescription);
+const pageKeywords = keywords?.length
+  ? keywords
+  : post?.keywords?.length
+    ? post.keywords
+    : seoConfig.keywords;
+
+const canonicalURL = new URL(Astro.url.pathname, siteConfig.url).href;
+const resolvedImage = image || seoConfig.defaultImage;
+const isMusicPage = false; // 音乐页已归档禁用
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <meta name="keywords" content={pageKeywords.join(", ")} />
+    <meta name="author" content={siteConfig.author} />
+    <meta name="robots" content={seoConfig.robots} />
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large" />
+    <meta name="bingbot" content="index, follow" />
+    <meta name="baiduspider" content="index, follow" />
+    <link rel="canonical" href={canonicalURL} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="msvalidate.01" content="8814B55DAA53801F47B998FE06421544" />
+
+    <!-- Geo Tags -->
+    <meta name="geo.region" content="CN-HE" />
+    <meta name="geo.placename" content="Shijiazhuang" />
+    <meta name="geo.position" content="38.0428;114.5149" />
+    <meta name="ICBM" content="38.0428, 114.5149" />
+    {/* Favicon - use avatar image */}
+    <link rel="icon" href={siteConfig.avatar} />
+    <link rel="apple-touch-icon" href={siteConfig.avatar} />
+    {/* RSS 2.0 & Atom 1.0 自动发现 */}
+    <link rel="alternate" type="application/rss+xml" title={`${siteConfig.title} (RSS 2.0)`} href="/rss.xml" />
+    <link rel="alternate" type="application/atom+xml" title={`${siteConfig.title} (Atom 1.0)`} href="/atom.xml" />
+    {/* WebMCP 工具注册 */}
+    <script is:inline src="/webmcp-register.js"></script>
+
+    {/* Open Graph Tags */}
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content={post ? "article" : "website"} />
+    <meta property="og:image" content={resolvedImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content={siteConfig.title} />
+    <meta property="og:locale" content="zh-CN" />
+    <meta property="og:locale:alternate" content="zh_CN" />
+    <meta property="og:url" content={canonicalURL} />
+    {post && <meta property="article:published_time" content={post.dateISO || post.date} />}
+    
+    {/* Twitter Card Tags */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={seoConfig.twitter.site} />
+    <meta name="twitter:creator" content={seoConfig.twitter.creator} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={resolvedImage} />
+
+    {/* JSON-LD Structured Data */}
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": `${siteConfig.url}/#website`,
+          "url": siteConfig.url,
+          "name": siteConfig.title,
+          "description": siteConfig.description,
+          "inLanguage": "zh-CN"
+        },
+        {
+          "@type": "Person",
+          "@id": `${siteConfig.url}/#person`,
+          "name": siteConfig.author,
+          "url": siteConfig.url,
+          "image": siteConfig.avatar,
+          "sameAs": [
+            siteConfig.socials.github
+          ]
+        },
+        ...(post ? [{
+          "@type": "Article",
+          "@id": `${canonicalURL}#article`,
+          "headline": post.title,
+          "description": pageDescription,
+          "image": resolvedImage,
+          "datePublished": post.dateISO || post.date,
+          "author": {
+            "@type": "Person",
+            "name": siteConfig.author,
+            "url": siteConfig.url,
+            "image": siteConfig.avatar
+          },
+          "publisher": {
+            "@type": "Person",
+            "name": siteConfig.author,
+            "image": siteConfig.avatar
+          },
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": canonicalURL
+          }
+        }] : [])
+      ]
+    })} />
+
+    {/* Dynamic Prefetch & Preconnect */}
+    {seoConfig.dnsPrefetch.map(domain => (
+      <link rel="dns-prefetch" href={domain} />
+    ))}
+    {seoConfig.preconnect.map(conn => (
+      <link rel="preconnect" href={conn.url} crossorigin={conn.crossOrigin === "anonymous" ? "anonymous" : undefined} />
+    ))}
+
+    {siteConfig.analytics.umami.map(u => (
+      <script defer src={u.src} data-website-id={u.id}></script>
+    ))}
+    {siteConfig.analytics.clarity && (
+      <script type="text/javascript" define:vars={{ clarityId: siteConfig.analytics.clarity }}>
+        /* Clarity：页面 load 后再加载，不阻塞首屏 */
+        window.addEventListener('load', function() {
+          (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window, document, "clarity", "script", clarityId);
+        });
+      </script>
+    )}
+  <style is:global>
+    @keyframes content-in {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes content-out {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(15px); }
+    }
+    /* Card Specific Entrance - Used for staggered listing */
+    @keyframes card-entrance {
+      0% { 
+        opacity: 0; 
+        transform: translateY(30px) scale(0.96);
+      }
+      70% {
+        opacity: 1;
+        transform: translateY(-4px) scale(1.02);
+      }
+      100% { 
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .animate-card-entrance {
+      animation: card-entrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    /* 减弱动态效果：禁用 blur，降低动画幅度 */
+    @media (prefers-reduced-motion: reduce) {
+      @keyframes content-in {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+      }
+      @keyframes content-out {
+        100% { opacity: 0; }
+      }
+      @keyframes card-entrance {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+      }
+    }
+
+    /* ===== 缓存调试面板：右下角横条 ===== */
+    .cache-panel {
+      position: fixed;
+      bottom: 8px;
+      right: 8px;
+      z-index: 99999;
+      font: 11px/1.4 ui-monospace, monospace;
+      color: #94a3b8;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 6px 10px;
+      pointer-events: none;
+      white-space: nowrap;
+      backdrop-filter: blur(4px);
+    }
+    .cache-panel-header { display: none; }
+    .cache-panel-stats { display: inline; }
+    .cache-stat { display: inline; margin: 0 2px; }
+    .cache-stat-cached { color: #34d399; }
+    .cache-stat-queued { color: #fbbf24; }
+    .cache-stat-loading { color: #60a5fa; }
+    .cache-stat-hit { color: #34d399; font-weight: 700; }
+    .cache-stat-miss { color: #f87171; font-weight: 700; }
+
+    /* ===== HIT/MISS 弹出提示 ===== */
+    .cache-toast {
+      position: fixed;
+      z-index: 999999;
+      font: 700 11px/1 ui-monospace, monospace;
+      padding: 4px 8px;
+      border-radius: 4px;
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      transform: translateY(0);
+      letter-spacing: 0.02em;
+    }
+    .cache-toast-hit {
+      background: rgba(52, 211, 153, 0.95);
+      color: #064e3b;
+      box-shadow: 0 2px 8px rgba(52, 211, 153, 0.3);
+    }
+    .cache-toast-miss {
+      background: rgba(248, 113, 113, 0.95);
+      color: #7f1d1d;
+      box-shadow: 0 2px 8px rgba(248, 113, 113, 0.3);
+    }
+
+  </style>
+  {/* Dark mode init: read persisted theme before first paint */}
+  <script is:inline>
+    (function() {
+      try {
+        const saved = localStorage.getItem('theme');
+        if (saved === 'dark') {
+          document.documentElement.classList.add('dark');
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else if (saved === 'light') {
+          document.documentElement.classList.remove('dark');
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      } catch (e) {
+        // localStorage may be unavailable in some contexts
+      }
+    })();
+  </script>
+  <ClientRouter />
+</head>
+  <body data-bg-url={siteConfig.assets.siteBg || ''} data-is-article={isArticle ? "true" : "false"} class="bg-[#f6eddc] dark:bg-[#141413] text-[#1a1a1a] dark:text-[#e8e6e3] selection:bg-[#9e2a2b]/20 selection:text-[#9e2a2b] dark:selection:text-[#ffffff]">
+    {/* Persistent full-page bg layer (survives View Transitions) */}
+    <div
+      id="site-bg"
+      transition:persist="site-bg"
+      class="fixed inset-0 -z-10 pointer-events-none"
+      aria-hidden="true"
+    ></div>
+    <div id="site-bg-loader" transition:persist="site-bg-loader" aria-hidden="true">
+      <div class="bg-bricks">
+        <span class="bg-brick"></span>
+        <span class="bg-brick"></span>
+        <span class="bg-brick"></span>
+      </div>
+      <span class="bg-loader-text">loading</span>
+      <div class="bg-mini-bar"><i id="site-bg-loader-bar"></i></div>
+      <span class="bg-loader-meta" id="site-bg-loader-meta" hidden>0 / 0 · 0%</span>
+    </div>
+    <!-- Tiny top bar + count only while real resources are loading -->
+    <div id="resource-progress" transition:persist="resource-progress" aria-hidden="true">
+      <i></i>
+      <span id="resource-progress-meta" hidden>0 / 0 · 0%</span>
+    </div>
+    <!-- Skip to content for keyboard users -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:bg-[#1a1a1a] dark:focus:bg-[#e8e6e3] focus:text-white dark:focus:text-[#1a1a1a] focus:px-4 focus:py-2 focus:rounded-sm focus:font-black focus:text-sm focus:shadow-[4px_4px_0px_0px_#9e2a2b] focus:no-underline focus:outline-none">
+      跳转到主要内容
+    </a>
+    {/* Global reading progress bar */}
+    <div class="fixed top-0 left-0 w-full h-[5px] bg-transparent z-[110] pointer-events-none">
+      <div 
+        id="scroll-bar-indicator"
+        class="h-full bg-[#9e2a2b] dark:bg-[#d9534f] origin-left w-0 transition-all duration-75"
+      ></div>
+    </div>
+    {/* 缓存系统：面板 + HIT/MISS 弹出提示（persist 保持跨页面） */}
+    <div id="cache-panel" class="cache-panel" transition:persist="cache-panel" style="display:none">
+      <div class="cache-panel-header">⚡ Cache</div>
+      <div id="cache-panel-stats" class="cache-panel-stats">—</div>
+    </div>
+    <div id="cache-toast" class="cache-toast" transition:persist="cache-toast" style="display:none"></div>
+    <script is:inline>
+    (function () {
+      // 不开 debug 就什么都不运行
+      if (sessionStorage.getItem('cacheDebug') !== '1') {
+        // 只在 /cachelog 路径开启
+        if (window.location.pathname === '/cachelog' || window.location.pathname === '/cachelog/') {
+          try { sessionStorage.setItem('cacheDebug', '1'); } catch {}
+        } else {
+          return; // 不是 debug 模式，直接退出
+        }
+      }
+
+      var panel = document.getElementById('cache-panel');
+      var statsEl = document.getElementById('cache-panel-stats');
+      var toast = document.getElementById('cache-toast');
+      if (!panel || !statsEl || !toast) return;
+
+      // 更新面板内容
+      function updatePanel() {
+        panel.style.display = '';
+        var s = window.__cacheStats || {};
+        var parts = [];
+        parts.push('<span class="cache-stat cache-stat-cached">' + (s.cached || 0) + ' cached</span>');
+        parts.push('<span class="cache-stat cache-stat-queued">' + (s.queued || 0) + ' queued</span>');
+        parts.push('<span class="cache-stat cache-stat-loading">' + (s.loading || 0) + ' loading</span>');
+        var last = sessionStorage.getItem('[cache]lastClick');
+        if (last) {
+          var isHit = last.indexOf('HIT ') === 0;
+          var slug = last.replace(/^(HIT|MISS) /, '');
+          parts.push('<span class="cache-stat ' + (isHit ? 'cache-stat-hit' : 'cache-stat-miss') + '">' + (isHit ? '✓ HIT ' : '✗ MISS ') + slug + '</span>');
+        }
+        statsEl.innerHTML = parts.join('');
+      }
+
+      updatePanel();
+      setInterval(updatePanel, 500);
+      document.addEventListener('astro:page-load', updatePanel);
+      document.addEventListener('astro:after-swap', updatePanel);
+
+      // HIT/MISS 弹出提示
+      var toastTimer = null;
+      function showToast(hit, x, y) {
+        toast.textContent = hit ? '✓ HIT' : '✗ MISS';
+        toast.className = 'cache-toast cache-toast-' + (hit ? 'hit' : 'miss');
+        toast.style.left = x + 'px';
+        toast.style.top = (y - 30) + 'px';
+        toast.style.display = '';
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(-8px)';
+          setTimeout(function () { toast.style.display = 'none'; }, 200);
+        }, 1200);
+      }
+
+      // 只在 debug 模式下监听点击（不阻塞导航）
+      document.addEventListener('click', function (e) {
+        var link = e.target.closest('a[href^="/posts/"]');
+        if (!link) return;
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+        var url = link.href;
+        if (/\/posts\/?$/.test(url)) return;
+
+        var slug = url.split('/').filter(Boolean).pop() || '';
+        var absUrl = url.startsWith('http') ? url : location.origin + url;
+
+        // 异步查缓存，不阻塞导航
+        caches.open('blog-article-cache-v1').then(function (cache) {
+          return cache.match(new Request(absUrl));
+        }).then(function (res) {
+          if (!res) return false;
+          return res.json().then(function (data) {
+            return data && data.html && Date.now() - data.ts < 30 * 60 * 1000;
+          });
+        }).then(function (hit) {
+          try { sessionStorage.setItem('[cache]lastClick', (hit ? 'HIT ' : 'MISS ') + slug); } catch {}
+          showToast(hit, e.clientX, e.clientY);
+          updatePanel();
+        }).catch(function () {});
+      }, true);
+    })();
+    </script>
+    {/* 暂时禁用：<WelcomeToast /> */}
+    <div class={isMusicPage ? 'flex flex-col h-[100dvh] overflow-hidden' : 'flex flex-col min-h-screen'}>
+      <NavBar />
+      
+      {!isAboutPage ? (
+        <div 
+          class={`px-2 font-sans transition-all duration-300 ${
+            isMusicPage
+              ? 'h-full overflow-hidden'
+              : 'min-h-screen py-2 sm:py-6 sm:px-6 md:py-8 md:px-8'
+          } ${isArticle ? "article-paper-shell" : ""}`}
+        >
+          <div class="max-w-[1440px] w-full mx-auto flex flex-col gap-3 sm:gap-6">
+            {!hideBanner && (
+            <PageBanner 
+              client:load
+              pathname={Astro.url.pathname}
+              categoryName={categoryName}
+              tagName={tagName}
+              post={post}
+              postsCount={postsCount}
+            />
+            )}
+
+            <main
+              id="main-content"
+              class="flex-1"
+              transition:animate={{
+                forwards: {
+                  old: [{ name: 'content-out', duration: '0.2s', easing: 'ease-in' }],
+                  new: [{ name: 'content-in', duration: '0.35s', easing: 'ease-out' }]
+                },
+                backwards: {
+                  old: [{ name: 'content-out', duration: '0.2s', easing: 'ease-in' }],
+                  new: [{ name: 'content-in', duration: '0.35s', easing: 'ease-out' }]
+                }
+              }}
+            >
+              <slot />
+            </main>
+          </div>
+        </div>
+      ) : (
+        <main class="flex-1">
+          <slot />
+        </main>
+      )}
+      
+      {!hideFooter && (
+      <footer class="w-full select-none">
+        <div class="max-w-5xl mx-auto px-4 py-6 text-center text-xs font-mono text-[#1a1a1a] dark:text-[#e8e6e3] leading-relaxed space-y-3">
+          {/* 导航链接：经典出版物边框按钮组 */}
+          <div class="flex flex-wrap justify-center gap-2">
+            {infoConfig.footer.links.map((link) => (
+              <a href={link.path} target={link.external ? "_blank" : undefined} rel={link.external ? "noopener noreferrer" : undefined}
+                 class="px-3 py-1 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm font-black text-xs text-[#1a1a1a] dark:text-[#e8e6e3] bg-[#ffffff] dark:bg-[#1c1b1a] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] dark:hover:bg-[#d9534f] dark:hover:border-[#d9534f] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] active:translate-y-0 active:shadow-[1px_1px_0px_0px_#1a1a1a] transition-all whitespace-nowrap">
+                {link.name}
+              </a>
+            ))}
+          </div>
+          {/* 版权 + 备案 */}
+          <div class="font-bold">
+            <span>{infoConfig.footer.copyrightText}</span>
+            {infoConfig.footer.icp.text && <>
+              <span class="mx-1.5 text-neutral-400">·</span>
+              <a href={infoConfig.footer.icp.link} target="_blank" rel="noopener noreferrer" class="text-[#9e2a2b] dark:text-[#d9534f] hover:underline">{infoConfig.footer.icp.text}</a>
+            </>}
+          </div>
+          <div>
+            <span>{footerConfig.repoText}</span><a href={footerConfig.repoUrl} class="hover:text-[#9e2a2b] underline font-bold">{footerConfig.repoDisplayName}</a>
+            {(() => {
+              try {
+                const log = execSync('git log -n 1 --pretty=format:"%h||%ci"').toString().trim();
+                const [hash, dateRaw] = log.split('||');
+                const d = dateRaw ? new Date(dateRaw) : null;
+                const formattedDate = d
+                  ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+                  : '';
+                return <>
+                  <span class="mx-1">·</span>
+                  <a href={`${footerConfig.repoUrl}/commit/${hash}`} class="hover:text-[#9e2a2b] underline font-bold">{hash}</a>
+                  {formattedDate && <><span class="mx-0.5">·</span><span>{formattedDate}</span></>}
+                </>;
+              } catch (e) {
+                console.warn('[Layout] Git info unavailable at build time');
+                return null;
+              }
+            })()}
+          </div>
+          <div class="font-bold">
+            本站文章与说说累计 <span class="text-[#9e2a2b] dark:text-[#d9534f]">{wordCountK}k 字</span>
+          </div>
+          <div id="footer-uptime" data-start={siteConfig.startTime.getTime()} class="text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400">
+            本站已在互联网中航行 <span id="uptime-display" class="font-bold text-[#9e2a2b] dark:text-[#d9534f]">计算中...</span>
+          </div>
+          {/* 博客架构徽章：Neo-Brutalist 粗野主义风格 */}
+          <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
+            <a 
+              href="https://astro.build" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="group inline-flex items-center gap-1.5 px-3 py-1 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm bg-[#ffffff] dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] dark:hover:bg-[#d9534f] dark:hover:border-[#d9534f] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] active:translate-y-0 active:shadow-[1px_1px_0px_0px_#1a1a1a] transition-all font-mono font-bold text-xs"
+              title="Astro: The web framework for content-driven websites"
+            >
+              <svg class="w-3.5 h-3.5 text-[#ff5d01] group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+                <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+              </svg>
+              <span>Proudly built with <strong class="font-black underline decoration-2 underline-offset-2">Astro</strong></span>
+            </a>
+          </div>
+        </div>
+      </footer>
+      )}
+    </div>
+
+<script>
+  if (!window._uptimeStarted) {
+    window._uptimeStarted = true;
+    setInterval(function() {
+      const el = document.getElementById('uptime-display');
+      const container = document.getElementById('footer-uptime');
+      if (!el) return;
+      const startMs = container ? Number(container.getAttribute('data-start')) : new Date(2026, 7, 7, 0, 0, 0).getTime();
+      const diff = Math.max(0, (Date.now() - (isNaN(startMs) ? 1786032000000 : startMs)) / 1000);
+      const days = Math.floor(diff / 86400);
+      const hours = Math.floor((diff % 86400) / 3600);
+      const mins = Math.floor((diff % 3600) / 60);
+      const secs = Math.floor(diff % 60);
+      el.textContent = days + '\u5929' + String(hours).padStart(2,'0') + '\u5c0f\u65f6' + String(mins).padStart(2,'0') + '\u5206' + String(secs).padStart(2,'0') + '\u79d2';
+    }, 1000);
+  }
+</script>
+<script is:inline>
+  (function () {
+    function applySiteBg() {
+      var el = document.getElementById('site-bg');
+      if (!el) return;
+      var loader = document.getElementById('site-bg-loader');
+      var isArticle = document.body && document.body.dataset.isArticle === 'true';
+      var url = document.body && document.body.getAttribute('data-bg-url');
+      if (isArticle || !url) {
+        var isDark = document.documentElement.classList.contains('dark');
+        el.style.backgroundColor = isDark ? '#141413' : '#f6eddc';
+        el.style.backgroundImage = isDark
+          ? 'radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)'
+          : 'repeating-linear-gradient(0deg, rgba(112, 82, 42, 0.025) 0, rgba(112, 82, 42, 0.025) 1px, transparent 1px, transparent 4px), repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0, rgba(255, 255, 255, 0.12) 1px, transparent 1px, transparent 7px)';
+        el.style.backgroundSize = isDark ? '24px 24px' : 'auto';
+        el.style.backgroundPosition = '0 0';
+        el.style.backgroundRepeat = 'repeat';
+        el.style.backgroundAttachment = isArticle ? 'fixed' : 'scroll';
+        el.classList.add('is-ready');
+        if (loader) loader.classList.remove('is-on');
+        return;
+      }
+
+      if (el.dataset.bgUrl === url && el.classList.contains('is-ready')) {
+        paintBg();
+        if (loader) loader.classList.remove('is-on');
+        return;
+      }
+
+      // Keep the current CSS background in place and only re-paint it with
+      // the same image instead of swapping to an empty dot grid first.
+      el.dataset.bgUrl = url;
+      paintBg();
+
+      function paintBg() {
+        var isDark = document.documentElement.classList.contains('dark');
+        var overlay = isDark
+          ? 'linear-gradient(rgba(20,20,19,0.72), rgba(20,20,19,0.72))'
+          : 'linear-gradient(rgba(250,248,245,0.48), rgba(250,248,245,0.48))';
+        el.style.backgroundImage =
+          'radial-gradient(circle, rgba(253,246,227,0.35) 1px, transparent 1px),' +
+          overlay + ',' +
+          'url(' + url + ')';
+        el.style.backgroundSize = '24px 24px, cover, cover';
+        el.style.backgroundPosition = '0 0, center, center';
+        el.style.backgroundRepeat = 'repeat, no-repeat, no-repeat';
+        el.style.backgroundAttachment = 'scroll, scroll, scroll';
+        el.classList.add('is-ready');
+        if (loader) loader.classList.remove('is-on');
+      }
+
+      var bgPromise = new Promise(function (resolve) {
+        var img = new Image();
+        img.onload = function () {
+          el.dataset.bgUrl = url;
+          paintBg();
+          resolve();
+        };
+        img.onerror = function () {
+          el.style.backgroundImage =
+            'radial-gradient(circle, rgba(253,246,227,0.35) 1px, transparent 1px),' +
+            'linear-gradient(rgba(250,248,245,0.55), rgba(250,248,245,0.55))';
+          el.style.backgroundSize = '24px 24px, cover';
+          el.style.backgroundPosition = '0 0, center';
+          el.style.backgroundRepeat = 'repeat, no-repeat';
+          el.style.backgroundAttachment = 'scroll, scroll';
+          el.classList.add('is-ready');
+          if (loader) loader.classList.remove('is-on');
+          resolve();
+        };
+        img.src = url;
+        if (img.complete) {
+          el.dataset.bgUrl = url;
+          paintBg();
+          resolve();
+        }
+      });
+      if (typeof window.__blogTrackResource === 'function') {
+        window.__blogTrackResource(bgPromise);
+      } else {
+        window.__blogPendingRes = window.__blogPendingRes || [];
+        window.__blogPendingRes.push(bgPromise);
+      }
+    }
+
+    function onPage() {
+      applySiteBg();
+    }
+
+    applySiteBg();
+    if (!window.__blogBgBeatInited) {
+      window.__blogBgBeatInited = true;
+      document.addEventListener('astro:after-swap', applySiteBg);
+      document.addEventListener('astro:page-load', onPage);
+      window.addEventListener('theme-change', applySiteBg);
+    }
+  })();
+</script>
+<script>
+  (function () {
+    var totalRes = 0;
+    var doneRes = 0;
+    var hideTimer = null;
+
+    function setProgressUI(done, total) {
+      var top = document.getElementById('resource-progress');
+      var topBar = top && top.querySelector('i');
+      var topMeta = document.getElementById('resource-progress-meta');
+      var entryBar = document.getElementById('site-bg-loader-bar');
+      var entryMeta = document.getElementById('site-bg-loader-meta');
+      // never show empty 0/0
+      if (!total || total <= 0) {
+        if (top) top.classList.remove('is-on');
+        if (topBar) topBar.style.width = '0%';
+        if (topMeta) { topMeta.hidden = true; topMeta.textContent = ''; }
+        if (entryBar) entryBar.style.width = '0%';
+        if (entryMeta) { entryMeta.hidden = true; entryMeta.textContent = ''; }
+        return;
+      }
+      var pct = Math.min(100, Math.round((done / total) * 100));
+      var label = done + ' / ' + total + ' · ' + pct + '%';
+      if (topBar) topBar.style.width = pct + '%';
+      if (entryBar) entryBar.style.width = pct + '%';
+      if (topMeta) { topMeta.hidden = false; topMeta.textContent = label; }
+      if (entryMeta) { entryMeta.hidden = false; entryMeta.textContent = label; }
+      if (top) {
+        if (done < total) {
+          top.classList.add('is-on');
+        } else {
+          // snap to 100% then hide
+          if (topBar) topBar.style.width = '100%';
+          if (entryBar) entryBar.style.width = '100%';
+          if (topMeta) topMeta.textContent = total + ' / ' + total + ' · 100%';
+          if (entryMeta) entryMeta.textContent = total + ' / ' + total + ' · 100%';
+          clearTimeout(hideTimer);
+          hideTimer = setTimeout(function () {
+            if (top) top.classList.remove('is-on');
+            if (topMeta) topMeta.hidden = true;
+            if (entryMeta) entryMeta.hidden = true;
+          }, 320);
+        }
+      }
+    }
+
+    function bumpDone() {
+      doneRes = Math.min(totalRes, doneRes + 1);
+      setProgressUI(doneRes, totalRes);
+    }
+
+    function trackResource(promiseLike) {
+      totalRes += 1;
+      setProgressUI(doneRes, totalRes);
+      Promise.resolve(promiseLike).then(bumpDone, bumpDone);
+    }
+
+    window.__blogTrackResource = trackResource;
+    if (window.__blogPendingRes && window.__blogPendingRes.length) {
+      var pending = window.__blogPendingRes.slice();
+      window.__blogPendingRes = [];
+      for (var pi = 0; pi < pending.length; pi++) trackResource(pending[pi]);
+    }
+
+    function scan(root) {
+      if (!root || !root.querySelectorAll) return;
+      var els = root.querySelectorAll('img, iframe, video');
+      for (var i = 0; i < els.length; i++) {
+        (function (el) {
+          if (el.tagName === 'IMG' && el.complete) return;
+          trackResource(new Promise(function (resolve) {
+            el.addEventListener('load', resolve, { once: true });
+            el.addEventListener('error', resolve, { once: true });
+          }));
+        })(els[i]);
+      }
+    }
+
+    function boot() {
+      scan(document);
+      var mo = new MutationObserver(function (mutations) {
+        for (var m = 0; m < mutations.length; m++) {
+          var added = mutations[m].addedNodes;
+          for (var n = 0; n < added.length; n++) {
+            if (added[n].nodeType === 1) scan(added[n]);
+          }
+        }
+      });
+      try {
+        mo.observe(document.documentElement, { childList: true, subtree: true });
+      } catch (e) {}
+    }
+
+    document.addEventListener('astro:page-load', function () {
+      totalRes = 0;
+      doneRes = 0;
+      setProgressUI(0, 0);
+      scan(document);
+    });
+  })();
+</script>
+
+    {/* Floating Back To Top button */}
+    <button
+      id="back-to-top-btn"
+      class="fixed bottom-24 right-6 z-[95] w-12 h-12 rounded-sm border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#ffffff] dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] flex items-center justify-center cursor-pointer shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] dark:hover:bg-[#d9534f] dark:hover:border-[#d9534f] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#1a1a1a] active:translate-y-0 active:shadow-none transition-all duration-150 opacity-0 pointer-events-none"
+      aria-label="回到顶部"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+      </svg>
+    </button>
+
+    {/* 音乐播放器已随 /music 路由归档至 src/pages/_archive */}
+    <PrefetchLinks client:load />
+
+    {/* 全局出版风格快捷检索弹窗 (Cmd/Ctrl + K) */}
+    <SearchModal />
+
+    {/* 苹果同款原生质感图片灯箱 */}
+    <AppleLightbox />
+  </body>
+</html>
+
+  <script is:inline data-astro-rerun>
+{
+  // 滚动阅读进度条
+  if (!window.__scrollBarSetup) {
+    window.__scrollBarSetup = true;
+    window.addEventListener('scroll', () => {
+      const el = document.getElementById('scroll-bar-indicator');
+      if (!el) return;
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const percentage = totalHeight > 0 ? (window.pageYOffset / totalHeight) * 100 : 0;
+      el.style.width = percentage + '%';
+    }, { passive: true });
+  }
+
+  function setupBackToTop() {
+    const backToTopBtn = document.getElementById('back-to-top-btn');
+    if (!backToTopBtn) return;
+
+    if (!window.__backToTopScrollSetup) {
+      window.__backToTopScrollSetup = true;
+      window.addEventListener('scroll', () => {
+        const btn = document.getElementById('back-to-top-btn');
+        if (!btn) return;
+        if (window.scrollY > 300) {
+          btn.classList.remove('opacity-0', 'pointer-events-none');
+          btn.classList.add('opacity-100');
+        } else {
+          btn.classList.add('opacity-0', 'pointer-events-none');
+          btn.classList.remove('opacity-100');
+        }
+      }, { passive: true });
+    }
+
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  // 全局出版级统一代码视窗增强器
+  function setupUnifiedCodeBlocks() {
+    // 1. 处理所有原生 Markdown 代码块 <pre>
+    document.querySelectorAll('pre').forEach((pre) => {
+      // 若已增强或位于已存在的代码块容器内，则跳过
+      if (
+        pre.hasAttribute('data-enhanced') ||
+        pre.closest('[data-codeblock]') ||
+        pre.closest('.editorial-codeblock-wrapper') ||
+        pre.closest('.editorial-code-window')
+      ) {
+        return;
+      }
+      pre.setAttribute('data-enhanced', 'true');
+
+      // 提取语言标识
+      let lang = pre.getAttribute('data-language') || '';
+      if (!lang) {
+        const codeEl = pre.querySelector('code');
+        if (codeEl) {
+          const cls = Array.from(codeEl.classList).find((c) => c.startsWith('language-'));
+          if (cls) lang = cls.replace('language-', '');
+        }
+        if (!lang) {
+          const preCls = Array.from(pre.classList).find((c) => c.startsWith('language-'));
+          if (preCls) lang = preCls.replace('language-', '');
+        }
+      }
+      if (!lang || lang.toLowerCase() === 'plaintext') lang = 'CODE';
+
+      // 构建外层与标题栏结构
+      const wrapper = document.createElement('div');
+      wrapper.className = 'editorial-codeblock-wrapper not-prose my-6';
+      wrapper.setAttribute('data-codeblock', 'true');
+
+      const innerBox = document.createElement('div');
+      innerBox.className = 'border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] overflow-hidden bg-[#faf8f5] dark:bg-[#141413]';
+
+      const header = document.createElement('div');
+      header.className = 'flex flex-wrap gap-2 items-center justify-between px-3.5 py-2 bg-[#f0ebe1] dark:bg-[#242220] border-b-2 sm:border-b-3 border-[#1a1a1a] dark:border-[#e8e6e3] text-xs font-mono select-none';
+      header.innerHTML = `
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span class="w-2.5 h-2.5 rounded-full bg-[#ef4444] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-[#eab308] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-[#22c55e] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30"></span>
+          </div>
+          <span class="font-bold px-1.5 py-0.5 rounded-xs bg-[#1a1a1a] dark:bg-[#e8e6e3] text-white dark:text-[#1a1a1a] text-[10px] tracking-wider uppercase font-mono">${lang.toUpperCase()}</span>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" class="code-wrap-btn px-2 py-0.5 border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30 rounded-xs bg-white/70 dark:bg-transparent hover:bg-[#1a1a1a] hover:text-white dark:hover:bg-[#e8e6e3] dark:hover:text-[#1a1a1a] transition-colors text-[10px] font-bold text-[#1a1a1a] dark:text-[#e8e6e3] cursor-pointer" title="切换自动换行">换行</button>
+          <button type="button" class="code-copy-btn px-2.5 py-0.5 border border-[#1a1a1a] dark:border-[#e8e6e3] rounded-xs bg-white dark:bg-[#1c1b1a] hover:bg-[#9e2a2b] hover:text-white dark:hover:bg-[#d9534f] transition-all text-[11px] font-bold text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center gap-1" title="复制代码">
+            <svg class="copy-icon w-3 h-3 stroke-[2.5]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span class="copy-text">复制</span>
+          </button>
+        </div>
+      `;
+
+      const contentBox = document.createElement('div');
+      contentBox.className = 'code-content-box p-4 text-sm font-mono overflow-x-auto text-[#24292e] dark:text-[#e1e4e8] leading-relaxed custom-scrollbar relative';
+
+      pre.style.margin = '0';
+      pre.style.padding = '0';
+      pre.style.border = 'none';
+      pre.style.borderRadius = '0';
+      pre.style.boxShadow = 'none';
+      pre.style.backgroundColor = 'transparent';
+      pre.style.overflow = 'visible';
+
+      pre.parentNode.insertBefore(wrapper, pre);
+      wrapper.appendChild(innerBox);
+      innerBox.appendChild(header);
+      innerBox.appendChild(contentBox);
+      contentBox.appendChild(pre);
+    });
+
+    // 2. 统一为所有代码块绑定交互（包括 Markdown 代码块与 <CodeBlock>）
+    document.querySelectorAll('[data-codeblock]').forEach((block) => {
+      if (block.__bound) return;
+      block.__bound = true;
+
+      const copyBtn = block.querySelector('.code-copy-btn');
+      const copyText = block.querySelector('.copy-text');
+      const wrapBtn = block.querySelector('.code-wrap-btn');
+      const contentBox = block.querySelector('.code-content-box');
+      const pre = block.querySelector('pre');
+
+      if (copyBtn && (contentBox || pre)) {
+        copyBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const codeEl = block.querySelector('code');
+          const textToCopy = codeEl ? codeEl.innerText : (pre ? pre.innerText : contentBox.innerText);
+          try {
+            await navigator.clipboard.writeText(textToCopy.replace(/\r\n/g, '\n').trim());
+            if (copyText) copyText.textContent = '已复制';
+            copyBtn.classList.add('bg-[#10b981]', 'text-white');
+            copyBtn.classList.remove('bg-white', 'dark:bg-[#1c1b1a]');
+            setTimeout(() => {
+              if (copyText) copyText.textContent = '复制';
+              copyBtn.classList.remove('bg-[#10b981]', 'text-white');
+              copyBtn.classList.add('bg-white', 'dark:bg-[#1c1b1a]');
+            }, 2000);
+          } catch (err) {
+            console.error('Failed to copy', err);
+          }
+        });
+      }
+
+      if (wrapBtn) {
+        let isWrapped = false;
+        wrapBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          isWrapped = !isWrapped;
+          if (isWrapped) {
+            if (pre) pre.style.whiteSpace = 'pre-wrap';
+            if (contentBox) {
+              contentBox.classList.remove('whitespace-pre');
+              contentBox.classList.add('whitespace-pre-wrap');
+            }
+            wrapBtn.textContent = '不换行';
+          } else {
+            if (pre) pre.style.whiteSpace = 'pre';
+            if (contentBox) {
+              contentBox.classList.remove('whitespace-pre-wrap');
+              contentBox.classList.add('whitespace-pre');
+            }
+            wrapBtn.textContent = '换行';
+          }
+        });
+      }
+
+      // 长代码折叠逻辑（超过 40 行）
+      if (contentBox && pre && !block.querySelector('.fold-overlay')) {
+        const lines = (pre.innerText || '').split('\n').filter((l) => l.trim()).length;
+        if (lines > 40) {
+          contentBox.classList.add('max-h-[520px]', 'transition-all', 'duration-300');
+          const overlay = document.createElement('div');
+          overlay.className = 'absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#faf8f5] dark:from-[#141413] via-[#faf8f5]/90 dark:via-[#141413]/90 to-transparent flex items-end justify-center pb-3 z-10 fold-overlay';
+          overlay.innerHTML = `
+            <button type="button" class="expand-btn bg-[#9e2a2b] border border-[#1a1a1a] dark:border-[#e8e6e3] text-white font-bold px-3 py-1 flex items-center gap-1.5 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all text-xs rounded-xs cursor-pointer">
+              展开代码 (${lines} 行)
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          `;
+          contentBox.appendChild(overlay);
+
+          overlay.querySelector('.expand-btn').addEventListener('click', () => {
+            contentBox.style.maxHeight = 'none';
+            overlay.classList.add('hidden');
+          });
+        }
+      }
+    });
+  }
+
+  // 全局边注角标与悬浮框交互管理器
+  function setupFootnoteInteractions() {
+    if (window._editorialFootnoteInitialized) return;
+    window._editorialFootnoteInitialized = true;
+
+    document.addEventListener('click', (e) => {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+
+      const closeBtn = target.closest('.popover-close-btn');
+      if (closeBtn) {
+        e.stopPropagation();
+        e.preventDefault();
+        const anchor = closeBtn.closest('.footnote-anchor');
+        if (anchor) {
+          anchor.classList.remove('pinned');
+          anchor.classList.add('is-closed');
+          const trigger = anchor.querySelector('.footnote-trigger');
+          if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        }
+        return;
+      }
+
+      const trigger = target.closest('.footnote-trigger');
+      if (trigger) {
+        e.stopPropagation();
+        const anchor = trigger.closest('.footnote-anchor');
+        if (anchor) {
+          const isPinned = anchor.classList.contains('pinned');
+          document.querySelectorAll('.footnote-anchor.pinned').forEach((a) => {
+            a.classList.remove('pinned');
+            const tr = a.querySelector('.footnote-trigger');
+            if (tr) tr.setAttribute('aria-expanded', 'false');
+          });
+          if (!isPinned) {
+            anchor.classList.remove('is-closed');
+            anchor.classList.add('pinned');
+            trigger.setAttribute('aria-expanded', 'true');
+            adjustPopoverPlacement(anchor);
+          } else {
+            anchor.classList.add('is-closed');
+          }
+        }
+        return;
+      }
+
+      if (!target.closest('.footnote-popover')) {
+        document.querySelectorAll('.footnote-anchor').forEach((a) => {
+          a.classList.remove('pinned');
+          a.classList.remove('is-closed');
+          const tr = a.querySelector('.footnote-trigger');
+          if (tr) tr.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+
+    document.addEventListener('mouseout', (e) => {
+      const target = e.target;
+      if (!(target instanceof HTMLElement)) return;
+      const anchor = target.closest('.footnote-anchor');
+      if (anchor) {
+        const related = e.relatedTarget;
+        if (!(related instanceof Node) || !anchor.contains(related)) {
+          anchor.classList.remove('is-closed');
+        }
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.footnote-anchor').forEach((a) => {
+          a.classList.remove('pinned');
+          a.classList.add('is-closed');
+          const tr = a.querySelector('.footnote-trigger');
+          if (tr) tr.setAttribute('aria-expanded', 'false');
+        });
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        const activeEl = document.activeElement;
+        if (activeEl && activeEl.classList.contains('footnote-trigger')) {
+          e.preventDefault();
+          activeEl.click();
+        }
+      }
+    });
+
+    document.addEventListener('mouseover', (e) => {
+      const target = e.target;
+      if (!(target instanceof HTMLElement)) return;
+      const anchor = target.closest('.footnote-anchor');
+      if (anchor) {
+        adjustPopoverPlacement(anchor);
+      }
+    });
+  }
+
+  function adjustPopoverPlacement(anchor) {
+    const popover = anchor.querySelector('.footnote-popover');
+    if (!popover) return;
+    const margin = 12;
+    const arrow = popover.querySelector('.popover-arrow');
+    const pane = anchor.closest('#preview-scroll-wrap') || anchor.closest('.win7-window-body');
+    const bounds = pane?.getBoundingClientRect();
+    const left = Math.max(margin, (bounds?.left ?? 0) + margin);
+    const right = Math.min(window.innerWidth - margin, (bounds?.right ?? window.innerWidth) - margin);
+    popover.style.transform = '';
+    if (arrow) arrow.style.transform = '';
+    if (pane) popover.style.maxWidth = `${Math.max(0, right - left)}px`;
+    const rect = popover.getBoundingClientRect();
+    if (rect.left < left) {
+      const shift = left - rect.left;
+      popover.style.transform = `translateX(calc(-50% + ${shift}px)) translateY(0)`;
+      if (arrow) arrow.style.transform = `translateX(calc(-50% - ${shift}px)) rotate(45deg)`;
+    } else if (rect.right > right) {
+      const shift = rect.right - right;
+      popover.style.transform = `translateX(calc(-50% - ${shift}px)) translateY(0)`;
+      if (arrow) arrow.style.transform = `translateX(calc(-50% - ${shift}px)) rotate(45deg)`;
+    } else {
+      popover.style.transform = '';
+      if (arrow) arrow.style.transform = '';
+    }
+  }
+
+  // 执行页面级增强函数
+  function runPageEnhancements() {
+    setupBackToTop();
+    setupUnifiedCodeBlocks();
+    setupFootnoteInteractions();
+  }
+
+  // 1. 同步执行或在 DOM 就绪后立即执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runPageEnhancements);
+  } else {
+    runPageEnhancements();
+  }
+
+  // 2. Astro ClientRouter 客户端路由切页与视图更新全生命周期
+  document.addEventListener('astro:page-load', runPageEnhancements);
+  document.addEventListener('astro:after-swap', runPageEnhancements);
+
+  // 3. 挂载到全局 window 供页面组件主动调用
+  window.__setupUnifiedCodeBlocks = setupUnifiedCodeBlocks;
+  window.__setupFootnoteInteractions = setupFootnoteInteractions;
+}
+</script>
+
+

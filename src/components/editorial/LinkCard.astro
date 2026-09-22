@@ -1,0 +1,509 @@
+---
+import { ExternalLink, Bookmark, Play, Film } from 'lucide-astro';
+import { BRAND_ICONS } from '@/utils/linkIcon';
+
+interface Props {
+  title: string;
+  url?: string;
+  bvid?: string;
+  desc?: string;
+  author?: string;
+  icon?: string;
+  stamp?: string;
+  badge?: string;
+  authorPrefix?: string;
+  type?: 'link' | 'video' | 'bilibili' | 'article';
+  cover?: string;
+  poster?: string;
+  duration?: string;
+  views?: string;
+  danmaku?: string;
+  class?: string;
+}
+
+const {
+  title,
+  url: rawUrl,
+  bvid,
+  desc,
+  author,
+  icon,
+  stamp: propStamp,
+  badge: propBadge,
+  authorPrefix: propAuthorPrefix,
+  type = 'link',
+  cover: rawCover,
+  poster: rawPoster,
+  duration,
+  views,
+  danmaku,
+  class: className = '',
+} = Astro.props;
+
+// 解析完整 URL（优先使用传入的 url，若传入了 bvid 则自动拼装 B站标准视频地址）
+const resolvedUrl = rawUrl || (bvid ? `https://www.bilibili.com/video/${bvid}` : '#');
+const isBilibili = type === 'bilibili' || /bilibili\.com|b23\.tv/i.test(resolvedUrl) || Boolean(bvid);
+const isYouTube = /youtube\.com|youtu\.be/i.test(resolvedUrl);
+const isVideo = type === 'video' || isBilibili || isYouTube || Boolean(duration) || Boolean(rawCover) || Boolean(rawPoster);
+const resolvedCover = rawCover || rawPoster;
+
+// 智能默认印签
+const defaultStamp = isBilibili
+  ? '哔哩哔哩 · BILIBILI'
+  : isYouTube
+    ? 'YOUTUBE · 视频'
+    : isVideo
+      ? '视听放映 · VIDEO'
+      : 'BOOKMARK';
+
+const stamp = propStamp || propBadge || defaultStamp;
+
+// 智能默认作者前缀
+const authorPrefix = propAuthorPrefix || (isBilibili ? 'UP主：' : isVideo ? '创作者：' : '来源：');
+
+// 域名简写（提取纯净主域名，避免长路径破坏排版）
+let domainName = '';
+try {
+  const parsed = new URL(resolvedUrl);
+  domainName = parsed.hostname.replace(/^www\./, '');
+} catch {
+  domainName = resolvedUrl.replace(/^https?:\/\//, '').split('/')[0].replace(/^www\./, '');
+}
+if (!domainName || domainName === '#') {
+  domainName = isBilibili ? 'bilibili.com' : 'link';
+}
+---
+
+<a
+  href={resolvedUrl}
+  target="_blank"
+  rel="noopener noreferrer"
+  class={`ex-libris-card ${isVideo ? 'is-video-card' : ''} ${isBilibili ? 'is-bilibili' : ''} ${resolvedCover ? 'has-cover' : ''} ${className}`}
+>
+  <div class="card-inner">
+    <!-- Top Header Bar: Unified for both styles -->
+    <div class="card-header font-mono">
+      <div class="header-left">
+        <span class="card-stamp">
+          {isBilibili ? (
+            <span class="stamp-brand-icon" set:html={BRAND_ICONS.bilibili} />
+          ) : isVideo ? (
+            <Film size={11} class="stamp-icon" />
+          ) : (
+            <Bookmark size={10} class="stamp-icon" />
+          )}
+          <span>{stamp}</span>
+        </span>
+      </div>
+
+      <div class="header-right">
+        <span class="card-domain-badge">
+          <span>{domainName}</span>
+          <ExternalLink size={10} class="domain-arrow" />
+        </span>
+      </div>
+    </div>
+
+    <!-- Letterpress dashed divider rule -->
+    <div class="card-divider-rule" aria-hidden="true"></div>
+
+    <!-- Main Content Area -->
+    <div class="card-main-grid">
+      <!-- Media / Icon Column -->
+      {resolvedCover ? (
+        <div class="video-cover-frame">
+          <img src={resolvedCover} alt={title} loading="lazy" class="video-cover-img" />
+          <div class="video-play-overlay" aria-hidden="true">
+            <div class="play-circle">
+              <Play size={16} fill="currentColor" class="play-icon" />
+            </div>
+          </div>
+          {duration && <span class="video-duration-pill font-mono">{duration}</span>}
+        </div>
+      ) : (
+        <div class="card-avatar-box">
+          {isBilibili ? (
+            <span class="card-brand-svg" set:html={BRAND_ICONS.bilibili} />
+          ) : isVideo ? (
+            <Film size={20} class="card-video-icon" />
+          ) : icon ? (
+            <span class="card-avatar-text font-serif">{icon}</span>
+          ) : (
+            <span class="card-avatar-text font-serif">{title.slice(0, 1)}</span>
+          )}
+          {isVideo && <span class="micro-play-dot">▶</span>}
+        </div>
+      )}
+
+      <!-- Text & Meta Column -->
+      <div class="card-content-col">
+        <div class="card-text-body">
+          <h4 class="card-title font-serif">{title}</h4>
+          {desc && <p class="card-desc font-sans">{desc}</p>}
+        </div>
+
+        {(author || views || danmaku || isVideo) && (
+          <div class="card-meta-row font-mono">
+            {author && (
+              <span class="meta-item author font-sans">
+                {authorPrefix}<strong>{author}</strong>
+              </span>
+            )}
+            {views && <span class="meta-item views font-sans">· {views}播放</span>}
+            {danmaku && <span class="meta-item danmaku font-sans">· {danmaku}弹幕</span>}
+            {isVideo && !resolvedCover && (
+              <span class="meta-item jump-hint font-sans">· 点击前往观影 ↗</span>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</a>
+
+<style>
+  .ex-libris-card {
+    display: block;
+    margin: 24px 0;
+    border: 2.5px solid var(--line-solid);
+    padding: 14px 18px 16px;
+    background: var(--paper-surface);
+    box-shadow: 4px 4px 0 var(--line-solid);
+    border-radius: 0;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.15s ease;
+    text-indent: 0 !important;
+    text-decoration: none !important;
+    background-image: none !important;
+    color: inherit;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  .ex-libris-card:hover {
+    transform: translate(-1.5px, -1.5px);
+    box-shadow: 5.5px 5.5px 0 var(--line-solid);
+    border-color: var(--press-red);
+  }
+
+  .ex-libris-card:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1.5px 1.5px 0 var(--line-solid);
+  }
+
+  .ex-libris-card.is-bilibili:hover {
+    border-color: #fb7299;
+  }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+  }
+
+  /* ---------------- Top Header Bar ---------------- */
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    user-select: none;
+    line-height: 1;
+  }
+
+  .card-stamp {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 5px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: var(--press-red);
+    background: var(--press-red-soft);
+    border: 1.5px solid var(--press-red);
+    box-shadow: 1.5px 1.5px 0 var(--press-red);
+    border-radius: 0;
+    padding: 2.5px 7.5px;
+    text-transform: uppercase;
+  }
+
+  .is-bilibili .card-stamp {
+    color: #e03166;
+    background: rgba(251, 114, 153, 0.08);
+    border-color: #fb7299;
+    box-shadow: 1.5px 1.5px 0 #fb7299;
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .is-bilibili .card-stamp {
+    color: #ff85ad;
+    background: rgba(251, 114, 153, 0.15);
+  }
+
+  .stamp-brand-icon {
+    display: inline-flex;
+    width: 13px;
+    height: 13px;
+  }
+
+  .stamp-brand-icon :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .card-domain-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink-secondary);
+    letter-spacing: 0.8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    opacity: 0.8;
+    transition: color 0.15s ease, opacity 0.15s ease;
+  }
+
+  .ex-libris-card:hover .card-domain-badge {
+    color: var(--press-red);
+    opacity: 1;
+  }
+
+  .ex-libris-card.is-bilibili:hover .card-domain-badge {
+    color: #fb7299;
+  }
+
+  /* ---------------- Divider Line ---------------- */
+  .card-divider-rule {
+    height: 2px;
+    border-bottom: 2px solid var(--line-solid);
+    margin: 10px 0 14px 0;
+  }
+
+  /* ---------------- Main Content Grid ---------------- */
+  .card-main-grid {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  /* Video Thumbnail Cover */
+  .video-cover-frame {
+    position: relative;
+    width: 180px;
+    height: 102px;
+    aspect-ratio: 16 / 9;
+    background: var(--paper-bg);
+    border: 2px solid var(--line-solid);
+    border-radius: 0;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 580px) {
+    .card-main-grid {
+      flex-direction: column;
+    }
+    .video-cover-frame {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  .video-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .ex-libris-card:hover .video-cover-img {
+    transform: scale(1.05);
+  }
+
+  .video-play-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+  }
+
+  .ex-libris-card:hover .video-play-overlay {
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  .play-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid var(--press-red);
+    box-shadow: 2px 2px 0 var(--line-solid);
+    color: var(--press-red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 2.5px;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+  }
+
+  .is-bilibili .play-circle {
+    border-color: #fb7299;
+    color: #fb7299;
+  }
+
+  .ex-libris-card:hover .play-circle {
+    transform: scale(1.12);
+    background: #ffffff;
+  }
+
+  .video-duration-pill {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 4.5px;
+    border-radius: 0;
+    user-select: none;
+    line-height: 1.2;
+  }
+
+  /* Compact Avatar Icon Box */
+  .card-avatar-box {
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--line-solid);
+    border-radius: 0;
+    background: var(--paper-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    color: var(--press-red);
+    box-shadow: 2px 2px 0 var(--line-solid);
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  .is-bilibili .card-avatar-box {
+    color: #fb7299;
+  }
+
+  .ex-libris-card:hover .card-avatar-box {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--line-solid);
+    border-color: var(--press-red);
+  }
+
+  .is-bilibili:hover .card-avatar-box {
+    border-color: #fb7299;
+  }
+
+  .card-brand-svg {
+    width: 24px;
+    height: 24px;
+    display: flex;
+  }
+
+  .card-brand-svg :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .micro-play-dot {
+    position: absolute;
+    bottom: -3px;
+    right: -3px;
+    font-size: 8px;
+    line-height: 1;
+    background: var(--press-red);
+    color: #ffffff;
+    border-radius: 2px;
+    padding: 1px 2.5px;
+  }
+
+  .is-bilibili .micro-play-dot {
+    background: #fb7299;
+  }
+
+  .card-avatar-text {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  /* ---------------- Content Column ---------------- */
+  .card-content-col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .card-text-body {
+    flex: 1;
+  }
+
+  .card-title {
+    font-size: 15.5px;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 0 0 4px 0;
+    color: var(--ink-text);
+    transition: color 0.15s ease;
+    word-break: break-word;
+  }
+
+  .ex-libris-card:hover .card-title {
+    color: var(--press-red);
+  }
+
+  .is-bilibili:hover .card-title {
+    color: #e03166;
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .is-bilibili:hover .card-title {
+    color: #ff85ad;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--ink-secondary);
+    line-height: 1.6;
+    margin: 0;
+    word-break: break-word;
+  }
+
+  /* ---------------- Bottom Meta Row ---------------- */
+  .card-meta-row {
+    margin-top: 8px;
+    padding-top: 6px;
+    font-size: 11px;
+    color: var(--ink-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    line-height: 1.4;
+  }
+
+  .meta-item strong {
+    color: var(--ink-text);
+  }
+
+  .jump-hint {
+    color: var(--press-red);
+    font-weight: 700;
+  }
+
+  .is-bilibili .jump-hint {
+    color: #fb7299;
+  }
+</style>

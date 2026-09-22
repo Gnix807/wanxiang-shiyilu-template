@@ -1,0 +1,561 @@
+---
+interface Props {
+  /** 印章文字（1~4 字，如 "墨痕"、"听雨"、"核对备查"、"长卷排印"） */
+  text?: string;
+  /**
+   * 印色与雕刻工艺：
+   * - 'relief': 朱文 / 阳刻（白底红字，笔画为朱砂印泥，传统私印典范）
+   * - 'intaglio': 白文 / 阴刻（红底白字，印泥实底留白笔画，汉印满白金石气）
+   * - 'wax': 复古火漆蜡封（立体微凹凸、天然熔蜡波纹边缘与蜡油厚度光泽）
+   * - 'stamp': 近代报馆/档案验讫戳（双线框、公报星号标引、细微拓印墨痕感）
+   */
+  variant?: 'relief' | 'intaglio' | 'wax' | 'stamp';
+  /**
+   * 印章形制：
+   * - 'square': 汉印正统方印（二字竖排或四字回文方印）
+   * - 'round': 规整圆印 / 圆形火漆印
+   * - 'oval': 文人长圆引首章 / 随形闲章
+   * - 'rect': 扁方 / 长方印戳
+   */
+  shape?: 'square' | 'round' | 'oval' | 'rect';
+  /**
+   * 印章尺寸：
+   * - 'xs': 22px（行内微标）
+   * - 'sm': 30px ~ 32px（诗词压角、对谈头像、题跋落款）
+   * - 'md': 42px ~ 46px（标准正文方印、章节压角）
+   * - 'lg': 68px ~ 78px（藏书票名章、扉页大印）
+   */
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  /**
+   * 手工钤印自然微倾斜：
+   * - true: 自动计算微倾斜（-1.5deg ~ 1.2deg，模拟手工执印手感）
+   * - number: 指定角度（如 -1.8）
+   * - false: 保持绝对水平
+   */
+  tilt?: boolean | number;
+  /** 印色谱系：'vermilion' (朱砂矿物红，默认) | 'ink' (徽墨黑) | 'bronze' (古铜冷青) | 'ochre' (赭石沉黄) */
+  color?: 'vermilion' | 'ink' | 'bronze' | 'ochre';
+  /** 预制或高精真实印章图像模式（承接如《示例作者之印》静态透明资产） */
+  src?: string;
+  /** 悬停提示文字 */
+  title?: string;
+  /** 附加 CSS class */
+  class?: string;
+  className?: string;
+}
+
+const {
+  text = '印',
+  variant = 'relief',
+  shape = 'square',
+  size = 'sm',
+  tilt = true,
+  color = 'vermilion',
+  src,
+  title,
+  class: classProp,
+  className = '',
+} = Astro.props;
+
+const extraClass = classProp || className;
+
+// 计算稳定自然的手工钤印微倾角
+let rotationDeg = 0;
+if (typeof tilt === 'number') {
+  rotationDeg = tilt;
+} else if (tilt === true) {
+  const seed = (text.charCodeAt(0) || 0) + (text.charCodeAt(1) || 0) + text.length * 7;
+  const sign = seed % 2 === 0 ? -1 : 1;
+  // 火漆蜡封外轮廓本身具有天然熔蜡不对称性，倾角控制在极微偏角以保持印文视觉中正
+  const mag = variant === 'wax' ? 0.35 + (seed % 4) * 0.1 : 0.7 + (seed % 7) * 0.18;
+  rotationDeg = Number((sign * mag).toFixed(2));
+}
+
+const cleanText = text.trim();
+const len = cleanText.length;
+const isFourChar = len === 4 && (shape === 'square' || shape === 'round');
+const isTwoChar = len === 2;
+const isOneChar = len === 1;
+
+// 汉印四字回文体例：右列自上而下，左列自上而下
+// 例如 "示例作者之印" -> 右列 [倪, 谅], 左列 [之, 印]
+const rightCol = isFourChar ? [cleanText[0], cleanText[1]] : [];
+const leftCol = isFourChar ? [cleanText[2], cleanText[3]] : [];
+---
+
+<div
+  class:list={[
+    'editorial-seal',
+    `variant-${variant}`,
+    `shape-${shape}`,
+    `size-${size}`,
+    `color-${color}`,
+    extraClass,
+  ]}
+  style={rotationDeg !== 0 ? `--seal-tilt: ${rotationDeg}deg;` : undefined}
+  title={title || `印戳：${cleanText}`}
+  role="img"
+  aria-label={title || `印戳：${cleanText}`}
+>
+  {src ? (
+    <img
+      src={src}
+      alt={title || cleanText}
+      class="seal-img"
+      loading="lazy"
+      decoding="async"
+    />
+  ) : variant === 'wax' ? (
+    /* 复古火漆蜡封架构：双层环状熔蜡波纹与中正压印 */
+    <div class="wax-seal-wrapper">
+      <div class="wax-seal-inner">
+        {isFourChar ? (
+          <div class="wax-seal-grid font-serif">
+            <div class="seal-col right-col">
+              <span class="seal-char">{rightCol[0]}</span>
+              <span class="seal-char">{rightCol[1]}</span>
+            </div>
+            <div class="seal-col left-col">
+              <span class="seal-char">{leftCol[0]}</span>
+              <span class="seal-char">{leftCol[1]}</span>
+            </div>
+          </div>
+        ) : isTwoChar ? (
+          <div class="wax-seal-vertical font-serif">
+            <span class="seal-char">{cleanText[0]}</span>
+            <span class="seal-char">{cleanText[1]}</span>
+          </div>
+        ) : (
+          <span class="wax-seal-text font-serif">{cleanText}</span>
+        )}
+      </div>
+    </div>
+  ) : variant === 'stamp' ? (
+    /* 近代公报/档案验讫戳：双线框与星号标引 */
+    <div class="stamp-wrapper font-mono">
+      <span class="stamp-symbol">★</span>
+      <span class="stamp-text font-serif">{cleanText}</span>
+    </div>
+  ) : isFourChar ? (
+    /* 传统汉印四字回文两列两行架构 */
+    <div class="four-char-seal font-serif">
+      <div class="seal-col right-col">
+        <span class="seal-char">{rightCol[0]}</span>
+        <span class="seal-char">{rightCol[1]}</span>
+      </div>
+      <div class="seal-col left-col">
+        <span class="seal-char">{leftCol[0]}</span>
+        <span class="seal-char">{leftCol[1]}</span>
+      </div>
+    </div>
+  ) : isTwoChar ? (
+    /* 文人两字单列竖排行气架构 */
+    <div class="vertical-two-seal font-serif">
+      <span class="seal-char">{cleanText[0]}</span>
+      <span class="seal-char">{cleanText[1]}</span>
+    </div>
+  ) : (
+    /* 通用文字排印 */
+    <span class="single-seal-text font-serif">{cleanText}</span>
+  )}
+</div>
+
+<style>
+  /* =======================================================
+     印章基础外框与金石物理质感
+     ======================================================= */
+  .editorial-seal {
+    --seal-tilt: 0deg;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    vertical-align: middle;
+    user-select: none;
+    line-height: 1;
+    transform: rotate(var(--seal-tilt));
+    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.22s ease;
+    flex-shrink: 0;
+  }
+
+  .editorial-seal:hover {
+    transform: rotate(0deg) scale(1.08);
+  }
+
+  /* 图像模式 */
+  .seal-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  /* =======================================================
+     印色谱系 (Color Palettes)
+     ======================================================= */
+  /* 朱砂金石红 (默认正统) */
+  .editorial-seal.color-vermilion {
+    --seal-c: var(--press-red, #9e2a2b);
+    --seal-soft: var(--press-red-soft, rgba(158, 42, 43, 0.08));
+    --seal-shadow: rgba(158, 42, 43, 0.24);
+  }
+
+  /* 徽墨青石黑 */
+  .editorial-seal.color-ink {
+    --seal-c: var(--ink-text, #2c2825);
+    --seal-soft: rgba(44, 40, 37, 0.08);
+    --seal-shadow: rgba(44, 40, 37, 0.22);
+  }
+
+  /* 古铜冷青 */
+  .editorial-seal.color-bronze {
+    --seal-c: #3d5a52;
+    --seal-soft: rgba(61, 90, 82, 0.09);
+    --seal-shadow: rgba(61, 90, 82, 0.22);
+  }
+
+  /* 赭石沉黄 */
+  .editorial-seal.color-ochre {
+    --seal-c: #9c6628;
+    --seal-soft: rgba(156, 102, 40, 0.09);
+    --seal-shadow: rgba(156, 102, 40, 0.22);
+  }
+
+  /* =======================================================
+     尺寸矩阵 (Size Variants)
+     ======================================================= */
+  .size-xs {
+    width: 22px;
+    height: 22px;
+    font-size: 10px;
+    padding: 1px;
+  }
+  .size-sm {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+    padding: 2px;
+  }
+  .size-md {
+    width: 44px;
+    height: 44px;
+    font-size: 15px;
+    padding: 3px;
+  }
+  .size-lg {
+    width: 72px;
+    height: 72px;
+    font-size: 20px;
+    padding: 5px;
+  }
+
+  /* =======================================================
+     形制形态 (Shape Styles)
+     ======================================================= */
+  /* 正统方印：纯正直角与金石破口 */
+  .shape-square {
+    border-radius: 0;
+  }
+
+  /* 圆印 */
+  .shape-round {
+    border-radius: 50%;
+  }
+
+  /* 文人长圆引首章 */
+  .shape-oval {
+    width: auto;
+    min-width: 26px;
+    height: 36px;
+    border-radius: 18px;
+    padding: 2px 8px;
+  }
+  .shape-oval.size-xs { height: 24px; min-width: 18px; border-radius: 12px; padding: 1px 5px; }
+  .shape-oval.size-md { height: 50px; min-width: 34px; border-radius: 25px; padding: 4px 10px; }
+  .shape-oval.size-lg { height: 76px; min-width: 52px; border-radius: 38px; padding: 6px 14px; }
+
+  /* 扁方/长方印戳 */
+  .shape-rect {
+    width: auto;
+    height: 28px;
+    border-radius: 0;
+    padding: 2px 8px;
+  }
+  .shape-rect.size-xs { height: 20px; padding: 1px 5px; }
+  .shape-rect.size-md { height: 38px; padding: 3px 12px; }
+  .shape-rect.size-lg { height: 56px; padding: 4px 16px; }
+
+  /* =======================================================
+     工艺雕法 (Craft Variants)
+     ======================================================= */
+  /* 1. 朱文 / 阳刻 (Relief)：白底红字，金石崩边 */
+  .variant-relief {
+    border: 2px solid var(--seal-c);
+    color: var(--seal-c);
+    background: transparent;
+    box-shadow: 
+      inset 0 0 0 1px var(--paper-surface, #faf6ed),
+      inset 0 0 0 2px var(--seal-c),
+      2px 2px 0 var(--seal-shadow);
+  }
+
+  .variant-relief:hover {
+    filter: drop-shadow(0 2px 6px var(--seal-shadow));
+  }
+
+  /* 2. 白文 / 阴刻 (Intaglio)：红泥实底留白笔画 */
+  .variant-intaglio {
+    border: 2px solid var(--seal-c);
+    background: var(--seal-c);
+    color: var(--paper-surface, #faf6ed);
+    box-shadow: 2px 2px 0 var(--line-solid);
+  }
+
+  .variant-intaglio:hover {
+    filter: drop-shadow(0 2px 6px var(--seal-shadow));
+  }
+
+  /* 3. 复古火漆蜡封 (Wax Seal) */
+  .variant-wax {
+    border-radius: 48% 52% 49% 51% / 51% 49% 52% 48%;
+    background: radial-gradient(circle at 35% 35%, #b8271d 0%, #851b14 70%, #5e110c 100%);
+    color: #f7ede8;
+    box-shadow: 
+      0 2px 6px rgba(133, 27, 20, 0.4),
+      0 0 0 2px rgba(184, 39, 29, 0.2),
+      inset 0 1px 2px rgba(255, 255, 255, 0.35),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(133, 27, 20, 0.6);
+  }
+
+  .variant-wax .wax-seal-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .variant-wax .wax-seal-inner {
+    border: 1px dashed rgba(255, 255, 255, 0.38);
+    border-radius: 50%;
+    width: 78%;
+    height: 78%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+    box-sizing: border-box;
+    text-align: center;
+    line-height: 1;
+  }
+
+  .shape-square.variant-wax .wax-seal-inner,
+  .shape-rect.variant-wax .wax-seal-inner {
+    border-radius: 3px;
+    width: 82%;
+    height: 82%;
+  }
+
+  .shape-oval.variant-wax .wax-seal-inner {
+    border-radius: 9999px;
+    width: 82%;
+    height: 82%;
+  }
+
+  /* 火漆两字单列竖排中正居中 */
+  .variant-wax .wax-seal-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    width: 100%;
+    height: 100%;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .variant-wax .wax-seal-vertical .seal-char {
+    display: block;
+    font-weight: 800;
+    font-size: 0.68em;
+    line-height: 1;
+    text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.5), 0 1px 1px rgba(255, 255, 255, 0.3);
+    text-align: center;
+    letter-spacing: 0;
+  }
+
+  /* 火漆四字双列方阵居中 */
+  .variant-wax .wax-seal-grid {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    width: 100%;
+    height: 100%;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .variant-wax .wax-seal-grid .seal-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    height: 100%;
+    line-height: 1;
+  }
+
+  .variant-wax .wax-seal-grid .seal-char {
+    display: block;
+    font-weight: 800;
+    font-size: 0.48em;
+    line-height: 1;
+    text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.5), 0 1px 1px rgba(255, 255, 255, 0.3);
+    text-align: center;
+  }
+
+  /* 火漆单字/通用文字排印 */
+  .variant-wax .wax-seal-text {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.5), 0 1px 1px rgba(255, 255, 255, 0.3);
+    font-size: 0.85em;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    max-width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .size-xs.variant-wax .wax-seal-vertical .seal-char {
+    font-size: 0.6em;
+  }
+  .size-xs.variant-wax .wax-seal-text {
+    font-size: 0.75em;
+  }
+
+  /* 4. 报馆/档案验讫戳 (Archival Stamp) */
+  .variant-stamp {
+    border: 2px solid var(--seal-c);
+    color: var(--seal-c);
+    background: var(--seal-soft);
+    padding: 3px 8px;
+    box-shadow: 2px 2px 0 var(--seal-shadow);
+    border-radius: 0;
+  }
+
+  .stamp-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    letter-spacing: 0.8px;
+  }
+
+  .stamp-symbol {
+    font-size: 0.85em;
+    opacity: 0.85;
+  }
+
+  .stamp-text {
+    font-weight: 800;
+    font-size: 0.95em;
+  }
+
+  /* =======================================================
+     文字排布体例 (Calligraphy Layout)
+     ======================================================= */
+  /* 汉印四字回文两列两行架构 */
+  .four-char-seal {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .seal-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    height: 100%;
+    line-height: 1;
+  }
+
+  .seal-char {
+    display: block;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  /* 文人两字单列竖排 */
+  .vertical-two-seal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    height: 100%;
+    line-height: 1;
+  }
+
+  .vertical-two-seal .seal-char {
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .single-seal-text {
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  /* =======================================================
+     深色暗底自适应 (Dark Theme Support)
+     ======================================================= */
+  :global(:is(.dark, [data-theme="dark"])) .variant-relief {
+    border-color: var(--press-red);
+    color: var(--press-red);
+    box-shadow: 
+      inset 0 0 0 1px var(--paper-surface, #1e1b18),
+      inset 0 0 0 2px var(--press-red),
+      1px 1px 0 rgba(0, 0, 0, 0.4);
+    filter: brightness(1.08) contrast(1.05);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .variant-intaglio {
+    background: var(--press-red);
+    border-color: var(--press-red);
+    color: var(--paper-surface, #1e1b18);
+    box-shadow: 1.5px 1.5px 0 rgba(0, 0, 0, 0.5);
+    filter: brightness(1.06) contrast(1.05);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .variant-wax {
+    filter: brightness(1.05) contrast(1.08);
+    box-shadow: 
+      0 2px 6px rgba(0, 0, 0, 0.6),
+      0 0 0 2px rgba(184, 39, 29, 0.3),
+      inset 0 1px 2px rgba(255, 255, 255, 0.3),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.7);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .variant-stamp {
+    border-color: var(--press-red);
+    outline-color: var(--press-red);
+    color: var(--press-red);
+    background: rgba(217, 83, 79, 0.12);
+  }
+</style>

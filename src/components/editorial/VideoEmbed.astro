@@ -1,0 +1,213 @@
+---
+/**
+ * VideoEmbed 视频嵌入组件 (移植自 Zhilu / Clarity，并融入每日公报报志排印美学)
+ * 支持智能解析 Bilibili、YouTube、抖音及原生 MP4 链接。
+ */
+
+interface Props {
+  /** 完整视频 URL（支持 B站、YouTube、抖音、MP4 直链） */
+  url?: string;
+  /** 视频 ID（BV号、YouTube ID、抖音 ID，亦可直接传入完整 URL） */
+  id?: string;
+  /** 专属 B 站 BV 号快捷参数 */
+  bvid?: string;
+  /** 视频源类型，缺省时根据链接自动推断 */
+  type?: 'raw' | 'bilibili' | 'bilibili-nano' | 'youtube' | 'douyin' | 'douyin-wide' | 'tiktok';
+  /** 原生视频/iframe直链 */
+  src?: string;
+  /** 封面图（type 为 raw 时生效） */
+  poster?: string;
+  /** 是否自动播放（默认 false，防打扰） */
+  autoplay?: boolean;
+  /** 自定义宽高比，如 '16 / 9' 或 1.6 */
+  ratio?: string | number;
+  /** 容器最大宽度，默认 100% */
+  width?: string;
+  /** 容器最大高度，默认 80vh */
+  height?: string;
+  /** 视频题注 / 刊记说明 */
+  caption?: string;
+  /** 附加 CSS 类名 */
+  class?: string;
+}
+
+const {
+  url,
+  id: rawId,
+  bvid: rawBvid,
+  type: rawType,
+  src: rawSrc,
+  poster,
+  autoplay = false,
+  ratio: customRatio,
+  width = '100%',
+  height = '80vh',
+  caption,
+  class: className = '',
+} = Astro.props;
+
+// 智能提取输入字符串（优先 url，其次 bvid，再者 id）
+const inputTarget = (url || rawBvid || rawId || '').trim();
+
+let resolvedType: 'raw' | 'bilibili' | 'bilibili-nano' | 'youtube' | 'douyin' | 'douyin-wide' | 'tiktok' = rawType || 'bilibili';
+let resolvedId = inputTarget;
+let resolvedSrc = rawSrc || '';
+
+// 智能链接解析逻辑
+if (inputTarget) {
+  // 1. 匹配 Bilibili: 支持完整链接、短链接 b23.tv 或纯 BV 号
+  const biliMatch = inputTarget.match(/(?:bilibili\.com\/video\/|b23\.tv\/)?(BV[a-zA-Z0-9]{10})/i);
+  if (biliMatch) {
+    resolvedType = rawType === 'bilibili-nano' ? 'bilibili-nano' : 'bilibili';
+    resolvedId = biliMatch[1];
+  }
+  // 2. 匹配 YouTube: 支持 watch?v= 或 youtu.be/
+  else if (/youtube\.com|youtu\.be/i.test(inputTarget)) {
+    const ytMatch = inputTarget.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+    resolvedType = 'youtube';
+    resolvedId = ytMatch ? ytMatch[1] : inputTarget;
+  }
+  // 3. 匹配 抖音
+  else if (/douyin\.com/i.test(inputTarget)) {
+    const dyMatch = inputTarget.match(/(?:douyin\.com\/video\/)(\d+)/i);
+    resolvedType = rawType === 'douyin-wide' ? 'douyin-wide' : 'douyin';
+    resolvedId = dyMatch ? dyMatch[1] : inputTarget;
+  }
+  // 4. 匹配 原生视频直链 (.mp4, .webm, .ogg)
+  else if (/\.(mp4|webm|ogg|m4v)(\?.*)?$/i.test(inputTarget)) {
+    resolvedType = 'raw';
+    resolvedSrc = inputTarget;
+  }
+  // 5. 默认兜底：若纯传入以 BV 开头字符串
+  else if (/^BV[a-zA-Z0-9]{10}$/i.test(inputTarget)) {
+    resolvedType = 'bilibili';
+    resolvedId = inputTarget;
+  }
+}
+
+// 宽高比判定
+const resolvedRatio = customRatio
+  ? customRatio
+  : resolvedType === 'douyin'
+  ? '27 / 56'
+  : resolvedType === 'douyin-wide'
+  ? '1198 / 731'
+  : '16 / 9';
+
+// 组装最终播放器地址
+let finalSrc = resolvedSrc;
+if (resolvedType === 'bilibili') {
+  finalSrc = `https://player.bilibili.com/player.html?bvid=${resolvedId}&autoplay=${autoplay ? 'true' : 'false'}&high_quality=1&as_wide=1`;
+} else if (resolvedType === 'bilibili-nano') {
+  finalSrc = `https://www.bilibili.com/blackboard/newplayer.html?bvid=${resolvedId}&autoplay=${autoplay ? 'true' : 'false'}`;
+} else if (resolvedType === 'youtube') {
+  finalSrc = `https://www.youtube.com/embed/${resolvedId}?rel=0&disablekb=1&playsinline=1&autoplay=${autoplay ? 1 : 0}`;
+} else if (resolvedType === 'douyin' || resolvedType === 'douyin-wide') {
+  finalSrc = `https://open.douyin.com/player/video?vid=${resolvedId}`;
+} else if (resolvedType === 'tiktok') {
+  finalSrc = `https://www.tiktok.com/embed/v3/${resolvedId}`;
+} else if (resolvedType === 'raw' && !finalSrc) {
+  finalSrc = resolvedId;
+}
+---
+
+<figure class={`editorial-video-container ${className}`}>
+  <div class="video-matting">
+    <div
+      class="video-player-frame"
+      style={{
+        aspectRatio: String(resolvedRatio),
+        maxWidth: width,
+        maxHeight: height,
+      }}
+    >
+      {resolvedType === 'raw' ? (
+        <video
+          src={finalSrc}
+          poster={poster}
+          controls
+          playsinline
+          preload="metadata"
+        />
+      ) : (
+        <iframe
+          src={finalSrc}
+          scrolling="no"
+          loading="lazy"
+          allowfullscreen="true"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture"
+        />
+      )}
+    </div>
+
+    {caption && (
+      <figcaption class="video-caption font-sans">
+        <strong class="caption-marker font-mono">§ 视频 · VIDEO ｜ </strong>
+        <span class="caption-text font-serif">{caption}</span>
+      </figcaption>
+    )}
+  </div>
+</figure>
+
+<style>
+  .editorial-video-container {
+    margin: 36px auto;
+    width: 100%;
+    text-indent: 0;
+  }
+
+  .video-matting {
+    background: var(--paper-surface);
+    border: 2.5px solid var(--line-solid);
+    box-shadow: 4px 4px 0 var(--line-solid);
+    border-radius: 0;
+    padding: 12px 12px 14px;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .video-matting:hover {
+    transform: translate(-1.5px, -1.5px);
+    box-shadow: 5.5px 5.5px 0 var(--line-solid);
+  }
+
+  .video-player-frame {
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    background-color: #0b0b0d;
+    border: 2px solid var(--line-solid);
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  .video-player-frame iframe,
+  .video-player-frame video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background-color: transparent;
+  }
+
+  .video-caption {
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink-secondary);
+    text-align: center;
+    letter-spacing: 0.3px;
+    padding: 0 4px;
+  }
+
+  .caption-marker {
+    color: var(--press-red);
+    font-weight: 700;
+  }
+
+  /* 暗色模式适配 */
+  :global(:is(.dark, [data-theme="dark"])) .video-matting {
+    border-color: var(--line-solid);
+    box-shadow: var(--shadow-paper);
+  }
+</style>

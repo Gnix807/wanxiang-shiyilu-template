@@ -1,0 +1,38 @@
+---
+import { getLinkMeta } from '@/utils/linkIcon';
+
+interface Props {
+  href: string;
+  icon?: string;
+  target?: string;
+  rel?: string;
+  class?: string;
+  showDomain?: boolean;
+  title?: string;
+}
+
+const {
+  href = '#',
+  icon,
+  target,
+  rel,
+  class: className = '',
+  showDomain = true,
+  title,
+} = Astro.props;
+
+const meta = getLinkMeta(href, icon);
+const resolvedTarget = target ?? (meta.isExternal ? '_blank' : undefined);
+const resolvedRel = rel ?? (meta.isExternal ? 'noopener noreferrer' : undefined);
+const resolvedTitle = title ?? (meta.isExternal && meta.domain ? `前往 ${meta.domain} ↗` : undefined);
+---
+
+<a
+  href={href}
+  class={`editorial-link ${meta.isExternal ? 'external-link' : 'internal-link'} ${className}`}
+  target={resolvedTarget}
+  rel={resolvedRel}
+  data-domain={showDomain && meta.isExternal ? meta.domain : undefined}
+  data-icon={meta.iconName}
+  title={resolvedTitle}
+><span class="editorial-link-icon" set:html={meta.iconSvg} /><span class="editorial-link-text"><slot /></span></a>

@@ -1,0 +1,54 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getProcessedTalks } from '../../utils/postsFetcher';
+import SvelteTalkDetail from '../../components/SvelteTalkDetail.svelte';
+import { WalineComment } from '../../components/WalineComment';
+import ShareButton from '../../components/ShareButton.svelte';
+import { i18nConfig } from '../../config/site';
+
+export async function getStaticPaths() {
+  const talks = await getProcessedTalks();
+  return talks.map(talk => {
+    return {
+      params: { id: talk.slug },
+      props: { talk }
+    };
+  });
+}
+
+const { id } = Astro.params;
+const { talk } = Astro.props;
+
+/** SEO description: plain text, first 150 chars only */
+function talkSeoDescription(raw: string, max = 150): string {
+  const plain = (raw || '')
+    .replace(/!\[.*?\]\(.*?\)/g, '')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/[#*`_~>|]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (plain.length <= max) return plain;
+  return plain.slice(0, max);
+}
+
+const seoDescription = talkSeoDescription(talk.content || '');
+---
+
+<Layout 
+  title={talk.title || i18nConfig.talk.detailFallbackTitle}
+  description={seoDescription}
+  keywords={[talk.title || '说说', ...(talk.tags || []), '动态']}
+>
+  <SvelteTalkDetail talk={talk} client:load />
+  <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-4 shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] rounded-sm flex items-center justify-center mt-6">
+    <ShareButton
+      title={talk.title || ''}
+      description={seoDescription}
+      url={Astro.url.href}
+      image={''}
+      date={talk.date || ''}
+      client:only="svelte"
+    />
+  </div>
+  <WalineComment client:idle />
+</Layout>

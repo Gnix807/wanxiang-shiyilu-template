@@ -1,0 +1,86 @@
+---
+interface Props {
+  cols?: 2 | 3 | 4;
+  caption?: string;
+  className?: string;
+}
+
+const {
+  cols = 2,
+  caption,
+  className = '',
+} = Astro.props;
+---
+
+<figure class={`editorial-image-grid cols-${cols} ${className}`}>
+  <div class="grid-container">
+    <slot />
+  </div>
+  {caption && <figcaption class="grid-caption font-sans">{caption}</figcaption>}
+</figure>
+
+<style>
+  .editorial-image-grid {
+    margin: 32px 0;
+    text-align: center;
+  }
+
+  .grid-container {
+    display: grid;
+    gap: 12px;
+  }
+
+  .editorial-image-grid.cols-2 .grid-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .editorial-image-grid.cols-3 .grid-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .editorial-image-grid.cols-4 .grid-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .editorial-image-grid :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 2px solid var(--line-solid);
+    border-radius: 0;
+    box-shadow: 3px 3px 0 var(--line-solid);
+    display: block;
+    background: var(--paper-surface);
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .editorial-image-grid :global(img:hover) {
+    transform: translate(-1.5px, -1.5px);
+    box-shadow: 4.5px 4.5px 0 var(--line-solid);
+  }
+
+  .grid-caption {
+    font-size: 12.5px;
+    color: var(--ink-secondary);
+    margin-top: 14px;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .grid-caption::before,
+  .grid-caption::after {
+    content: '—';
+    color: var(--press-red);
+    font-weight: 800;
+  }
+
+  @media (max-width: 680px) {
+    .editorial-image-grid.cols-2 .grid-container,
+    .editorial-image-grid.cols-3 .grid-container,
+    .editorial-image-grid.cols-4 .grid-container {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

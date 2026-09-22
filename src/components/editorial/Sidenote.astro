@@ -1,0 +1,321 @@
+---
+import { inlineNoteHtml } from '../../utils/inlineNote';
+interface Props {
+  id: string | number;
+  label?: string;
+  title?: string;
+  kicker?: string;
+  font?: 'handwriting' | 'serif' | 'sans';
+}
+
+const {
+  id,
+  label,
+  title = `注记 [${id}]`,
+  kicker = '旁注札记 · MARGINALIA',
+  font = 'handwriting',
+} = Astro.props;
+const content = inlineNoteHtml(await Astro.slots.render('default'));
+const displayTrigger = label || `[${id}]`;
+---
+
+<span class="footnote-anchor" data-sidenote-id={id} data-sidenote-title={title}>&#x2060;<sup class="footnote-ref"><span class="footnote-trigger" role="button" tabindex="0" aria-haspopup="dialog" aria-expanded="false" aria-label={`注释 [${id}]`}>{displayTrigger}</span></sup><span class="footnote-popover" role="dialog" aria-modal="false">
+    <span class="popover-arrow"></span>
+    <span class="popover-header font-sans">
+      <span class="popover-masthead">
+        <span class="popover-badge font-mono">§ {id}</span>
+        {kicker && <span class="popover-kicker font-sans">{kicker}</span>}
+      </span>
+      <button type="button" class="popover-close-btn" aria-label="关闭注释" title="关闭">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </span>
+    {title && <span class="popover-title font-serif">{title}</span>}
+    <span class={`popover-content font-${font}`}>
+      <Fragment set:html={content} />
+    </span>
+  </span></span><style>
+  .footnote-anchor {
+    position: relative;
+    display: inline-block;
+    vertical-align: baseline;
+    line-height: 1;
+    margin: 0 1.5px;
+    text-indent: 0;
+  }
+
+  .footnote-ref {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    top: -0.42em;
+    line-height: 1;
+    font-size: 11.5px;
+    font-weight: 700;
+    user-select: none;
+    white-space: nowrap;
+    vertical-align: baseline;
+    font-family: var(--font-serif), var(--font-sans), sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .footnote-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 14px;
+    height: 15px;
+    padding: 0 2.5px;
+    color: var(--press-red);
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .footnote-anchor:hover .footnote-trigger,
+  .footnote-anchor:focus-within .footnote-trigger {
+    background-color: var(--press-red-soft, rgba(158, 42, 43, 0.08));
+    border-color: rgba(158, 42, 43, 0.22);
+    color: var(--press-red);
+    text-decoration: none !important;
+  }
+
+  :global(.footnote-anchor.pinned) .footnote-trigger {
+    background-color: var(--press-red);
+    border-color: var(--press-red);
+    color: #ffffff !important;
+    text-decoration: none !important;
+    box-shadow: 1px 1px 0 var(--line-solid) !important;
+    border-radius: 2px;
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .footnote-anchor:hover .footnote-trigger,
+  :global(:is(.dark, [data-theme="dark"])) .footnote-anchor:focus-within .footnote-trigger {
+    border-color: rgba(217, 83, 79, 0.35);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) :global(.footnote-anchor.pinned) .footnote-trigger {
+    box-shadow: 1px 1px 0 var(--line-solid) !important;
+  }
+
+  /* 组件库级 Popover 浮层 (粗野主义厚边框与硬质阴影) */
+  .footnote-popover {
+    position: absolute;
+    bottom: calc(100% + 16px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    width: 270px;
+    max-width: min(280px, calc(100vw - 32px));
+    background-color: var(--paper-surface);
+    border: 2px solid var(--line-solid);
+    border-radius: 0;
+    box-shadow: 4px 4px 0 var(--line-solid);
+    padding: 10px 12px;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+    pointer-events: none;
+    cursor: text;
+    user-select: text;
+    text-align: left;
+  }
+
+  /* 桥接鼠标悬停区域，防止指针移入卡片时闪退 */
+  .footnote-popover::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 18px;
+    background: transparent;
+  }
+
+  /* Popover 小三角指示箭头 */
+  .popover-arrow {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 8px;
+    height: 8px;
+    background-color: var(--paper-surface);
+    border-right: 2px solid var(--line-solid);
+    border-bottom: 2px solid var(--line-solid);
+    pointer-events: none;
+  }
+
+  /* 强制关闭状态（解决鼠标悬停在关闭按钮上时仍被 :hover 强行显示的经典问题） */
+  .footnote-anchor.is-closed .footnote-popover {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: translateX(-50%) translateY(4px) !important;
+  }
+
+  .footnote-anchor:hover:not(.is-closed) .footnote-popover,
+  :global(.footnote-anchor.pinned:not(.is-closed)) .footnote-popover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+
+  .popover-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--line-solid);
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+    user-select: none;
+  }
+
+  .popover-masthead {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .popover-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--press-red);
+    background: var(--press-red-soft);
+    border: 1.5px solid var(--press-red);
+    box-shadow: 1.5px 1.5px 0 var(--press-red);
+    padding: 0.5px 5px;
+    border-radius: 0;
+    line-height: 1.2;
+    flex-shrink: 0;
+  }
+
+  .popover-kicker {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--ink-light);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .popover-title {
+    display: block;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--ink-text);
+    margin-bottom: 6px;
+    line-height: 1.35;
+    letter-spacing: -0.2px;
+  }
+
+  .popover-close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: transparent;
+    border: 1px solid var(--line-solid);
+    padding: 0;
+    margin: -2px -2px -2px 4px;
+    color: var(--ink-light);
+    cursor: pointer;
+    border-radius: 0;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .popover-close-btn:hover {
+    color: var(--press-red);
+    background-color: var(--press-red-soft);
+    border-color: var(--press-red);
+  }
+
+  .popover-close-btn:active {
+    transform: scale(0.9);
+  }
+
+  .popover-close-btn svg {
+    pointer-events: none;
+  }
+
+  .popover-content {
+    display: block;
+    color: var(--ink-text);
+    font-size: 13.5px;
+    line-height: 1.65;
+    word-break: break-word;
+  }
+
+  .popover-content.font-handwriting {
+    font-family: var(--font-handwriting);
+    font-size: 13.5px;
+    line-height: 1.65;
+    letter-spacing: 0.2px;
+  }
+
+  .popover-content.font-serif {
+    font-family: var(--font-serif);
+    font-size: 12.5px;
+  }
+
+  .popover-content.font-sans {
+    font-family: var(--font-sans);
+    font-size: 12px;
+  }
+
+  /* 暗色模式适配 */
+  :global(:is(.dark, [data-theme="dark"])) .footnote-popover {
+    background-color: var(--paper-surface);
+    border-color: var(--line-solid);
+    box-shadow: 4px 4px 0 var(--line-solid);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .popover-arrow {
+    background-color: var(--paper-surface);
+    border-color: var(--line-solid);
+  }
+
+  /* 侧栏卡片悬停时，正文注记微脉冲发光联动 */
+  :global(.footnote-anchor.footnote-hover-pulse .footnote-trigger) {
+    background-color: var(--press-red) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 8px rgba(158, 42, 43, 0.55);
+    transform: scale(1.15);
+    border-radius: 2px;
+  }
+
+  /* 侧栏跳转时的平滑轻量高亮动效 */
+  :global(.footnote-anchor.footnote-flash .footnote-trigger) {
+    animation: footnoteSubtlePulse 1.4s ease;
+  }
+
+  @keyframes footnoteSubtlePulse {
+    0%, 100% {
+      background-color: transparent;
+      color: var(--press-red);
+    }
+    30%, 70% {
+      background-color: var(--press-red);
+      color: #ffffff !important;
+      box-shadow: 0 0 8px rgba(158, 42, 43, 0.4);
+    }
+  }
+</style>
+

@@ -1,0 +1,82 @@
+---
+interface Props {
+  src: string;
+  alt?: string;
+  fig?: string;
+  caption?: string;
+}
+
+const { src, alt = '图版', fig = '图 1.0', caption } = Astro.props;
+---
+
+<figure class="editorial-plate">
+  <div class="plate-matting">
+    <div class="plate-frame">
+      <img src={src} alt={alt} loading="lazy" />
+    </div>
+    {(caption || fig) && (
+      <figcaption class="plate-caption font-sans">
+        <strong class="plate-tag font-mono">{fig}：</strong>
+        <span class="plate-text font-serif">{caption ? caption : <slot />}</span>
+      </figcaption>
+    )}
+  </div>
+</figure>
+
+<style>
+  .editorial-plate {
+    margin: 40px 0;
+    text-indent: 0;
+  }
+
+  .plate-matting {
+    background: var(--paper-surface);
+    border: 2.5px solid var(--line-solid);
+    box-shadow: 4px 4px 0 var(--line-solid);
+    border-radius: 0;
+    padding: 12px 12px 14px;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .plate-matting:hover {
+    transform: translate(-1.5px, -1.5px);
+    box-shadow: 5.5px 5.5px 0 var(--line-solid);
+  }
+
+  .plate-frame {
+    border: 1.5px solid var(--line-solid);
+    background-color: var(--paper-bg);
+    overflow: hidden;
+    border-radius: 0;
+  }
+
+  .plate-frame img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .plate-caption {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 8px 6px 2px;
+    border-top: 2px solid var(--line-solid);
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--ink-secondary);
+  }
+
+  .plate-tag {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--press-red);
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  .plate-text {
+    color: var(--ink-secondary);
+  }
+</style>

@@ -1,0 +1,55 @@
+---
+interface Props {
+  className?: string;
+}
+
+const { className = '' } = Astro.props;
+---
+
+<kbd class={`editorial-kbd font-mono ${className}`}><slot /></kbd>
+
+<style>
+  .editorial-kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    max-width: max-content;
+    min-width: 1.5em;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.15;
+    text-indent: 0 !important;
+    color: var(--ink-text);
+    background: var(--paper-surface);
+    border: 1.5px solid var(--line-solid);
+    border-bottom: 3px solid var(--line-solid);
+    border-radius: 1px;
+    box-shadow: 1px 1px 0 var(--line-solid);
+    margin: 0 2px;
+    vertical-align: 0.5px;
+    white-space: nowrap;
+    user-select: none;
+    transition: transform 0.1s ease, border-bottom-width 0.1s ease;
+  }
+
+  .editorial-kbd :global(*) {
+    text-indent: 0 !important;
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .editorial-kbd {
+    background: #242220;
+    border-color: var(--line-solid);
+    border-bottom-color: var(--line-solid);
+  }
+
+  .editorial-kbd:hover {
+    transform: translateY(-0.5px);
+  }
+
+  .editorial-kbd:active {
+    transform: translateY(1.5px);
+    border-bottom-width: 1.5px;
+  }
+</style>

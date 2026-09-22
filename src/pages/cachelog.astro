@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Cache Debug" description="缓存调试面板">
+  <div class="max-w-2xl mx-auto py-12">
+    <h1 class="text-3xl font-black text-[#1a1a1a] dark:text-[#e8e6e3] mb-6 flex items-center gap-2.5">
+      <svg class="w-8 h-8 text-amber-500 fill-amber-500 shrink-0" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <span>Cache Debug</span>
+    </h1>
+    <p class="text-slate-600 dark:text-slate-400 mb-8 font-serif">右下角缓存统计面板已全站启用。返回其他页面时面板保持可见。</p>
+    <div class="bg-white dark:bg-[#1c1b1a] border-4 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm p-6 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3]">
+      <h2 class="text-lg font-bold text-[#9e2a2b] dark:text-[#d9534f] mb-4">说明</h2>
+      <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-2 font-mono">
+        <li>• <strong>cached</strong>：已预加载并缓存的文章数量</li>
+        <li>• <strong>queued</strong>：等待预加载的文章数量</li>
+        <li>• <strong>loading</strong>：正在加载的文章数量</li>
+        <li>• <strong>HIT/MISS</strong>：点击文章时是否命中缓存</li>
+      </ul>
+      <div class="mt-4 flex gap-2">
+        <a href="/" class="px-4 py-2 bg-[#9e2a2b] dark:bg-[#d9534f] text-white font-black text-sm rounded-sm hover:opacity-90 transition-opacity">← 返回首页</a>
+      </div>
+    </div>
+  </div>
+</Layout>

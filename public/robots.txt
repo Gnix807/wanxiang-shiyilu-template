@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+# Set your production URL before adding a Sitemap directive.

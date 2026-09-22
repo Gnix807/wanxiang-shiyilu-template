@@ -1,0 +1,456 @@
+---
+interface Props {
+  type?: 'editorial' | 'tip' | 'warning' | 'archive' | 'danger' | 'caution' | 'insight' | 'quote' | 'info';
+  title?: string;
+  kicker?: string | boolean;
+  badge?: string | boolean;
+  tag?: string | boolean;
+  symbol?: string;
+  code?: string | boolean;
+  seal?: string | boolean;
+  stamp?: string;
+  bottomTag?: string;
+  font?: 'handwriting' | 'manuscript' | 'serif' | 'sans';
+}
+
+const {
+  type = 'editorial',
+  title,
+  kicker,
+  badge: badgeProp,
+  tag: tagProp,
+  symbol: symbolProp,
+  code: codeProp,
+  seal: sealProp,
+  stamp: stampProp,
+  bottomTag: bottomTagProp,
+  font,
+} = Astro.props;
+
+// Normalizing types
+const normalizedType = (
+  type === 'caution' ? 'danger' :
+  type === 'quote' ? 'insight' :
+  type
+) as 'editorial' | 'tip' | 'warning' | 'danger' | 'archive' | 'insight' | 'info';
+
+const metaMap = {
+  editorial: {
+    tag: 'NOTE · 手札',
+    symbol: '§',
+    code: 'ED-01',
+    defaultTitle: '主理人手札 · 设计案语',
+    sealText: 'PAPER JOURNAL · 笺',
+  },
+  tip: {
+    tag: 'TIP · 妙诀',
+    symbol: '✦',
+    code: 'TP-02',
+    defaultTitle: '实践要点 · 经验札记',
+    sealText: '格物致知 · VERIFIED',
+  },
+  warning: {
+    tag: 'WARN · 避坑',
+    symbol: '▲',
+    code: 'WN-03',
+    defaultTitle: '避坑指南 · 排版防范',
+    sealText: '防错核验 · ADVISORY',
+  },
+  danger: {
+    tag: 'DANGER · 禁忌',
+    symbol: '◆',
+    code: 'DG-04',
+    defaultTitle: '重点警示 · 规避误区',
+    sealText: '严防全局 · STRICT',
+  },
+  archive: {
+    tag: 'REF · 典籍',
+    symbol: '¶',
+    code: 'AR-05',
+    defaultTitle: '文萃引注 · 历史文献',
+    sealText: '典藏考据 · ARCHIVE',
+  },
+  insight: {
+    tag: 'THOUGHT · 哲思',
+    symbol: '❖',
+    code: 'IN-06',
+    defaultTitle: '独家洞察 · 纸墨哲思',
+    sealText: '随笔札记 · INSIGHT',
+  },
+  info: {
+    tag: 'INFO · 简报',
+    symbol: '※',
+    code: 'IF-07',
+    defaultTitle: '参考备忘 · 简报核查',
+    sealText: '专栏编校 · NOTED',
+  },
+};
+
+const meta = metaMap[normalizedType] || metaMap.editorial;
+const cardTitle = title || meta.defaultTitle;
+
+// 左上角印签自定义（支持 kicker / badge / tag / symbol，亦可通过 badge={false} 隐藏）
+const rawBadge = kicker ?? badgeProp ?? tagProp;
+const showBadge = rawBadge !== false && rawBadge !== 'none' && rawBadge !== '';
+const badgeText = typeof rawBadge === 'string' && rawBadge ? rawBadge : meta.tag;
+const hasLeadingSymbol = /^[\u00A7\u25C6\u25B2\u2726\u2605\u2756\u00B6\u203B\u25A0\u25CF\u25AA\uD83C-\uDBFF\uDC00-\uDFFF]/.test(badgeText);
+const resolvedSymbol = symbolProp !== undefined ? symbolProp : (hasLeadingSymbol ? '' : meta.symbol);
+
+// 顶部档案编目号定制
+const showCode = codeProp !== false && codeProp !== 'none';
+const serialCode = typeof codeProp === 'string' && codeProp ? codeProp : `№ ${meta.code} · SPEC`;
+
+// 右下角验讫印签（支持自定义文字，亦可通过 seal={false} 隐藏）
+const rawSeal = sealProp ?? stampProp ?? bottomTagProp;
+const showSeal = rawSeal !== false && rawSeal !== 'none' && rawSeal !== '';
+const sealText = typeof rawSeal === 'string' && rawSeal ? rawSeal : meta.sealText;
+---
+
+<aside class={`editorial-note note-${normalizedType}`}>
+  <!-- Top Masthead Header -->
+  <div class="note-masthead">
+    <div class="masthead-left">
+      <!-- Vintage Stamped Badge with Dashed Inset Outline -->
+      {showBadge && (
+        <span class="note-stamp-badge font-mono">
+          {resolvedSymbol && <span class="stamp-symbol">{resolvedSymbol}</span>}
+          <span class="stamp-label">{badgeText}</span>
+        </span>
+      )}
+      {cardTitle && <strong class="note-title font-serif">{cardTitle}</strong>}
+    </div>
+    {showCode && (
+      <div class="masthead-right font-mono">
+        <span class="note-serial-code">{serialCode}</span>
+      </div>
+    )}
+  </div>
+
+  <!-- Dashed Letterpress Divider -->
+  <div class="note-divider-rule" aria-hidden="true"></div>
+
+  <!-- Note Body Content -->
+  <div class={`note-body ${font ? `font-${font}` : 'font-sans'}`}>
+    <slot />
+  </div>
+
+  <!-- Vintage Colophon / Archive Footer -->
+  {showSeal && (
+    <div class="note-colophon">
+      <div class="colophon-dingbat font-mono" aria-hidden="true">
+        <span class="dingbat-symbol">✦ ✦ ✦</span>
+      </div>
+      <div class="colophon-seal font-mono">
+        <span class="seal-dot">●</span>
+        <span>{sealText}</span>
+      </div>
+    </div>
+  )}
+</aside>
+
+<style>
+  .editorial-note {
+    --note-accent: var(--press-red);
+    --note-accent-soft: rgba(158, 42, 43, 0.08);
+    --note-divider: rgba(158, 42, 43, 0.25);
+
+    background: var(--paper-surface);
+    border: 2.5px solid var(--line-solid);
+    border-left: 6px solid var(--note-accent);
+    box-shadow: 4px 4px 0 var(--line-solid);
+    border-radius: 2px;
+    margin: 32px 0;
+    padding: 18px 22px 15px;
+    position: relative;
+    box-sizing: border-box;
+    text-indent: 0 !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .editorial-note:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--line-solid);
+  }
+
+  /* ---------------- Masthead ---------------- */
+  .note-masthead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    user-select: none;
+    flex-wrap: wrap;
+  }
+
+  .masthead-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  /* Neo-Brutalist Stamped Badge */
+  .note-stamp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: var(--note-accent);
+    background: var(--note-accent-soft);
+    border: 1.5px solid var(--note-accent);
+    box-shadow: 1.5px 1.5px 0 var(--note-accent);
+    padding: 2.5px 8.5px;
+    text-transform: uppercase;
+    border-radius: 2px;
+    transition: transform 0.15s ease;
+  }
+
+  .editorial-note:hover .note-stamp-badge {
+    transform: translate(-0.5px, -0.5px);
+  }
+
+  .stamp-symbol {
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .stamp-label {
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+  }
+
+  .note-title {
+    font-family: var(--font-serif);
+    font-size: 15.5px;
+    font-weight: 800;
+    color: var(--ink-text);
+    letter-spacing: 0.2px;
+    line-height: 1.4;
+  }
+
+  .masthead-right {
+    display: flex;
+    align-items: center;
+  }
+
+  .note-serial-code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--ink-secondary);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 1.5px 6px;
+    border: 1.5px solid var(--line-solid);
+    border-radius: 2px;
+  }
+
+  /* ---------------- Divider ---------------- */
+  .note-divider-rule {
+    height: 2px;
+    background: var(--note-divider);
+    margin: 12px 0 14px 0;
+  }
+
+  /* ---------------- Body Content ---------------- */
+  .note-body {
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--ink-secondary);
+    text-align: justify;
+    word-break: break-word;
+  }
+
+  .note-body.font-manuscript {
+    font-family: var(--font-manuscript);
+  }
+
+  .note-body.font-handwriting {
+    font-family: var(--font-handwriting);
+  }
+
+  .note-body.font-serif {
+    font-family: var(--font-serif);
+  }
+
+  .note-body :global(p) {
+    margin: 0 0 10px 0 !important;
+    text-indent: 0 !important;
+    color: inherit;
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  .note-body :global(p:last-child) {
+    margin-bottom: 0 !important;
+  }
+
+  .note-body :global(strong) {
+    color: var(--ink-text);
+    font-weight: 800;
+  }
+
+  .note-body :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    padding: 2px 6px;
+    border-radius: 2px;
+    background: var(--note-accent-soft);
+    color: var(--note-accent);
+    border: 1.5px solid var(--note-divider);
+  }
+
+  /* ---------------- Colophon Footer ---------------- */
+  .note-colophon {
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1.5px solid var(--note-divider);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .colophon-dingbat {
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--note-accent);
+    opacity: 0.6;
+  }
+
+  .colophon-seal {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--note-accent);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    background: var(--note-accent-soft);
+    border: 1.5px solid var(--note-accent);
+    box-shadow: 1.5px 1.5px 0 var(--note-accent);
+    padding: 2px 8px;
+    border-radius: 2px;
+    transition: transform 0.15s ease;
+  }
+
+  .editorial-note:hover .colophon-seal {
+    transform: translate(-0.5px, -0.5px);
+  }
+
+  .seal-dot {
+    font-size: 7px;
+    line-height: 1;
+  }
+
+  /* ================== COLOR PALETTES ================== */
+
+  /* 1. 主理人手札 (editorial) - 金石朱砂红 */
+  .editorial-note.note-editorial {
+    --note-accent: #9e2a2b;
+    --note-accent-soft: rgba(158, 42, 43, 0.07);
+    --note-divider: rgba(158, 42, 43, 0.22);
+  }
+
+  /* 2. 实践要点 (tip) - 翠微竹青 */
+  .editorial-note.note-tip {
+    --note-accent: #245e28;
+    --note-accent-soft: rgba(36, 94, 40, 0.07);
+    --note-divider: rgba(36, 94, 40, 0.22);
+  }
+
+  /* 3. 避坑指南 (warning) - 琥珀赭石 */
+  .editorial-note.note-warning {
+    --note-accent: #925c0e;
+    --note-accent-soft: rgba(146, 92, 14, 0.07);
+    --note-divider: rgba(146, 92, 14, 0.22);
+  }
+
+  /* 4. 重点禁忌 (danger) - 丹红烈焰 */
+  .editorial-note.note-danger {
+    --note-accent: #b91c1c;
+    --note-accent-soft: rgba(185, 28, 28, 0.07);
+    --note-divider: rgba(185, 28, 28, 0.22);
+  }
+
+  /* 5. 文萃引注 (archive) - 霁蓝石青 */
+  .editorial-note.note-archive {
+    --note-accent: #1e4c72;
+    --note-accent-soft: rgba(30, 76, 114, 0.07);
+    --note-divider: rgba(30, 76, 114, 0.22);
+  }
+
+  /* 6. 独家洞察 (insight) - 暮山紫棠 */
+  .editorial-note.note-insight {
+    --note-accent: #5c3a72;
+    --note-accent-soft: rgba(92, 58, 114, 0.07);
+    --note-divider: rgba(92, 58, 114, 0.22);
+  }
+
+  /* 7. 参考备忘 (info) - 黛青石绿 */
+  .editorial-note.note-info {
+    --note-accent: #155e75;
+    --note-accent-soft: rgba(21, 94, 117, 0.07);
+    --note-divider: rgba(21, 94, 117, 0.22);
+  }
+
+  /* ================== DARK MODE ADAPTATION ================== */
+  :global(:is(.dark, [data-theme="dark"])) .editorial-note {
+    box-shadow: 3px 3px 0 var(--line-solid), 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .editorial-note:hover {
+    box-shadow: 4.5px 4.5px 0 var(--line-solid), 0 6px 16px rgba(0, 0, 0, 0.4);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .editorial-note.note-editorial {
+    --note-accent: #d9534f;
+    --note-accent-soft: rgba(217, 83, 79, 0.12);
+    --note-divider: rgba(217, 83, 79, 0.3);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .editorial-note.note-tip {
+    --note-accent: #48a24e;
+    --note-accent-soft: rgba(72, 162, 78, 0.12);
+    --note-divider: rgba(72, 162, 78, 0.3);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .editorial-note.note-warning {
+    --note-accent: #e09935;
+    --note-accent-soft: rgba(224, 153, 53, 0.12);
+    --note-divider: rgba(224, 153, 53, 0.3);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .editorial-note.note-danger {
+    --note-accent: #f87171;
+    --note-accent-soft: rgba(248, 113, 113, 0.12);
+    --note-divider: rgba(248, 113, 113, 0.3);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .editorial-note.note-archive {
+    --note-accent: #4a8cc7;
+    --note-accent-soft: rgba(74, 140, 199, 0.12);
+    --note-divider: rgba(74, 140, 199, 0.3);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .editorial-note.note-insight {
+    --note-accent: #b180d7;
+    --note-accent-soft: rgba(177, 128, 215, 0.12);
+    --note-divider: rgba(177, 128, 215, 0.3);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .editorial-note.note-info {
+    --note-accent: #38bdf8;
+    --note-accent-soft: rgba(56, 189, 248, 0.12);
+    --note-divider: rgba(56, 189, 248, 0.3);
+  }
+</style>

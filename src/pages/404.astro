@@ -1,0 +1,28 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { i18nConfig } from '../config/site';
+---
+
+<Layout title={i18nConfig.notFound.title} keywords={['404', '未找到', '404 Not Found']}>
+  <div class="min-h-[60vh] flex items-center justify-center px-4">
+    <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-8 sm:p-12 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm text-center max-w-lg w-full animate-card-entrance">
+      <div class="text-8xl sm:text-9xl font-black text-[#1a1a1a] dark:text-[#e8e6e3] leading-none mb-4 font-serif">{i18nConfig.notFound.bigText}</div>
+      <div class="h-1 w-16 bg-[#9e2a2b] dark:bg-[#d9534f] mx-auto mb-6"></div>
+      <p class="text-lg sm:text-xl font-bold text-neutral-600 dark:text-neutral-300 mb-8">{i18nConfig.notFound.message}</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a 
+          href="/" 
+          class="inline-block bg-[#1a1a1a] dark:bg-[#e8e6e3] text-white dark:text-[#1a1a1a] font-black px-6 py-3 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[3px_3px_0px_0px_#9e2a2b] hover:shadow-none hover:bg-[#9e2a2b] hover:border-[#9e2a2b] hover:text-white hover:translate-x-0.5 hover:translate-y-0.5 transition-all text-sm uppercase tracking-wider"
+        >
+          {i18nConfig.notFound.backHome}
+        </a>
+        <a 
+          href="/posts" 
+          class="inline-block bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] font-black px-6 py-3 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3] hover:shadow-none hover:bg-[#9e2a2b] hover:border-[#9e2a2b] hover:text-white hover:translate-x-0.5 hover:translate-y-0.5 transition-all text-sm uppercase tracking-wider"
+        >
+          {i18nConfig.notFound.browseArchive}
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>

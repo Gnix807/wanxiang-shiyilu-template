@@ -1,0 +1,846 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getProcessedPosts } from '../../utils/postsFetcher';
+import { getCollection } from 'astro:content';
+import { siteConfig, i18nConfig, contentConfig } from '../../config/site';
+import { calculateReadingTime } from '../../utils/readingTime';
+
+import { WalineComment } from '../../components/WalineComment';
+
+import ShareButton from '../../components/ShareButton.svelte';
+import PageViews from '../../components/PageViews.svelte';
+import LeftSidebar from '../../components/LeftSidebar.astro';
+import { commitIndex, historySummaryOf } from '../../utils/commitStats';
+
+
+export async function getStaticPaths() {
+  const posts = await getProcessedPosts();
+  return posts.map(post => {
+    return {
+      params: { id: post.slug },
+      props: { post }
+    };
+  });
+}
+
+const { id } = Astro.params;
+const { post } = Astro.props;
+
+// Render original collection Markdown using Astro compiler
+import { render } from 'astro:content';
+const rawPosts = await getCollection('posts');
+const articleEntry = rawPosts.find(p => (p.slug || p.id) === post.slug);
+if (!articleEntry) {
+  return Astro.redirect('/404');
+}
+const { Content, headings } = await render(articleEntry);
+const readTime = calculateReadingTime(articleEntry.body || "");
+
+// 文章历史：commit 索引里按源文件基名存，collection entry id 正好等于基名
+const history = historySummaryOf(articleEntry.id.replace(/\.mdx?$/, ''));
+
+function fmtHistoryTime(ts: number): string {
+  const d = new Date(ts);
+  const p = (v: number) => String(v).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+// Calculate adjacent posts
+const allPosts = await getProcessedPosts();
+const tagMap: Record<string, number> = {};
+allPosts.forEach(p => { if (p.tags) { p.tags.forEach(t => { tagMap[t] = (tagMap[t] || 0) + 1; }); } });
+const allTags = Object.entries(tagMap).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
+const idx = allPosts.findIndex(p => p.slug === post.slug);
+const prevPost = idx < allPosts.length - 1 ? allPosts[idx + 1] : null;
+const nextPost = idx > 0 ? allPosts[idx - 1] : null;
+
+// Map headings to our toc format
+const toc = headings.map(h => ({
+  level: h.depth,
+  text: h.text,
+  id: h.slug
+}));
+
+const minTocLevel = toc.length > 0 ? Math.min(...toc.map(item => item.level)) : 1;
+
+// Compute related posts by tag overlap
+const relatedPosts = (() => {
+  if (!post.tags || post.tags.length === 0) return [];
+  const scored = allPosts
+    .filter(p => p.slug !== post.slug)
+    .map(p => ({
+      post: p,
+      score: (p.tags || []).filter(t => post.tags.includes(t)).length
+    }))
+    .filter(x => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map(x => x.post);
+  return scored;
+})();
+
+---
+
+
+<Layout 
+  title={post.title}
+  description={post.description}
+  image={post.img}
+  post={post}
+  isArticle={true}
+>
+  <div class="w-full flex flex-col gap-6 relative">
+    <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start w-full">
+      
+      {/* Main post body center panel */}
+      <div class="flex-1 min-w-0 w-full space-y-8 lg:order-2">
+        <article class="article-paper bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-4 sm:p-6 md:p-10 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] sm:shadow-[8px_8px_0px_0px_#1a1a1a] dark:sm:shadow-[8px_8px_0px_0px_#e8e6e3] rounded-sm animate-card-entrance opacity-0">
+          <div class="border-b-3 sm:border-b-4 border-[#1a1a1a] dark:border-[#e8e6e3] pb-6 mb-8 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+              <h1 class="text-xl sm:text-2xl md:text-3xl font-black text-[#1a1a1a] dark:text-[#e8e6e3] mb-4 leading-tight font-serif">{post.title}</h1>
+              <div class="flex flex-wrap items-center gap-3.5 justify-center md:justify-start">
+                <span class="text-neutral-500 dark:text-neutral-400 font-extrabold font-mono text-sm">{post.date}</span>
+                <span class="text-neutral-500 dark:text-neutral-400 font-extrabold font-mono text-sm">/ {i18nConfig.post.readingTime} {readTime} {i18nConfig.post.readingTimeUnit}</span>
+                <PageViews path={post.slug} client:idle />
+                
+                {post.category && (
+                  <a 
+                    href={`/category/${post.category}`} 
+                    class="bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] px-2.5 py-0.5 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] text-center font-bold text-[#9e2a2b] dark:text-[#d9534f] text-xs hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] transition-colors"
+                  >
+                    {post.category}
+                  </a>
+                )}
+
+                {post.tags && post.tags.length > 0 && (
+                  <div class="flex flex-wrap gap-2">
+                    {post.tags.map(tag => (
+                      <a 
+                        href={`/tag/${tag}`} 
+                        class="text-xs font-bold bg-white dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] text-neutral-700 dark:text-neutral-300 px-2.5 py-0.5 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] transition-colors"
+                      >
+                        #{tag}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+          </div>
+
+          {/* Prose Content block */}
+          <div class="prose prose-slate dark:prose-invert prose-lg max-w-none w-full min-w-0 break-words">
+            <Content />
+          </div>
+        </article>
+
+        {/* Copyright Metadata block */}
+        <div 
+          class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-5 md:p-7 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm relative transition-all duration-300 group/copyright animate-card-entrance opacity-0"
+          id="post-copyright-card"
+          style="animation-delay: 0.1s"
+        >
+          <div class="absolute right-4 bottom-0 text-[110px] font-black text-[#1a1a1a]/5 dark:text-[#e8e6e3]/5 select-none pointer-events-none transform rotate-12 translate-y-12 translate-x-6 leading-none select-none">
+            C
+          </div>
+          
+          <div class="relative z-10 space-y-4">
+            <div class="flex items-start justify-between gap-3">
+              <h3 class="text-base sm:text-lg font-black text-[#1a1a1a] dark:text-[#e8e6e3] leading-snug min-w-0 font-serif">{post.title}</h3>
+              {/* 分享按钮：放在底部版权卡片右上角 */}
+              <div class="shrink-0">
+                <ShareButton
+                  title={post.title}
+                  description={post.description}
+                  url={Astro.url.href}
+                  image={post.img}
+                  date={post.date}
+                  readTime={readTime}
+                  tags={post.tags || []}
+                  client:only="svelte"
+                />
+              </div>
+            </div>
+            
+            <div class="inline-block bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 px-3 py-1 rounded-sm text-xs font-bold text-[#1a1a1a] dark:text-[#e8e6e3] hover:text-[#9e2a2b] dark:hover:text-[#d9534f] transition-all break-all select-all">
+              <a href={Astro.url.href} target="_blank" rel="noopener noreferrer">
+                {Astro.url.href}
+              </a>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 border-t-2 border-dashed border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 pt-4 text-[11px] sm:text-xs">
+              <div>
+                <div class="text-neutral-400 font-bold mb-1 uppercase tracking-wider">{i18nConfig.post.copyrightTitle}</div>
+                <div class="font-extrabold text-[#9e2a2b] dark:text-[#d9534f] hover:translate-x-0.5 transition-transform">{siteConfig.author}</div>
+              </div>
+              <div>
+                <div class="text-neutral-400 font-bold mb-1 uppercase tracking-wider">{i18nConfig.post.publishedTitle}</div>
+                <div class="font-mono font-bold text-neutral-600 dark:text-neutral-300">{post.date}</div>
+              </div>
+              <div>
+                <div class="text-neutral-400 font-bold mb-1 uppercase tracking-wider">{i18nConfig.post.licenseTitle}</div>
+                <div>
+                  <a href={contentConfig.license.url} class="font-bold text-[#9e2a2b] dark:text-[#d9534f] hover:underline transition-all">
+                    {contentConfig.license.name}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Article history block —— 首屏只有次数与最后更改时间，明细点开才拉分片 */}
+        {history && (
+          <div
+            class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-4 md:p-5 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm animate-card-entrance opacity-0"
+            style="animation-delay: 0.12s"
+          >
+            <div
+              id="post-history"
+              class="hist"
+              data-key={history.key}
+              data-shard={history.shard}
+              data-count={history.count}
+              data-repo={commitIndex.repo}
+              aria-expanded="false"
+            >
+              <button type="button" class="hist-head">
+                <span class="hist-icon">🧾</span>
+                <span class="hist-title">
+                  <span class="hist-label">文章历史</span>
+                  <span class="hist-sub">
+                    修改 {history.count} 次 · 最后更改于 {fmtHistoryTime(history.lastTs)}
+                  </span>
+                </span>
+                <span class="hist-caret">▶</span>
+              </button>
+              <div class="hist-body">
+                <div class="hist-stats">
+                  <span class="hist-add">+{history.added}</span>
+                  <span class="hist-del">-{history.removed}</span>
+                  <span class="hist-since">首次提交 {fmtHistoryTime(history.firstTs)}</span>
+                </div>
+                <div id="post-history-list" class="hist-list"></div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Related Posts */}
+        {relatedPosts.length > 0 && (
+          <div class="animate-card-entrance opacity-0" style="animation-delay: 0.08s" data-prefetch="post-bottom">
+            <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-4 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm">
+              <h3 class="font-black text-[#1a1a1a] dark:text-[#e8e6e3] text-sm mb-3 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#9e2a2b] dark:text-[#d9534f]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                </svg>
+                {i18nConfig.post.relatedPosts}
+              </h3>
+              <div class="flex flex-wrap gap-2">
+                {relatedPosts.map(rp => (
+                  <a
+                    href={`/posts/${encodeURIComponent(rp.slug)}`}
+                    class="group bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] px-3 py-2 rounded-sm shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-200 inline-flex items-center gap-2"
+                  >
+                    <span class="text-xs font-black text-neutral-800 dark:text-neutral-200 group-hover:text-[#9e2a2b] transition-colors whitespace-nowrap">{rp.title}</span>
+                    <span class="text-[9px] font-bold text-neutral-400 font-mono shrink-0">{rp.date}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Previous / Next pagination navigation blocks */}
+        <div class="flex flex-col sm:flex-row gap-3 w-full animate-card-entrance opacity-0" style="animation-delay: 0.1s" data-prefetch="post-bottom">
+          {prevPost ? (
+            <a 
+              href={`/posts/${encodeURIComponent(prevPost.slug)}`}
+              class="flex-1 min-w-0 bg-white dark:bg-[#1c1b1a] hover:bg-[#f4efe6] dark:hover:bg-[#242220] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] px-4 py-3 rounded-sm shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-200 flex items-center gap-3 group text-left"
+            >
+              <span class="text-[#9e2a2b] dark:text-[#d9534f] group-hover:-translate-x-1 transition-transform shrink-0 font-extrabold">❮</span>
+              <div class="min-w-0 flex-1">
+                <div class="text-[9px] uppercase font-black tracking-widest text-neutral-400 mb-0.5">{i18nConfig.post.prevPost}</div>
+                <p class="text-xs sm:text-sm font-black text-neutral-800 dark:text-neutral-200 truncate">{prevPost.title}</p>
+              </div>
+            </a>
+          ) : (
+            <div class="hidden sm:block flex-1 border-3 border-dashed border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 px-4 py-3 rounded-sm text-center text-xs font-black text-neutral-400 dark:text-neutral-500 bg-white/30 dark:bg-white/5">
+              {i18nConfig.post.noMorePrev}
+            </div>
+          )}
+
+          {nextPost ? (
+            <a 
+              href={`/posts/${encodeURIComponent(nextPost.slug)}`}
+              class="flex-1 min-w-0 bg-white dark:bg-[#1c1b1a] hover:bg-[#f4efe6] dark:hover:bg-[#242220] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] px-4 py-3 rounded-sm shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-200 flex items-center justify-between gap-3 group text-right"
+            >
+              <div class="min-w-0 flex-1">
+                <div class="text-[9px] uppercase font-black tracking-widest text-neutral-400 mb-0.5">{i18nConfig.post.nextPost}</div>
+                <p class="text-xs sm:text-sm font-black text-neutral-800 dark:text-neutral-200 truncate">{nextPost.title}</p>
+              </div>
+              <span class="text-[#9e2a2b] dark:text-[#d9534f] group-hover:translate-x-1 transition-transform shrink-0 font-extrabold">❯</span>
+            </a>
+          ) : (
+            <div class="hidden sm:block flex-1 border-3 border-dashed border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 px-4 py-3 rounded-sm text-center text-xs font-black text-neutral-400 dark:text-neutral-500 bg-white/30 dark:bg-white/5">
+              {i18nConfig.post.noMoreNext}
+            </div>
+          )}
+        </div>
+
+        {/* Waline Comments */}
+        <WalineComment client:idle />
+      </div>
+
+      {/* Left Sidebar - AFTER main content in DOM for SEO */}
+      <aside class="hidden lg:flex w-[260px] shrink-0 flex-col gap-6 sticky top-[100px] lg:order-1">
+        <LeftSidebar posts={allPosts.map(p => ({ slug: p.slug, title: p.title, date: p.date, description: p.description }))} tags={allTags} showTags={false} />
+      </aside>
+
+      {/* Right Desktop Sticky TOC Side Menu */}
+      <div class="hidden lg:block w-[260px] shrink-0 sticky top-[100px] z-10 self-start lg:order-3">
+        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-5 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm max-h-[calc(100vh-120px)] flex flex-col">
+          <h3 class="font-black text-[#1a1a1a] dark:text-[#e8e6e3] text-lg mb-4 flex items-center gap-2 shrink-0 font-serif">
+            {i18nConfig.post.tocTitle}
+          </h3>
+          {toc.length === 0 ? (
+            <p class="text-sm text-neutral-400 font-medium shrink-0">{i18nConfig.post.tocEmpty}</p>
+          ) : (
+            <div id="toc-container" class="overflow-y-auto pr-2 custom-scrollbar flex-1 relative">
+              <ul class="space-y-2 text-sm font-medium relative">
+                {toc.map((item, idx) => (
+                  <li 
+                    data-id={item.id}
+                    class="transition-all"
+                    style={{ paddingLeft: `${(item.level - minTocLevel) * 12}px` }}
+                  >
+                    <a 
+                      href={`#${item.id}`} 
+                      class="toc-nav-link block py-1 hover:text-[#9e2a2b] dark:hover:text-[#d9534f] hover:underline transition-colors line-clamp-1 border-l-2 pl-2 text-neutral-700 dark:text-neutral-300 border-transparent"
+                      data-id={item.id}
+                    >
+                      {item.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</Layout>
+
+<script>
+
+
+  function setupPostDetail() {
+    // Render image captions for images with alt text
+    function setupImageCaptions() {
+      const content = document.querySelector('.prose');
+      if (!content) return;
+      content.querySelectorAll('img[alt]').forEach(img => {
+        if (!img.alt || img.closest('figure')) return;
+        const p = img.closest('p');
+        if (!p || p.children.length !== 1) return;
+        const fig = document.createElement('figure');
+        const cap = document.createElement('figcaption');
+        cap.textContent = img.alt;
+        p.parentNode.replaceChild(fig, p);
+        fig.appendChild(img);
+        fig.appendChild(cap);
+      });
+    }
+
+    // Image viewing is provided by the shared local AppleLightbox in Layout.
+
+    // Enhance Code Blocks with Mac Style
+    function enhanceCodeBlocks() {
+      // Find all pre elements - Shiki puts language info on the pre tag usually
+      const codeBlocks = document.querySelectorAll('.prose pre');
+      codeBlocks.forEach(pre => {
+        if (pre.hasAttribute('data-enhanced')) return;
+        pre.setAttribute('data-enhanced', 'true');
+        
+        // Language detection - check data attributes first then classes
+        let language = pre.getAttribute('data-language') || 'code';
+        if (language === 'code') {
+          const match = pre.className.match(/language-(\w+)/);
+          if (match) language = match[1];
+        }
+        
+        // Create container
+        const container = document.createElement('div');
+        container.className = 'my-8 relative border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm overflow-hidden bg-[#1c1b1a] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] group animate-card-entrance';
+        
+        // Header
+        const header = document.createElement('div');
+        header.className = 'bg-[#f4efe6] dark:bg-[#242220] border-b-2 sm:border-b-3 border-[#1a1a1a] dark:border-[#e8e6e3] px-4 py-2 flex items-center justify-between select-none';
+        header.innerHTML = `
+          <div class="flex gap-2 items-center">
+            <div class="w-2.5 h-2.5 rounded-full bg-[#1a1a1a] dark:bg-[#e8e6e3] opacity-30"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-[#1a1a1a] dark:bg-[#e8e6e3] opacity-50"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-[#9e2a2b]"></div>
+          </div>
+          <div class="font-mono text-[10px] font-black text-[#1a1a1a] dark:text-[#e8e6e3] uppercase tracking-[0.2em] opacity-80">${language}</div>
+          <button class="copy-btn text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] transition-all p-1 border border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm bg-white dark:bg-[#1c1b1a] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:shadow-none translate-x-[-1px] translate-y-[-1px] hover:translate-x-0 hover:translate-y-0" title="复制代码">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          </button>
+        `;
+        
+        const copyBtn = header.querySelector('.copy-btn');
+        copyBtn.addEventListener('click', () => {
+          const codeText = pre.innerText;
+          navigator.clipboard.writeText(codeText).then(() => {
+            copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+            setTimeout(() => {
+              copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+            }, 2000);
+          });
+        });
+
+        // Content Wrapper
+        const content = document.createElement('div');
+        content.className = 'relative flex flex-col min-h-0';
+        
+        const scrollArea = document.createElement('div');
+        scrollArea.className = 'overflow-x-auto custom-scrollbar text-sm font-mono leading-relaxed';
+        
+        // Reparent
+        pre.parentNode.insertBefore(container, pre);
+        container.appendChild(header);
+        container.appendChild(content);
+        content.appendChild(scrollArea);
+        scrollArea.appendChild(pre);
+        
+        // Folding logic
+        const lines = pre.innerText.split('\n').filter(l => l.trim()).length;
+        if (lines > 40) {
+          scrollArea.classList.add('max-h-[600px]', 'transition-all', 'duration-500');
+          
+          const overlay = document.createElement('div');
+          overlay.className = 'absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#1c1b1a] via-[#1c1b1a]/90 to-transparent flex items-end justify-center pb-4 z-10 fold-overlay';
+          overlay.innerHTML = `
+            <button class="expand-btn bg-[#9e2a2b] border border-[#1a1a1a] dark:border-[#e8e6e3] text-white font-black px-4 py-1.5 flex items-center gap-2 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all text-xs rounded-sm uppercase tracking-wider scale-90">
+              展开代码 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+          `;
+          
+          content.appendChild(overlay);
+          
+          const expandBtn = overlay.querySelector('.expand-btn');
+          expandBtn.addEventListener('click', () => {
+            scrollArea.style.maxHeight = 'none';
+            overlay.classList.add('hidden');
+            
+            // Add collapse button at bottom
+            const footer = document.createElement('div');
+            footer.className = 'border-t-2 border-dashed border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 bg-[#1c1b1a]/50 p-2 flex justify-center collapse-footer';
+            footer.innerHTML = `
+              <button class="collapse-btn bg-white dark:bg-[#242220] border border-[#1a1a1a] dark:border-[#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] font-black px-4 py-1 flex items-center gap-2 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all text-[10px] rounded-sm uppercase tracking-wider">
+                收起代码 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+              </button>
+            `;
+            content.appendChild(footer);
+            footer.querySelector('.collapse-btn').addEventListener('click', () => {
+              scrollArea.style.maxHeight = '600px';
+              overlay.classList.remove('hidden');
+              footer.remove();
+              // Smooth scroll back to top of container if hidden
+              const rect = container.getBoundingClientRect();
+              if (rect.top < 0) {
+                window.scrollTo({
+                  top: window.scrollY + rect.top - 100,
+                  behavior: 'smooth'
+                });
+              }
+            });
+          });
+        }
+
+        // Apply clean styles to the original pre
+        pre.style.margin = '0';
+        pre.style.padding = '1.25rem';
+        pre.style.borderRadius = '0';
+        pre.style.backgroundColor = 'transparent';
+      });
+    }
+
+    setupImageCaptions();
+
+    enhanceCodeBlocks();
+    // Desktop TOC highlight via IntersectionObserver
+    const tocNavLinks = Array.from(document.querySelectorAll('.toc-nav-link'));
+    const articleHeadings = Array.from(document.querySelectorAll('.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6'));
+    let activeId = '';
+    let isNavigating = false;
+
+    articleHeadings.forEach(heading => {
+      heading.classList.add('group', 'hover:bg-yellow-100/50', 'transition-colors', 'cursor-pointer', 'relative', 'scroll-mt-28');
+    });
+
+    function updateTOCHighlight(id) {
+      if (!id || id === activeId) return;
+      activeId = id;
+
+      tocNavLinks.forEach(link => {
+        const dataId = link.getAttribute('data-id');
+        const isActive = dataId === id;
+        
+        if (isActive) {
+          link.classList.add('active-toc-link');
+          
+          const parentContainer = link.closest('.overflow-y-auto');
+          if (parentContainer) {
+            const containerHeight = parentContainer.clientHeight;
+            const itemOffsetTop = (link as HTMLElement).offsetTop;
+            const itemHeight = link.clientHeight;
+            const targetScroll = itemOffsetTop - (containerHeight / 2) + (itemHeight / 2);
+            
+            parentContainer.scrollTo({
+              top: targetScroll,
+              behavior: 'smooth'
+            });
+          }
+        } else {
+          link.classList.remove('active-toc-link');
+        }
+      });
+    }
+
+    // Use IntersectionObserver for performant detection
+    const observerOptions = {
+      rootMargin: '-10% 0px -80% 0px',
+      threshold: 0
+    };
+
+    const headingObserver = new IntersectionObserver((entries) => {
+      if (isNavigating) return;
+      
+      // Find the first heading that is currently intersecting our trigger zone
+      const visibleHeading = entries.find(e => e.isIntersecting);
+      if (visibleHeading) {
+        updateTOCHighlight(visibleHeading.target.id);
+      } else {
+        // Fallback: if no heading is in the zone, check which one is above it
+        const scrollPos = window.scrollY + 150;
+        let bestCandidate = '';
+        for (const heading of articleHeadings) {
+          if ((heading as HTMLElement).offsetTop <= scrollPos) {
+            bestCandidate = heading.id;
+          } else {
+            break;
+          }
+        }
+        if (bestCandidate) updateTOCHighlight(bestCandidate);
+      }
+    }, observerOptions);
+
+    // 断开旧的 observer 和 scroll 监听（View Transitions 重进文章页时避免重复注册）
+    const w = window as any;
+    if (w.__tocObserver) {
+      try { w.__tocObserver.disconnect(); } catch (_) {}
+      w.__tocObserver = null;
+    }
+    if (w.__tocScrollHandler) {
+      try { window.removeEventListener('scroll', w.__tocScrollHandler); } catch (_) {}
+      w.__tocScrollHandler = null;
+    }
+    w.__tocObserver = headingObserver;
+
+    articleHeadings.forEach(h => headingObserver.observe(h));
+
+    // Fallback scroll listener for cases where observer might be sluggish
+    let scrollTimeout: any;
+    const tocScrollHandler = () => {
+      if (isNavigating) return;
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const scrollPos = window.scrollY + 130;
+        let current = '';
+        for (const heading of articleHeadings) {
+          if ((heading as HTMLElement).offsetTop <= scrollPos) current = heading.id;
+          else break;
+        }
+        if (current) updateTOCHighlight(current);
+      }, 50);
+    };
+    w.__tocScrollHandler = tocScrollHandler;
+    window.addEventListener('scroll', tocScrollHandler, { passive: true });
+
+    // Initial detection
+    setTimeout(() => {
+      const scrollPos = window.scrollY + 130;
+      let current = '';
+      for (const heading of articleHeadings) {
+        if ((heading as HTMLElement).offsetTop <= scrollPos) current = heading.id;
+        else break;
+      }
+      if (current) updateTOCHighlight(current);
+    }, 200);
+
+    function setupLinksClick(links) {
+      links.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const id = link.getAttribute('data-id');
+          const targetEl = document.getElementById(id);
+          if (targetEl) {
+            isNavigating = true;
+            updateTOCHighlight(id);
+            
+            // Native smooth scroll to target
+            window.scrollTo({
+              top: targetEl.offsetTop - 100,
+              behavior: 'smooth'
+            });
+            
+            window.history.pushState(null, '', '#' + id);
+            setTimeout(() => { isNavigating = false; }, 1000);
+          }
+        });
+      });
+    }
+
+    setupLinksClick(tocNavLinks);
+  }
+
+  // Initial run
+  requestAnimationFrame(setupPostDetail);
+
+  // Re-run on page transitions (guard against duplicates)
+  if (!window._postDetailListenersInited) {
+    document.addEventListener('astro:page-load', () => requestAnimationFrame(setupPostDetail));
+    window._postDetailListenersInited = true;
+  }
+
+  /* ================= 文章历史（点开才拉分片） ================= */
+  function setupPostHistory() {
+    const box = document.getElementById('post-history');
+    if (!box || box.dataset.bound === '1') return;
+    box.dataset.bound = '1';
+
+    const head = box.querySelector('.hist-head');
+    const list = document.getElementById('post-history-list');
+    if (!head || !list) return;
+
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    const p2 = (v) => String(v).padStart(2, '0');
+    const fmt = (ts) => {
+      const d = new Date(ts);
+      return `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())} ${p2(d.getHours())}:${p2(d.getMinutes())}`;
+    };
+
+    // 一次最多露 5 条，剩下的点「显示更多」逐批展开，
+    // 改动多的文章（最多 24 次）不会一下铺出一大片
+    const PAGE = 5;
+    let allRows = [];
+    let shown = 0;
+    let loaded = false;
+    let loading = false;
+
+    function rowHtml(e, repo) {
+      return `<div class="hist-row">
+  <span class="hist-dot"></span>
+  <div class="hist-main">
+    <div class="hist-subject" title="${esc(e.subject)}">${esc(e.subject)}</div>
+    <div class="hist-meta">
+      <span>${fmt(e.ts)}</span>
+      <a class="hist-sha" href="https://github.com/${repo}/commit/${esc(e.sha)}" target="_blank" rel="noopener">${esc(e.sha.slice(0, 7))}</a>
+      <span class="hist-add">+${e.added}</span>
+      <span class="hist-del">-${e.removed}</span>
+    </div>
+  </div>
+</div>`;
+    }
+
+    function renderRows(repo) {
+      if (!allRows.length) {
+        list.innerHTML = '<p class="hist-msg">没有找到这篇文章的提交记录</p>';
+        return;
+      }
+      shown = Math.min(shown + PAGE, allRows.length);
+      const rest = allRows.length - shown;
+      list.innerHTML =
+        allRows.slice(0, shown).map((e) => rowHtml(e, repo)).join('') +
+        (rest > 0 ? `<button type="button" class="hist-more">显示更多（还有 ${rest} 次）</button>` : '');
+
+      const more = list.querySelector('.hist-more');
+      if (more) more.addEventListener('click', () => renderRows(repo));
+    }
+
+    async function load() {
+      if (loaded || loading) return;
+      loading = true;
+      list.innerHTML = '<p class="hist-msg">加载中…</p>';
+      try {
+        const r = await fetch(`/data/history/${box.dataset.shard}.json`, {
+          headers: { Accept: 'application/json' },
+          signal: AbortSignal.timeout(12000),
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const data = await r.json();
+        allRows = (data.files || {})[box.dataset.key] || [];
+        shown = 0;
+        renderRows(box.dataset.repo || '');
+        loaded = true;
+      } catch (err) {
+        list.innerHTML = '<p class="hist-msg">历史加载失败，请稍后重试</p>';
+      } finally {
+        loading = false;
+      }
+    }
+
+    head.addEventListener('click', () => {
+      const open = box.getAttribute('aria-expanded') === 'true';
+      box.setAttribute('aria-expanded', open ? 'false' : 'true');
+      if (!open) load();
+    });
+  }
+
+  requestAnimationFrame(setupPostHistory);
+  if (!window._postHistoryInited) {
+    document.addEventListener('astro:page-load', () => requestAnimationFrame(setupPostHistory));
+    window._postHistoryInited = true;
+  }
+</script>
+
+<style is:global>
+  .toc-nav-link.active-toc-link {
+    border-left-width: 3px;
+    border-color: #9e2a2b;
+    background-color: rgba(158, 42, 43, 0.08);
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+    color: #9e2a2b;
+    font-weight: 800;
+    transform: scale(1.01);
+  }
+  .dark .active-toc-link {
+    border-color: #d9534f;
+    background-color: rgba(217, 83, 79, 0.12);
+    color: #d9534f;
+  }
+  .prose h1:target, .prose h2:target, .prose h3:target, .prose h4:target {
+    background-color: rgba(158, 42, 43, 0.08);
+  }
+
+  /* ---------- 文章历史卡 ---------- */
+  .hist-head {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; padding: 0; border: 0; background: none;
+    font: inherit; color: inherit; text-align: left; cursor: pointer;
+  }
+  .hist-icon {
+    flex-shrink: 0;
+    display: grid; place-items: center;
+    width: 34px; height: 34px; font-size: 16px;
+    background: #f4efe6;
+    border: 2px solid #1a1a1a; border-radius: 3px;
+    box-shadow: 2px 2px 0 0 #1a1a1a;
+  }
+  .dark .hist-icon {
+    background: #242220;
+    border-color: #e8e6e3;
+    box-shadow: 2px 2px 0 0 #e8e6e3;
+  }
+  .hist-title { flex: 1; min-width: 0; }
+  .hist-label {
+    display: block;
+    font-size: 14px; font-weight: 900; color: #1a1a1a;
+  }
+  .dark .hist-label { color: #e8e6e3; }
+  .hist-sub {
+    display: block; margin-top: 1px;
+    font-size: 11px; font-weight: 700; color: #78716c;
+  }
+  .dark .hist-sub { color: #94a3b8; }
+  .hist-caret {
+    flex-shrink: 0;
+    font-size: 11px; font-weight: 900; color: #9e2a2b;
+    transition: transform .18s ease;
+  }
+  .dark .hist-caret { color: #d9534f; }
+  .hist[aria-expanded="true"] .hist-caret { transform: rotate(90deg); }
+
+  .hist-body { display: none; }
+  .hist[aria-expanded="true"] .hist-body { display: block; }
+
+  .hist-stats {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline;
+    margin-top: 12px; padding-top: 10px;
+    border-top: 1.5px dashed rgba(26, 26, 26, .2);
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 11px; font-weight: 900;
+  }
+  .dark .hist-stats { border-top-color: rgba(232, 230, 227, .2); }
+  .hist-add { color: #2e7d32; }
+  .hist-del { color: #c62828; }
+  .hist-since { font-weight: 700; color: #94a3b8; }
+
+  .hist-list {
+    margin-top: 10px;
+    display: flex; flex-direction: column; gap: 7px;
+  }
+
+  .hist-row {
+    display: flex; align-items: flex-start; gap: 9px;
+    padding: 7px 9px;
+    background: rgba(255, 255, 255, .7);
+    border: 1.5px solid rgba(26, 26, 26, .15);
+    border-radius: 3px;
+  }
+  .dark .hist-row { background: rgba(255, 255, 255, .04); border-color: rgba(232, 230, 227, .15); }
+
+  .hist-dot {
+    flex-shrink: 0; margin-top: 4px;
+    width: 8px; height: 8px; border-radius: 2px;
+    background: #1a1a1a; border: 1px solid #1a1a1a;
+  }
+  .dark .hist-dot { background: #e8e6e3; border-color: #e8e6e3; }
+  .hist-row:first-child .hist-dot { background: #9e2a2b; border-color: #9e2a2b; }
+  .dark .hist-row:first-child .hist-dot { background: #d9534f; border-color: #d9534f; }
+
+  .hist-main { flex: 1; min-width: 0; }
+  .hist-subject {
+    font-size: 12px; font-weight: 800; color: #1a1a1a;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .dark .hist-subject { color: #e8e6e3; }
+  .hist-meta {
+    display: flex; flex-wrap: wrap; gap: 7px; margin-top: 2px;
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 10px; font-weight: 800; color: #a8a29e;
+  }
+  .hist-sha {
+    color: #9e2a2b; text-decoration: none;
+    border-bottom: 1.5px solid rgba(158, 42, 43, .3);
+  }
+  .dark .hist-sha { color: #d9534f; border-bottom-color: rgba(217, 83, 79, .3); }
+  .hist-sha:hover { text-decoration: underline; }
+  .hist-msg {
+    padding: 14px 0; text-align: center;
+    font-size: 12px; font-weight: 800; color: #a8a29e;
+  }
+
+  .hist-more {
+    align-self: center;
+    margin-top: 2px;
+    padding: 5px 12px;
+    font-size: 11px; font-weight: 900; color: #1a1a1a;
+    background: #ffffff;
+    border: 1.5px solid #1a1a1a; border-radius: 3px;
+    box-shadow: 2px 2px 0 0 #1a1a1a;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s, background .15s;
+  }
+  .dark .hist-more {
+    color: #e8e6e3; background: #1c1b1a; border-color: #e8e6e3; box-shadow: 2px 2px 0 0 #e8e6e3;
+  }
+  .hist-more:hover { background: #9e2a2b; color: #ffffff; border-color: #9e2a2b; transform: translate(1px, 1px); box-shadow: 1px 1px 0 0 #1a1a1a; }
+</style>

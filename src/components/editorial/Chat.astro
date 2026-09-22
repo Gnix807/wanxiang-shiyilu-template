@@ -1,0 +1,100 @@
+---
+interface Props {
+  title?: string;
+  subtitle?: string;
+  kicker?: string;
+  location?: string;
+  date?: string;
+  statusText?: string;
+  finial?: string;
+  variant?: 'wechat' | 'qq';
+  className?: string;
+}
+
+const {
+  title = '访谈对话 · CONVERSATION',
+  subtitle,
+  kicker,
+  location,
+  date,
+  statusText = '对话记录',
+  finial,
+  variant = 'wechat',
+  className = ''
+} = Astro.props;
+
+const displayKicker = kicker ?? subtitle;
+---
+
+<div class={`im-chat-window my-8 rounded-lg overflow-hidden border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[5px_5px_0px_0px_#1a1a1a] dark:shadow-[5px_5px_0px_0px_#e8e6e3] bg-[#f5f5f7] dark:bg-[#191919] font-sans ${className}`}>
+  {/* 聊天顶栏（微信/QQ风格） */}
+  <div class="bg-[#ededed] dark:bg-[#242424] border-b-2 border-[#1a1a1a]/15 dark:border-[#e8e6e3]/15 px-3.5 sm:px-4 py-2.5 flex items-center justify-between select-none">
+    <div class="flex items-center gap-2 min-w-0">
+      {/* 返回箭头 */}
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-neutral-600 dark:text-neutral-300 shrink-0">
+        <path d="m15 18-6-6 6-6"/>
+      </svg>
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="font-black text-xs sm:text-sm text-[#1a1a1a] dark:text-[#e8e6e3] truncate font-sans">
+          {title}
+        </span>
+        {displayKicker && (
+          <span class="hidden sm:inline-block text-[10px] font-bold text-[#9e2a2b] dark:text-[#d9534f] bg-white dark:bg-[#1a1a1a] px-1.5 py-0.2 rounded-xs border border-[#9e2a2b]/30">
+            {displayKicker}
+          </span>
+        )}
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3 shrink-0 text-neutral-500 dark:text-neutral-400">
+      {location && <span class="text-[11px] font-mono hidden md:inline">{location}</span>}
+      <span class="font-mono font-black text-sm tracking-widest cursor-pointer select-none">···</span>
+    </div>
+  </div>
+
+  {/* 聊天内容画布 */}
+  <div class="p-3.5 sm:p-5 flex flex-col gap-2">
+    {date && (
+      <div class="flex justify-center my-1 select-none">
+        <span class="text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-sm bg-black/5 dark:bg-white/10 text-neutral-500 dark:text-neutral-400">
+          {date} {statusText ? `· ${statusText}` : ''}
+        </span>
+      </div>
+    )}
+
+    {/* 消息发言流 */}
+    <div class="flex flex-col">
+      <slot />
+    </div>
+  </div>
+
+  {/* 微信拟真输入底栏 */}
+  <div class="bg-[#ededed] dark:bg-[#242424] border-t-2 border-[#1a1a1a]/15 dark:border-[#e8e6e3]/15 px-3 sm:px-4 py-2 flex items-center gap-2 sm:gap-3 select-none text-neutral-500 dark:text-neutral-400">
+    {/* 语音图标 */}
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 hover:text-[#1a1a1a] dark:hover:text-white transition-colors cursor-pointer" aria-label="语音">
+      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+      <line x1="12" x2="12" y1="19" y2="22"/>
+    </svg>
+
+    {/* 模拟文本输入框 */}
+    <div class="flex-1 bg-white dark:bg-[#1a1a1a] rounded-md px-3 py-1.5 text-xs text-neutral-400 border border-black/10 dark:border-white/10 font-sans cursor-text">
+      发送消息...
+    </div>
+
+    {/* 表情图标 */}
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 hover:text-[#1a1a1a] dark:hover:text-white transition-colors cursor-pointer" aria-label="表情">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+      <line x1="9" x2="9.01" y1="9" y2="9"/>
+      <line x1="15" x2="15.01" y1="9" y2="9"/>
+    </svg>
+
+    {/* 加号更多图标 */}
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 hover:text-[#1a1a1a] dark:hover:text-white transition-colors cursor-pointer" aria-label="更多功能">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M8 12h8"/>
+      <path d="M12 8v8"/>
+    </svg>
+  </div>
+</div>

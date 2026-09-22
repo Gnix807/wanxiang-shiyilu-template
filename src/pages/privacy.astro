@@ -1,0 +1,16 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { siteConfig } from '../config/site';
+---
+<Layout title="隐私说明" description="模板默认功能与可选服务说明">
+  <article class="prose max-w-3xl mx-auto p-6 bg-white dark:bg-neutral-900 border-2 border-neutral-800 dark:border-neutral-200">
+    <h1>隐私说明</h1>
+    <p>这是模板默认说明。发布自己的站点前，请根据实际部署方式和启用的服务修改本页。</p>
+    <h2>默认设置</h2>
+    <p>模板默认不加载评论、访问统计、天气或个人账号数据服务。浏览器会使用本地存储保留主题偏好和部分界面状态。</p>
+    <h2>可选服务</h2>
+    <p>启用评论、统计或外部媒体后，应说明相应服务方、数据用途与联系渠道。外部媒体只有在文章中引用时才会出现。</p>
+    <h2>联系</h2>
+    <p>请将站点配置中的联系地址替换为自己的地址：{siteConfig.socials.email}</p>
+  </article>
+</Layout>

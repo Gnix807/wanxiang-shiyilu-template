@@ -1,0 +1,429 @@
+---
+interface Props {
+  title?: string;
+  date?: string;
+  page?: string;
+  type?: 'ruled' | 'grid' | 'clean';
+  paperType?: 'ruled' | 'grid' | 'clean';
+  holes?: boolean;
+  redMargin?: boolean;
+  hasRedMargin?: boolean;
+  stamp?: string;
+  badge?: string;
+  dateLabel?: string;
+  pageLabel?: string;
+  footerSeal?: string;
+  footerColophon?: string;
+  font?: 'notebook' | 'handwriting' | 'serif' | 'sans';
+  className?: string;
+}
+
+const {
+  title = '便签备忘 · MEMO',
+  date,
+  page = 'NO. 01',
+  type: propType,
+  paperType,
+  holes = true,
+  redMargin: propRedMargin,
+  hasRedMargin,
+  stamp: propStamp,
+  badge: propBadge,
+  dateLabel = 'DATE:',
+  pageLabel = 'PAGE:',
+  footerSeal = 'RECORDED · 备忘归档',
+  footerColophon = 'PAGINATION § VERIFIED',
+  font = 'notebook',
+  className = '',
+} = Astro.props;
+
+const rawType = (propType || paperType || 'ruled').toLowerCase();
+const type = (rawType === 'lined' || rawType === 'lines' || rawType === 'horizontal' || rawType === 'hengtiao') ? 'ruled' : rawType;
+const redMargin = propRedMargin ?? hasRedMargin ?? true;
+const stamp = propStamp || propBadge || (type === 'grid' ? 'GRID NOTE' : type === 'clean' ? 'MEMO' : 'RULED NOTE');
+---
+
+<div class={`editorial-notebook type-${type} ${holes ? 'has-holes' : ''} ${redMargin ? 'has-red-margin' : ''} ${className}`}>
+  <!-- 顶部复古牛皮布纸装订脊条 -->
+  <div class="notebook-spine" aria-hidden="true">
+    <span class="spine-stitch"></span>
+  </div>
+
+  <!-- 记事本页眉：标题、日期与页码 -->
+  <div class="notebook-header font-sans">
+    <div class="header-left">
+      <span class="notebook-stamp">{stamp}</span>
+      <span class="notebook-title">{title}</span>
+    </div>
+    <div class="header-right">
+      {date && (
+        <span class="header-field">
+          <span class="field-label">{dateLabel}</span>
+          <span class="field-value font-mono">{date}</span>
+        </span>
+      )}
+      {page && (
+        <span class="header-field">
+          <span class="field-label">{pageLabel}</span>
+          <span class="field-value font-mono">{page}</span>
+        </span>
+      )}
+    </div>
+  </div>
+
+  <!-- 活页打孔与书写纸面 -->
+  <div class="notebook-paper">
+    {holes && (
+      <div class="loose-leaf-holes" aria-hidden="true">
+        <span class="punch-hole"></span>
+        <span class="punch-hole"></span>
+        <span class="punch-hole"></span>
+      </div>
+    )}
+
+    <!-- 记事正文槽（与横线严格咬合对齐） -->
+    <div class={`notebook-content font-${font}`}>
+      <slot />
+    </div>
+  </div>
+
+  <!-- 页脚：微型红印泥签章与装订标牌 -->
+  <div class="notebook-footer font-sans" aria-hidden="true">
+    <span class="footer-seal">{footerSeal}</span>
+    <span class="footer-dots">················································</span>
+    <span class="footer-colophon font-mono">{footerColophon}</span>
+  </div>
+</div>
+
+<style>
+  .editorial-notebook {
+    position: relative;
+    margin: 36px 0;
+    text-indent: 0;
+    background: var(--paper-surface);
+    border: 2.5px solid var(--line-solid);
+    box-shadow: 4px 4px 0 var(--line-solid);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  /* 顶部典雅装订脊条 */
+  .notebook-spine {
+    height: 8px;
+    background: var(--press-red);
+    border-bottom: 2.5px solid var(--line-solid);
+    position: relative;
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .notebook-spine {
+    background: var(--press-red);
+  }
+
+  .spine-stitch {
+    position: absolute;
+    top: 2px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 6px,
+      rgba(255, 255, 255, 0.5) 6px,
+      rgba(255, 255, 255, 0.5) 10px
+    );
+  }
+
+  /* 页眉布局 */
+  .notebook-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 20px 10px;
+    background: var(--paper-contrast);
+    border-bottom: 2.5px solid var(--line-solid);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .notebook-stamp {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 900;
+    color: var(--press-red);
+    background: var(--press-red-soft);
+    border: 1.5px solid var(--press-red);
+    box-shadow: 1.5px 1.5px 0 var(--press-red);
+    padding: 1.5px 6px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .notebook-title {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: var(--ink-text);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 11.5px;
+  }
+
+  .header-field {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  .field-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--ink-light);
+    letter-spacing: 0.5px;
+  }
+
+  .field-value {
+    font-family: var(--font-mono);
+    font-weight: 800;
+    color: var(--ink-text);
+    border-bottom: 2px solid var(--line-solid);
+    padding: 0 4px;
+    min-width: 48px;
+    text-align: center;
+  }
+
+  /* 纸张容器与网格横线 */
+  .notebook-paper {
+    position: relative;
+    padding: 16px 20px 20px 20px;
+    background-color: var(--paper-surface);
+  }
+
+  /* 横线本模式（Ruled Pattern: 32px 严格行高水平条纹） */
+  .editorial-notebook.type-ruled .notebook-paper {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 31px,
+      rgba(44, 40, 37, 0.16) 31px,
+      rgba(44, 40, 37, 0.16) 32px
+    );
+    background-size: 100% 32px;
+    background-position: 0 16px;
+  }
+
+  /* 暗色模式下的横格线适配 */
+  :global(:is(.dark, [data-theme="dark"])) .editorial-notebook.type-ruled .notebook-paper {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 31px,
+      rgba(222, 217, 206, 0.15) 31px,
+      rgba(222, 217, 206, 0.15) 32px
+    );
+  }
+
+  /* 方格纸模式（Grid Pattern: 16px 网格，严格匹配 32px 两倍基线） */
+  .editorial-notebook.type-grid .notebook-paper {
+    background-image: 
+      linear-gradient(to right, rgba(44, 40, 37, 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(44, 40, 37, 0.08) 1px, transparent 1px);
+    background-size: 16px 16px;
+    background-position: 0 16px;
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .editorial-notebook.type-grid .notebook-paper {
+    background-image: 
+      linear-gradient(to right, rgba(222, 217, 206, 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(222, 217, 206, 0.08) 1px, transparent 1px);
+    background-size: 16px 16px;
+    background-position: 0 16px;
+  }
+
+  /* 经典红色左装订边线 */
+  .editorial-notebook.has-red-margin .notebook-paper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 48px;
+    width: 2.5px;
+    background-color: var(--press-red);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .editorial-notebook.has-red-margin .notebook-paper::before {
+    background-color: var(--press-red);
+  }
+
+  /* 活页打孔效果 */
+  .loose-leaf-holes {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 30px 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .punch-hole {
+    width: 14px;
+    height: 14px;
+    background-color: var(--paper-bg);
+    border: 2px solid var(--line-solid);
+    border-radius: 50%;
+    box-shadow: 1.5px 1.5px 0 var(--line-solid);
+  }
+
+  /* 记事正文排印排布 */
+  .notebook-content {
+    position: relative;
+    z-index: 2;
+    line-height: 32px;
+    font-size: 15.5px;
+    color: var(--ink-text);
+  }
+
+  .notebook-content.font-notebook {
+    font-family: var(--font-notebook);
+    letter-spacing: 0.25px;
+  }
+
+  .notebook-content.font-handwriting {
+    font-family: var(--font-handwriting);
+    letter-spacing: 0.25px;
+  }
+
+  .notebook-content.font-serif {
+    font-family: var(--font-serif);
+  }
+
+  .notebook-content.font-sans {
+    font-family: var(--font-sans);
+  }
+
+  /* 带打孔和红竖线时的边距缩进 */
+  .editorial-notebook.has-red-margin .notebook-content {
+    padding-left: 44px;
+  }
+
+  /* 正文内部排版细节优化 */
+  .editorial-notebook .notebook-content :global(p) {
+    margin-top: 0 !important;
+    margin-bottom: 32px !important; /* 严格空出一整格横线，保持网格韵律 */
+    text-indent: 0 !important;
+    line-height: 32px !important;
+  }
+
+  .editorial-notebook .notebook-content :global(p:last-child) {
+    margin-bottom: 0 !important;
+  }
+
+  .editorial-notebook .notebook-content :global(h4),
+  .editorial-notebook .notebook-content :global(strong) {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--ink-text);
+    line-height: 32px !important;
+    display: inline;
+  }
+
+  .editorial-notebook .notebook-content :global(ul),
+  .editorial-notebook .notebook-content :global(ol) {
+    margin-top: 0 !important;
+    margin-bottom: 32px !important;
+    padding-left: 20px !important;
+    line-height: 32px !important;
+  }
+
+  .editorial-notebook .notebook-content :global(li) {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    line-height: 32px !important;
+  }
+
+  /* 记事本底部微型封印 */
+  .notebook-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 20px;
+    background: var(--paper-bg);
+    border-top: 2px solid var(--line-solid);
+    font-size: 10.5px;
+    color: var(--ink-light);
+    gap: 8px;
+  }
+
+  /* 档案核实验讫红戳记 */
+  .footer-seal {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-weight: 900;
+    color: var(--press-red);
+    letter-spacing: 0.8px;
+    font-size: 9.5px;
+    padding: 2px 7px;
+    border: 1.5px solid var(--press-red);
+    background: var(--press-red-soft, rgba(158, 42, 43, 0.08));
+    border-radius: 2px;
+    box-shadow: 2px 2px 0 var(--press-red);
+    user-select: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .footer-seal:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--press-red);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .footer-seal {
+    background: var(--press-red-soft);
+    box-shadow: 2px 2px 0 var(--press-red);
+  }
+
+  .footer-dots {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    opacity: 0.4;
+    text-align: center;
+  }
+
+  .footer-colophon {
+    font-size: 9.5px;
+    letter-spacing: 0.5px;
+    opacity: 0.75;
+  }
+
+  @media (max-width: 640px) {
+    .loose-leaf-holes {
+      display: none;
+    }
+    .editorial-notebook.has-red-margin .notebook-paper::before {
+      left: 24px;
+    }
+    .editorial-notebook.has-red-margin .notebook-content {
+      padding-left: 18px;
+    }
+  }
+</style>

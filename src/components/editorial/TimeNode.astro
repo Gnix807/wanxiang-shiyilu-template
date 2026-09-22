@@ -1,0 +1,280 @@
+---
+interface Props {
+  date?: string;
+  time?: string;
+  tag?: string;
+  badge?: string;
+  status?: string;
+  title?: string;
+  subtitle?: string;
+  symbol?: string | boolean;
+  icon?: string;
+  className?: string;
+}
+
+const {
+  date: propDate,
+  time: propTime,
+  tag,
+  badge,
+  status,
+  title,
+  subtitle,
+  symbol = '§',
+  icon,
+  className = '',
+} = Astro.props;
+
+const displayDate = propDate ?? propTime;
+const displayTag = status ?? badge ?? tag;
+const showSymbol = symbol !== false;
+const displaySymbol = typeof symbol === 'string' ? symbol : '§';
+---
+
+<div class={`time-node ${className}`}>
+  <!-- 纵向中轴体系：双环蜡封印章与严格同轴中线 -->
+  <div class="node-axis" aria-hidden="true">
+    <span class="node-line"></span>
+    <div class="node-seal">
+      {icon ? (
+        <span class="seal-icon">{icon}</span>
+      ) : (
+        <span class="seal-core"></span>
+      )}
+    </div>
+  </div>
+
+  <!-- 实体档案记事卡签 -->
+  <div class="node-card">
+    {(displayDate || displayTag) && (
+      <div class="card-header font-sans">
+        {displayDate && (
+          <div class="date-chip">
+            {showSymbol && displaySymbol && <span class="date-symbol">{displaySymbol}</span>}
+            <span class="date-val">{displayDate}</span>
+          </div>
+        )}
+        {displayTag && (
+          <span class={`era-tag ${status ? 'is-status' : ''}`}>{displayTag}</span>
+        )}
+      </div>
+    )}
+
+    {title && <h4 class="card-title font-serif">{title}</h4>}
+    {subtitle && <p class="card-subtitle font-sans">{subtitle}</p>}
+
+    <div class="card-content font-serif">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style>
+  .time-node {
+    position: relative;
+    display: flex;
+    gap: 18px;
+    text-indent: 0;
+    padding-bottom: 26px;
+  }
+
+  .time-node:last-child {
+    padding-bottom: 6px;
+  }
+
+  /* 纵向中轴槽：固定宽度 24px，子元素绝对同轴水平居中 */
+  .node-axis {
+    position: relative;
+    width: 24px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* 垂直连接轴线：与印章共享 left: 50% + translateX(-50%) */
+  .node-line {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 14px;
+    bottom: -26px;
+    width: 2.5px;
+    background-color: var(--line-solid);
+    z-index: 1;
+  }
+
+  .time-node:last-child .node-line {
+    display: none;
+  }
+
+  /* 粗野主义 45° 菱形方桩节点 */
+  .node-seal {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    top: 9px;
+    width: 14px;
+    height: 14px;
+    box-sizing: border-box;
+    background: var(--press-red);
+    border: 2px solid var(--line-solid);
+    border-radius: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 2px 0 var(--line-solid);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s;
+  }
+
+  .seal-core {
+    width: 4px;
+    height: 4px;
+    background-color: var(--paper-bg);
+    border-radius: 0;
+    transition: transform 0.2s ease;
+  }
+
+  .time-node:hover .node-seal {
+    transform: translateX(-50%) rotate(90deg) scale(1.2);
+    background-color: var(--ink-text);
+  }
+
+  .time-node:hover .seal-core {
+    transform: scale(1.1);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .node-seal {
+    background: var(--press-red);
+    border-color: var(--line-solid);
+    box-shadow: 2px 2px 0 var(--line-solid);
+  }
+
+  /* 历史纪事卡签：粗边框与硬质阴影 */
+  .node-card {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    background: var(--paper-surface);
+    border: 2px solid var(--line-solid);
+    border-left: 5px solid var(--press-red);
+    box-shadow: 3.5px 3.5px 0 var(--line-solid);
+    border-radius: 0;
+    padding: 14px 18px;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .node-card:hover {
+    transform: translate(-1.5px, -1.5px);
+    box-shadow: 5px 5px 0 var(--line-solid);
+  }
+
+  /* 移除粗野尖角以保持整饬 */
+  .node-card::before {
+    display: none;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+    border-bottom: 2px solid var(--line-solid);
+    padding-bottom: 8px;
+  }
+
+  /* 纪年印签标 */
+  .date-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    background: var(--paper-bg);
+    border: 1.5px solid var(--line-solid);
+    padding: 2px 8px;
+    border-radius: 0;
+    box-shadow: 1.5px 1.5px 0 var(--line-solid);
+  }
+
+  .date-symbol {
+    color: var(--press-red);
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .date-val {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: var(--ink-text);
+  }
+
+  .seal-icon {
+    font-size: 9px;
+    line-height: 1;
+    color: #ffffff;
+    font-weight: 800;
+    transform: rotate(-45deg);
+  }
+
+  /* 纪元/时期朱砂印戳与状态 */
+  .era-tag {
+    color: var(--press-red);
+    background: var(--press-red-soft);
+    border: 1.5px solid var(--press-red);
+    box-shadow: 1.5px 1.5px 0 var(--press-red);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 2px 7px;
+    border-radius: 0;
+    text-transform: uppercase;
+  }
+
+  .era-tag.is-status {
+    color: #2b7a2d;
+    background: rgba(43, 122, 45, 0.08);
+    border: 1.5px solid rgba(43, 122, 45, 0.5);
+    box-shadow: 1.5px 1.5px 0 rgba(43, 122, 45, 0.5);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .era-tag.is-status {
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.12);
+    border-color: rgba(74, 222, 128, 0.5);
+    box-shadow: 1.5px 1.5px 0 rgba(74, 222, 128, 0.5);
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--ink-text);
+    margin: 0 0 6px 0;
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+  }
+
+  .card-subtitle {
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    margin: -2px 0 8px 0;
+    line-height: 1.4;
+  }
+
+  .card-content {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--ink-secondary);
+  }
+
+  .card-content :global(p) {
+    margin-bottom: 6px;
+    text-indent: 0 !important;
+  }
+
+  .card-content :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

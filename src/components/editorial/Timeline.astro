@@ -1,0 +1,175 @@
+---
+interface Props {
+  title?: string | boolean;
+  subtitle?: string;
+  kicker?: string | boolean;
+  badge?: string | boolean;
+  finial?: string | boolean;
+  footer?: string | boolean;
+  header?: boolean;
+  className?: string;
+}
+
+const {
+  title,
+  subtitle,
+  kicker,
+  badge,
+  finial,
+  footer,
+  header = true,
+  className = '',
+} = Astro.props;
+
+// 处理顶部小标：优先取 badge 或 kicker
+const rawKicker = badge ?? kicker;
+const showKicker = rawKicker !== false && header;
+const displayKicker = typeof rawKicker === 'string' && rawKicker ? rawKicker : '演进脉络 · TIMELINE';
+
+// 处理标题：支持 title={false} 隐藏，默认 '演进纪要 · TIMELINE'
+const showTitle = title !== false && header;
+const displayTitle = typeof title === 'string' && title ? title : (title !== false ? '演进纪要 · TIMELINE' : '');
+
+// 处理底部署名：支持 finial={false} 或 footer={false} 隐藏
+const rawFinial = footer ?? finial;
+const showFinial = rawFinial !== false;
+const displayFinial = typeof rawFinial === 'string' && rawFinial ? rawFinial : '— 演进脉络收录归档 · TIMELINE COMPLETED —';
+
+const showHeaderBlock = header && (showKicker || showTitle || subtitle);
+---
+
+<div class={`editorial-timeline ${className}`}>
+  {showHeaderBlock && (
+    <div class="timeline-header-block">
+      <div class="timeline-masthead">
+        {(showKicker || subtitle) && (
+          <div class="timeline-badge-row font-sans">
+            {showKicker && <span class="timeline-kicker">{displayKicker}</span>}
+            {subtitle && <span class="timeline-subtitle">{subtitle}</span>}
+          </div>
+        )}
+        {showTitle && displayTitle && <h3 class="timeline-title font-sans">{displayTitle}</h3>}
+        <div class="timeline-divider" aria-hidden="true">
+          <span class="divider-line"></span>
+          <span class="divider-mark">◆</span>
+          <span class="divider-line"></span>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <div class="timeline-stream">
+    <slot />
+  </div>
+
+  <!-- 编年史底部封印结符 -->
+  {showFinial && (
+    <div class="timeline-footer-finial font-sans" aria-hidden="true">
+      <span class="finial-dot"></span>
+      <span class="finial-text">{displayFinial}</span>
+      <span class="finial-dot"></span>
+    </div>
+  )}
+</div>
+
+<style>
+  .editorial-timeline {
+    margin: 40px 0;
+    text-indent: 0;
+    position: relative;
+  }
+
+  .timeline-header-block {
+    margin-bottom: 24px;
+  }
+
+  .timeline-masthead {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .timeline-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .timeline-kicker {
+    font-family: var(--font-mono);
+    font-weight: 900;
+    color: var(--press-red);
+    background: var(--press-red-soft);
+    padding: 1.5px 7px;
+    border-radius: 2px;
+    border: 1.5px solid var(--press-red);
+    box-shadow: 1.5px 1.5px 0 var(--press-red);
+    text-transform: uppercase;
+  }
+
+  .timeline-subtitle {
+    color: var(--ink-light);
+    font-weight: 600;
+  }
+
+  .timeline-title {
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+    color: var(--ink-text);
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+
+  .timeline-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+    color: var(--press-red);
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 2px;
+    background: var(--line-solid);
+  }
+
+  .divider-mark {
+    font-size: 10px;
+  }
+
+  .timeline-stream {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .timeline-footer-finial {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 10.5px;
+    letter-spacing: 2px;
+    color: var(--ink-light);
+    text-transform: uppercase;
+    user-select: none;
+  }
+
+  .finial-dot {
+    width: 5px;
+    height: 5px;
+    background: var(--press-red);
+    border-radius: 0;
+  }
+
+  .finial-text {
+    border-top: 2px solid var(--line-solid);
+    border-bottom: 2px solid var(--line-solid);
+    padding: 3px 12px;
+  }
+</style>

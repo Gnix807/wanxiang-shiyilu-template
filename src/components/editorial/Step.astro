@@ -1,0 +1,320 @@
+---
+interface Props {
+  title?: string;
+  subtitle?: string;
+  step?: string | number | boolean;
+  index?: string | number;
+  num?: string | number;
+  stage?: string;
+  phase?: string | boolean;
+  badge?: string | boolean;
+  kicker?: string | boolean;
+  tag?: string;
+  prefix?: string;
+  phasePrefix?: string;
+  status?: string;
+  date?: string;
+  className?: string;
+}
+
+const {
+  title,
+  subtitle,
+  step: propStep,
+  index: propIndex,
+  num: propNum,
+  stage,
+  phase,
+  badge,
+  kicker,
+  tag,
+  prefix,
+  phasePrefix,
+  status,
+  date,
+  className = '',
+} = Astro.props;
+
+// 1. 左侧印章序号处理
+const rawStep = propStep ?? propIndex ?? propNum;
+let formattedStep: string | undefined = undefined;
+const showStamp = rawStep !== false;
+
+if (rawStep !== undefined && rawStep !== null && rawStep !== false) {
+  const str = String(rawStep).trim();
+  if (/^\d+$/.test(str)) {
+    formattedStep = str.padStart(2, '0');
+  } else {
+    formattedStep = str;
+  }
+}
+
+// 2. 红色阶段小标签处理
+const hidePhase = phase === false || badge === false || kicker === false;
+const rawCustomPhase = phase ?? badge ?? kicker ?? tag ?? stage;
+const customPhaseText = (typeof rawCustomPhase === 'string' && rawCustomPhase.trim() !== '') ? rawCustomPhase.trim() : null;
+
+// 自定义前缀（如 prefix="步骤"）
+const localPrefix = phasePrefix ?? prefix;
+---
+
+<div class={`editorial-step-item ${className}`}>
+  <!-- 纵向轴线与工序印章 -->
+  <div class="step-axis font-mono">
+    <span class="step-line" aria-hidden="true"></span>
+    {showStamp && (
+      <div class="step-stamp" data-step={formattedStep}></div>
+    )}
+  </div>
+
+  <!-- 步骤工艺卡片 -->
+  <div class="step-card font-sans">
+    <div class="step-header">
+      {(!hidePhase || status || date) && (
+        <div class="step-meta font-mono">
+          {!hidePhase && (
+            <span class="step-phase">
+              {customPhaseText ? (
+                customPhaseText
+              ) : (
+                <span class="counter-phase" data-step={formattedStep} data-prefix={localPrefix}>
+                  {localPrefix || null}
+                </span>
+              )}
+            </span>
+          )}
+          {status && <span class="step-status">{status}</span>}
+          {date && <span class="step-date">{date}</span>}
+        </div>
+      )}
+      {title && <h4 class="step-title font-serif">{title}</h4>}
+      {subtitle && <p class="step-subtitle font-sans">{subtitle}</p>}
+    </div>
+    <div class="step-body font-serif">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style>
+  .editorial-step-item {
+    counter-increment: step-counter;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(36px, max-content) minmax(0, 1fr);
+    gap: 16px;
+    align-items: flex-start;
+    text-indent: 0;
+  }
+
+  .step-axis {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding-top: 2px;
+    user-select: none;
+    align-self: stretch;
+  }
+
+  .step-line {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 38px;
+    bottom: -20px;
+    width: 2.5px;
+    background: var(--line-solid);
+    z-index: 1;
+  }
+
+  .editorial-step-item:last-child .step-line {
+    display: none;
+  }
+
+  /* 工序序号标 */
+  .step-stamp {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 6px;
+    background: var(--paper-surface);
+    border: 2px solid var(--line-solid);
+    border-radius: 2px;
+    box-shadow: 2.5px 2.5px 0 var(--line-solid);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-text);
+    z-index: 2;
+    transition: all 0.15s ease;
+    user-select: none;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+
+  .step-stamp::before {
+    content: counter(step-counter, decimal-leading-zero);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--ink-text);
+    transition: color 0.15s ease;
+  }
+
+  .step-stamp[data-step]::before {
+    content: attr(data-step);
+  }
+
+  .editorial-step-item:hover .step-stamp {
+    background: var(--press-red-soft);
+    border-color: var(--press-red);
+    box-shadow: 3px 3px 0 var(--press-red);
+  }
+
+  .editorial-step-item:hover .step-stamp::before {
+    color: var(--press-red);
+  }
+
+  /* 步骤卡片 */
+  .step-card {
+    min-width: 0;
+    background: var(--paper-surface);
+    border: 2px solid var(--line-solid);
+    border-left: 5px solid var(--press-red);
+    box-shadow: 3.5px 3.5px 0 var(--line-solid);
+    border-radius: 2px;
+    padding: 16px 20px;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .editorial-step-item:hover .step-card {
+    transform: translate(-1.5px, -1.5px);
+    box-shadow: 5px 5px 0 var(--line-solid);
+  }
+
+  .step-header {
+    margin-bottom: 10px;
+  }
+
+  .step-meta {
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .step-phase {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+    color: var(--press-red);
+    text-transform: uppercase;
+    background: var(--press-red-soft);
+    padding: 1.5px 6px;
+    border: 1.5px solid var(--press-red);
+    display: inline-block;
+    border-radius: 2px;
+  }
+
+  .counter-phase::before {
+    content: attr(data-prefix);
+  }
+
+  .counter-phase:not([data-prefix])::before {
+    content: var(--step-prefix, "PHASE");
+  }
+
+  .counter-phase::after {
+    content: " " counter(step-counter, decimal-leading-zero);
+  }
+
+  .counter-phase[data-step]::after {
+    content: " " attr(data-step);
+  }
+
+  .step-status {
+    font-size: 10px;
+    font-weight: 700;
+    color: #2b7a2d;
+    background: rgba(43, 122, 45, 0.08);
+    border: 1px solid rgba(43, 122, 45, 0.25);
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .step-status {
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.12);
+    border-color: rgba(74, 222, 128, 0.3);
+  }
+
+  .step-date {
+    font-size: 10.5px;
+    color: var(--ink-light);
+    font-family: var(--font-mono);
+    margin-left: auto;
+  }
+
+  .step-title {
+    font-size: 16.5px;
+    font-weight: 800;
+    color: var(--ink-text);
+    margin: 0;
+    line-height: 1.4;
+    letter-spacing: -0.2px;
+  }
+
+  .step-subtitle {
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    margin: 4px 0 0 0;
+    line-height: 1.4;
+  }
+
+  .step-body {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--ink-secondary);
+  }
+
+  .step-body :global(p) {
+    margin-bottom: 8px !important;
+    text-indent: 0 !important;
+  }
+
+  .step-body :global(p:last-child) {
+    margin-bottom: 0 !important;
+  }
+
+  @media (max-width: 600px) {
+    .editorial-step-item {
+      grid-template-columns: minmax(30px, max-content) minmax(0, 1fr);
+      gap: 12px;
+    }
+
+    .step-stamp {
+      min-width: 30px;
+      height: 30px;
+      padding: 0 4px;
+    }
+
+    .step-stamp::before {
+      font-size: 12px;
+    }
+
+    .step-line {
+      top: 32px;
+    }
+
+    .step-card {
+      padding: 14px 16px;
+    }
+
+    .step-title {
+      font-size: 15px;
+    }
+  }
+</style>

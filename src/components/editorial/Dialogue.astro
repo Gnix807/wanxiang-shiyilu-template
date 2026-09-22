@@ -1,0 +1,199 @@
+---
+import { siteConfig } from '../../config/site';
+
+interface Props {
+  speaker?: string | boolean;
+  role?: string;
+  type?: 'q' | 'a' | 'interviewer' | 'interviewee' | 'neutral' | 'left' | 'right';
+  time?: string;
+  badge?: string;
+  sealChar?: string;
+  initial?: string;
+  avatar?: string;
+  variant?: 'wechat' | 'qq';
+  className?: string;
+}
+
+const {
+  speaker,
+  role,
+  type,
+  time,
+  badge,
+  sealChar,
+  initial,
+  avatar,
+  variant = 'wechat',
+  className = '',
+} = Astro.props;
+
+// 说话人名称处理：支持省略或自定义
+const rawSpeaker = typeof speaker === 'string' ? speaker : '';
+const cleanSpeaker = rawSpeaker.replace(/^【|】$/g, '').trim();
+
+// 判定左右对齐：作者/应答方居右（绿色/蓝色气泡），提问者/访客居左（白色气泡）
+const isRight =
+  type === 'a' ||
+  type === 'interviewee' ||
+  type === 'right' ||
+  (!type && /倪|博主|答|作者|主理|A|我/i.test(cleanSpeaker));
+
+// 头像文字兜底
+const displayInitial = sealChar ?? initial ?? (cleanSpeaker ? cleanSpeaker.slice(0, 1) : (isRight ? '我' : '客'));
+
+// 头像处理：右侧优先使用站点作者头像
+const resolvedAvatar = avatar || (isRight ? siteConfig.avatar : null);
+const hasHeader = (speaker !== false && cleanSpeaker) || role || badge || time;
+---
+
+<div class={`im-message-row flex flex-col w-full my-3 sm:my-3.5 ${className}`}>
+  {/* 说话人与身份（若存在，置于气泡上方，留出头像槽位边距） */}
+  {hasHeader && (
+    <div class={`im-header-row flex items-center gap-1.5 mb-1 px-0.5 text-xs text-neutral-500 dark:text-neutral-400 font-sans select-none ${
+      isRight 
+        ? 'flex-row-reverse mr-[46px] sm:mr-[52px]' 
+        : 'flex-row ml-[46px] sm:ml-[52px]'
+    }`}>
+      {cleanSpeaker && <span class="font-extrabold text-[#1a1a1a] dark:text-[#e8e6e3]">{cleanSpeaker}</span>}
+      {role && (
+        <span class="text-[10px] font-mono font-bold bg-black/5 dark:bg-white/10 px-1.5 py-0.2 rounded-xs border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 text-neutral-700 dark:text-neutral-200">
+          {role}
+        </span>
+      )}
+      {badge && (
+        <span class="text-[10px] bg-[#9e2a2b]/10 dark:bg-[#d9534f]/20 text-[#9e2a2b] dark:text-[#d9534f] font-mono font-black px-1.5 py-0.2 rounded-xs border border-[#9e2a2b] dark:border-[#d9534f] shadow-[1px_1px_0px_0px_#9e2a2b]">
+          {badge}
+        </span>
+      )}
+      {time && <span class="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">{time}</span>}
+    </div>
+  )}
+
+  {/* 消息主体：头像与气泡顶部平齐对齐 */}
+  <div class={`flex w-full gap-2.5 sm:gap-3 items-start ${isRight ? 'flex-row-reverse' : 'flex-row'}`}>
+    {/* 头像 */}
+    <div class="im-avatar shrink-0 select-none">
+      {resolvedAvatar ? (
+        <img 
+          src={resolvedAvatar} 
+          alt={cleanSpeaker} 
+          class="w-9 h-9 sm:w-10 sm:h-10 rounded-sm object-cover border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3]" 
+          loading="lazy"
+        />
+      ) : (
+        <div class={`w-9 h-9 sm:w-10 sm:h-10 rounded-sm flex items-center justify-center font-black text-sm font-mono border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] ${
+          isRight 
+            ? 'bg-[#9e2a2b] text-white' 
+            : 'bg-[#e2ded5] dark:bg-[#33312e] text-[#1a1a1a] dark:text-[#e8e6e3]'
+        }`}>
+          {displayInitial}
+        </div>
+      )}
+    </div>
+
+    {/* 聊天气泡 */}
+    <div class={`im-bubble-container relative max-w-[84%] sm:max-w-[78%] px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-sm text-sm sm:text-[14.5px] leading-relaxed break-words font-sans border-2 border-[#1a1a1a] dark:border-[#e8e6e3] ${
+      isRight
+        ? variant === 'qq'
+          ? 'bg-[#12b7f5] dark:bg-[#0288d1] text-white im-bubble-right im-qq-right'
+          : 'bg-[#95ec69] dark:bg-[#2b7a2d] text-[#111111] dark:text-[#ffffff] im-bubble-right im-wechat-right'
+        : 'bg-white dark:bg-[#2c2c2c] text-[#1a1a1a] dark:text-[#e8e6e3] im-bubble-left'
+    }`}>
+      {/* 气泡小凸起尖角（带2px边框与硬质阴影联动） */}
+      {isRight ? (
+        <svg class="im-bubble-tail tail-right" viewBox="0 0 8 14" fill="none" aria-hidden="true">
+          <path d="M 0 0 L 7 7 L 0 14" stroke="currentColor" stroke-width="2" stroke-linejoin="round" class="tail-path" />
+          <rect x="-2" y="-1" width="3" height="16" class="tail-fill" />
+        </svg>
+      ) : (
+        <svg class="im-bubble-tail tail-left" viewBox="0 0 8 14" fill="none" aria-hidden="true">
+          <path d="M 8 0 L 1 7 L 8 14" stroke="currentColor" stroke-width="2" stroke-linejoin="round" class="tail-path" />
+          <rect x="7" y="-1" width="3" height="16" class="tail-fill" />
+        </svg>
+      )}
+
+      <div class="im-bubble-content font-sans">
+        <slot />
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* 统一全局硬质投影：通过 drop-shadow 作用于气泡矩形与尖角合并轮廓 */
+  .im-bubble-container {
+    filter: drop-shadow(2.5px 2.5px 0 #1a1a1a);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .im-bubble-container {
+    filter: drop-shadow(2.5px 2.5px 0 #e8e6e3);
+  }
+
+  /* 气泡尖角容器与定位 */
+  .im-bubble-tail {
+    position: absolute;
+    top: 10px;
+    width: 8px;
+    height: 14px;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  .tail-left {
+    left: -7px;
+  }
+
+  .tail-right {
+    right: -7px;
+  }
+
+  /* 描边颜色始终与边框一致 */
+  .tail-path {
+    stroke: #1a1a1a;
+  }
+  :global(:is(.dark, [data-theme="dark"])) .tail-path {
+    stroke: #e8e6e3;
+  }
+
+  /* 左侧气泡填充色 */
+  .im-bubble-left .tail-path,
+  .im-bubble-left .tail-fill {
+    fill: #ffffff;
+  }
+  :global(:is(.dark, [data-theme="dark"])) .im-bubble-left .tail-path,
+  :global(:is(.dark, [data-theme="dark"])) .im-bubble-left .tail-fill {
+    fill: #2c2c2c;
+  }
+
+  /* 微信右侧绿色气泡填充色 */
+  .im-wechat-right .tail-path,
+  .im-wechat-right .tail-fill {
+    fill: #95ec69;
+  }
+  :global(:is(.dark, [data-theme="dark"])) .im-wechat-right .tail-path,
+  :global(:is(.dark, [data-theme="dark"])) .im-wechat-right .tail-fill {
+    fill: #2b7a2d;
+  }
+
+  /* QQ右侧蓝色气泡填充色 */
+  .im-qq-right .tail-path,
+  .im-qq-right .tail-fill {
+    fill: #12b7f5;
+  }
+  :global(:is(.dark, [data-theme="dark"])) .im-qq-right .tail-path,
+  :global(:is(.dark, [data-theme="dark"])) .im-qq-right .tail-fill {
+    fill: #0288d1;
+  }
+
+  /* 消除正文在聊天气泡中的巨幅行距与底边距 */
+  .im-bubble-content :global(p) {
+    margin-top: 0 !important;
+    margin-bottom: 6px !important;
+    line-height: 1.65 !important;
+    text-indent: 0 !important;
+  }
+
+  .im-bubble-content :global(p:last-child) {
+    margin-bottom: 0 !important;
+  }
+</style>

@@ -1,0 +1,453 @@
+---
+import { parsePoetry } from '../../utils/poetry';
+interface Props {
+  title?: string;
+  author?: string;
+  note?: string;
+  seal?: string;
+  kicker?: string;
+  authorLabel?: string;
+  noteLabel?: string;
+  variant?: 'slip' | 'scroll' | 'broadside';
+  columns?: 1 | 2 | '1' | '2' | 'auto';
+  cols?: 1 | 2 | '1' | '2' | 'auto';
+  className?: string;
+}
+
+const {
+  title,
+  author,
+  note,
+  seal = '墨痕',
+  kicker = '现代诗文 · POETRY & VERSE',
+  authorLabel = '〔作者〕',
+  noteLabel = '附注：',
+  variant = 'slip',
+  columns: propColumns,
+  cols: propCols,
+  className = '',
+} = Astro.props;
+
+const columns = propColumns ?? propCols ?? 'auto';
+
+let rawSlot = '';
+if (Astro.slots.has('default')) {
+  rawSlot = await Astro.slots.render('default');
+}
+
+const normalizedCols: 1 | 2 | 'auto' =
+  columns === 2 || columns === '2' ? 2 : columns === 1 || columns === '1' ? 1 : 'auto';
+const parsedLines = parsePoetry(rawSlot, normalizedCols, title);
+---
+
+<figure class={`editorial-poetry-card variant-${variant} ${className}`}>
+  <!-- 四角古典折角花纹 (Corner Brackets) -->
+  <span class="p-corner p-corner-tl" aria-hidden="true">⌜</span>
+  <span class="p-corner p-corner-tr" aria-hidden="true">⌝</span>
+  <span class="p-corner p-corner-bl" aria-hidden="true">⌞</span>
+  <span class="p-corner p-corner-br" aria-hidden="true">⌟</span>
+
+  <!-- 顶部雅集眉标与横额 -->
+  <div class="poetry-header font-sans">
+    <div class="poetry-kicker-bar" aria-hidden="true">
+      <span class="kicker-line"></span>
+      <span class="kicker-leaf">❦</span>
+      <span class="kicker-text font-mono">{kicker}</span>
+      <span class="kicker-leaf">❦</span>
+      <span class="kicker-line"></span>
+    </div>
+    {title && <h3 class="poetry-title font-serif">{title}</h3>}
+    {author && (
+      <div class="poetry-author font-sans">
+        <span class="author-label">{authorLabel}</span>
+        <strong class="author-name font-serif">{author}</strong>
+      </div>
+    )}
+  </div>
+
+  <!-- 诗笺雕版细线装饰分隔 -->
+  <div class="poetry-divider" aria-hidden="true">
+    <span class="divider-line"></span>
+    <span class="divider-ornament">✤</span>
+    <span class="divider-line"></span>
+  </div>
+
+  <!-- 核心诗文行气排印区（保证换行、字韵、行距与中轴对齐） -->
+  <div class="poetry-body font-serif">
+    <div class="poetry-content font-serif">
+      {parsedLines.length > 0 ? (
+        parsedLines.map((item) => (
+          item.isCouplet ? (
+            <div class="poetry-line is-couplet">
+              <span class="poetry-hemistich hemistich-left" set:html={item.left} />
+              <span class="poetry-hemistich hemistich-right" set:html={item.right} />
+            </div>
+          ) : (
+            <div class="poetry-line is-single">
+              <span class="poetry-hemistich" set:html={item.text} />
+            </div>
+          )
+        ))
+      ) : (
+        <slot />
+      )}
+    </div>
+  </div>
+
+  <!-- 诗末文人题跋与金石朱砂印章 -->
+  {(note || seal) && (
+    <figcaption class="poetry-footer font-sans">
+      <div class="poetry-note font-serif">
+        {note && (
+          <>
+            <span class="note-tag">{noteLabel}</span>
+            <span class="note-text">{note}</span>
+          </>
+        )}
+      </div>
+      {seal && (
+        <div class="poetry-seal font-serif" title={`印戳：${seal}`} aria-label={`印戳：${seal}`}>
+          <span class="seal-text">{seal}</span>
+        </div>
+      )}
+    </figcaption>
+  )}
+</figure>
+
+<style>
+  .editorial-poetry-card {
+    position: relative;
+    margin: 44px auto;
+    max-width: 580px;
+    box-sizing: border-box;
+    text-indent: 0 !important;
+    background: var(--paper-surface);
+    border: 2.5px solid var(--line-solid);
+    box-shadow: 4px 4px 0 var(--line-solid);
+    padding: 34px 44px 30px;
+    border-radius: 0;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .editorial-poetry-card:hover {
+    transform: translate(-1.5px, -1.5px);
+    box-shadow: 5.5px 5.5px 0 var(--line-solid);
+  }
+
+  /* 四角古典折角花纹 */
+  .p-corner {
+    position: absolute;
+    font-family: var(--font-serif);
+    font-size: 14px;
+    font-weight: 900;
+    color: var(--press-red);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.8;
+  }
+  .p-corner-tl { top: 11px; left: 11px; }
+  .p-corner-tr { top: 11px; right: 11px; }
+  .p-corner-bl { bottom: 11px; left: 11px; }
+  .p-corner-br { bottom: 11px; right: 11px; }
+
+  /* 顶部雅集眉标 */
+  .poetry-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+  }
+
+  .poetry-kicker-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .kicker-line {
+    flex: 1;
+    max-width: 60px;
+    height: 2px;
+    background: var(--line-solid);
+  }
+
+  .kicker-leaf {
+    color: var(--press-red);
+    font-size: 11px;
+  }
+
+  .kicker-text {
+    font-size: 10.5px;
+    letter-spacing: 1.8px;
+    color: var(--ink-secondary);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .poetry-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--ink-text);
+    letter-spacing: 3.5px;
+    margin: 0 0 6px 0;
+    text-align: center;
+    line-height: 1.35;
+  }
+
+  .poetry-author {
+    font-size: 12px;
+    color: var(--ink-secondary);
+    letter-spacing: 1.2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 14px;
+  }
+
+  .author-label {
+    color: var(--press-red);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .author-name {
+    color: var(--ink-text);
+    font-weight: 700;
+  }
+
+  /* 诗笺雕版双细线分隔 */
+  .poetry-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 auto 18px;
+    width: 62%;
+    user-select: none;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 2px;
+    background: var(--line-solid);
+  }
+
+  .divider-ornament {
+    color: var(--press-red);
+    font-size: 11px;
+  }
+
+  /* 诗行核心排印区 */
+  .poetry-body {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .poetry-content {
+    font-family: var(--font-serif);
+    font-size: 17.5px;
+    line-height: 2.35;
+    letter-spacing: 2px;
+    color: var(--ink-text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    font-style: normal;
+  }
+
+  .poetry-line {
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    line-height: 2.35;
+    margin: 0 0 4px 0;
+  }
+
+  .poetry-line:last-child {
+    margin-bottom: 0;
+  }
+
+  /* 对偶句 / 律诗 / 绝句中缝对称排版：两半句以中轴为基准向两侧展开，中缝与上方✤严格在同一垂线上 */
+  .poetry-line.is-couplet {
+    justify-content: center;
+    gap: 1.4em;
+  }
+
+  .poetry-line.is-couplet .hemistich-left {
+    flex: 1;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .poetry-line.is-couplet .hemistich-right {
+    flex: 1;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  /* 单句 / 自由诗自然居中 */
+  .poetry-line.is-single {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .poetry-line.is-single .poetry-hemistich {
+    text-align: center;
+    display: inline-block;
+  }
+
+  /* 兼容未匹配到的段落或默认slot */
+  .poetry-content :global(p) {
+    margin: 0 0 6px 0 !important;
+    padding: 0 !important;
+    text-indent: 0 !important;
+    white-space: pre-line !important;
+    line-height: 2.35 !important;
+    font-size: inherit;
+    font-style: normal;
+    text-align: center;
+  }
+
+  .poetry-content :global(p:last-child) {
+    margin-bottom: 0 !important;
+  }
+
+  /* 底部题跋与金石朱砂印章 */
+  .poetry-footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 14px;
+    border-top: 2px solid var(--line-solid);
+    margin-top: 18px;
+  }
+
+  .poetry-note {
+    font-size: 11.5px;
+    color: var(--ink-secondary);
+    letter-spacing: 0.8px;
+    line-height: 1.6;
+    text-align: left;
+    flex: 1;
+  }
+
+  .note-tag {
+    color: var(--press-red);
+    font-weight: 700;
+    margin-right: 2px;
+  }
+
+  /* 文人金石朱文压角闲章 (Literati Relief Seal) */
+  .poetry-seal {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--press-red);
+    color: var(--press-red);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0;
+    box-shadow: 
+      inset 0 0 0 1px var(--paper-surface, #faf6ed),
+      inset 0 0 0 2px var(--press-red),
+      2px 2px 0 var(--line-solid);
+    transform: rotate(-3deg);
+    user-select: none;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
+  }
+
+  .editorial-poetry-card:hover .poetry-seal {
+    transform: rotate(-0.5deg) scale(1.08);
+    filter: drop-shadow(0 2px 6px rgba(184, 39, 29, 0.3));
+  }
+
+  .seal-text {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    line-height: 1.05;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    font-family: var(--font-serif);
+    text-shadow: 0 0.5px 0.5px rgba(158, 42, 43, 0.15);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .poetry-seal {
+    box-shadow: 
+      inset 0 0 0 1px var(--paper-surface, #1e1b18),
+      inset 0 0 0 2px var(--press-red),
+      1px 1px 0 rgba(0, 0, 0, 0.45);
+    filter: brightness(1.08) contrast(1.05);
+  }
+
+  /* -------------------------------------------------------------
+     形态 2: 经折装/卷轴风 (Scroll Variant)
+     ------------------------------------------------------------- */
+  .variant-scroll {
+    border-top: 4px solid #8c4b37;
+    border-bottom: 4px solid #8c4b37;
+    box-shadow: var(--shadow-paper);
+  }
+
+  /* -------------------------------------------------------------
+     形态 3: 大报诗文专栏特刊 (Broadside Variant)
+     ------------------------------------------------------------- */
+  .variant-broadside {
+    max-width: 660px;
+    border: 2px solid var(--line-solid);
+    padding: 34px 44px 26px;
+  }
+
+  /* 响应式微调 */
+  @media (max-width: 640px) {
+    .editorial-poetry-card {
+      padding: 22px 18px 18px;
+      margin: 32px 0;
+      outline-offset: -5px;
+    }
+
+    .p-corner-tl { top: 8px; left: 8px; }
+    .p-corner-tr { top: 8px; right: 8px; }
+    .p-corner-bl { bottom: 8px; left: 8px; }
+    .p-corner-br { bottom: 8px; right: 8px; }
+
+    .poetry-title {
+      font-size: 19px;
+      letter-spacing: 2px;
+    }
+
+    .poetry-content {
+      font-size: 15px;
+      line-height: 2.15;
+      letter-spacing: 1.2px;
+    }
+
+    .poetry-line.is-couplet {
+      gap: 1.1em;
+    }
+
+    .poetry-footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .poetry-seal {
+      align-self: flex-end;
+    }
+  }
+</style>

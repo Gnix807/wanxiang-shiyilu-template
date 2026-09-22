@@ -1,0 +1,84 @@
+# Dependencies, generated output and caches
+node_modules/
+/dist/
+/build/
+/.astro/
+/.vite/
+/.cache/
+/.pnpm-store/
+*.tsbuildinfo
+
+# Local hosting state (keep wrangler.toml in version control)
+/.wrangler/
+/.vercel/
+/.netlify/
+
+# Credentials; example files must contain placeholders only
+.env*
+!.env.example
+!.env.*.example
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Test output, logs and editor/OS temporary files
+/coverage/
+/playwright-report/
+/test-results/
+*.log
+*.log.*
+*.bak
+*.bk
+*.backup
+*.orig
+*.rej
+*.tmp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+/.idea/
+
+# Local experiments, superseded copies and unpublished drafts
+/scratch/
+/_archive/
+/src/content/drafts/
+/src/pages/_archive/
+/docs/editorial-revisions/
+/docs/migrations/
+/docs/superpowers/
+/docs/local/
+
+# Local assistant/session state
+/.superpowers/
+/.zcode/
+/.codex/
+/.deepseek/
+
+# Site-generated verification files and private exports
+# IndexNow creates public/<key>.txt; retain normal public text assets explicitly.
+/public/*.txt
+!/public/robots.txt
+!/public/ads.txt
+!/public/humans.txt
+!/public/llms.txt
+!/public/LICENSE*.txt
+!/public/NOTICE*.txt
+/waline*.json
+/subscription/
+/HIT.txt
+
+# Existing local packaging output
+/xuhome.zip
+/np.exe
+*.spec
+
+# Deliberately kept: package.json, pnpm-lock.yaml, src/config/, published
+# src/content/posts/ and talks/, public fonts/images, and public documentation.
+# A public template needs reviewed example files, not more ignore rules.

@@ -1,0 +1,106 @@
+---
+interface Props {
+  title?: string;
+  subtitle?: string;
+  kicker?: string;
+  badge?: string;
+  prefix?: string;
+  phasePrefix?: string;
+  start?: number;
+  className?: string;
+}
+
+const {
+  title,
+  subtitle,
+  kicker,
+  badge,
+  prefix,
+  phasePrefix,
+  start = 1,
+  className = ''
+} = Astro.props;
+
+const displayKicker = kicker ?? subtitle ?? badge ?? '步骤指引 · WORKFLOW';
+const effectivePrefix = phasePrefix ?? prefix;
+const customStyle: Record<string, string> = {};
+if (effectivePrefix) {
+  customStyle['--step-prefix'] = `"${effectivePrefix}"`;
+}
+if (start !== 1) {
+  customStyle['counter-reset'] = `step-counter ${start - 1}`;
+}
+---
+
+<div class={`editorial-steps ${className}`} style={Object.keys(customStyle).length ? customStyle : undefined}>
+  {title && (
+    <div class="steps-masthead font-sans">
+      <span class="steps-badge">
+        <span class="badge-icon">§</span>
+        <span class="badge-text">{displayKicker}</span>
+      </span>
+      <h4 class="steps-title font-serif">{title}</h4>
+      <div class="steps-divider"></div>
+    </div>
+  )}
+  <div class="steps-flow">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .editorial-steps {
+    counter-reset: step-counter;
+    position: relative;
+    margin: 32px 0;
+    text-indent: 0;
+  }
+
+  .steps-masthead {
+    margin-bottom: 24px;
+  }
+
+  .steps-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 900;
+    color: var(--press-red);
+    background: var(--press-red-soft);
+    border: 1.5px solid var(--press-red);
+    box-shadow: 1.5px 1.5px 0 var(--press-red);
+    padding: 2px 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    border-radius: 2px;
+  }
+
+  .badge-icon {
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  .steps-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--ink-text);
+    margin: 0 0 10px;
+    line-height: 1.4;
+  }
+
+  .steps-divider {
+    height: 4px;
+    border-top: 2.5px solid var(--line-solid);
+    border-bottom: 1px solid var(--line-solid);
+    margin-bottom: 20px;
+  }
+
+  .steps-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+</style>

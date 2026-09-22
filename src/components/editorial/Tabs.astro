@@ -1,0 +1,286 @@
+---
+interface Props {
+  name?: string;
+  labels?: string[];
+  items?: string[];
+  defaultIndex?: number;
+  className?: string;
+}
+
+const {
+  name,
+  labels: propLabels,
+  items: propItems,
+  defaultIndex = 0,
+  className = ''
+} = Astro.props;
+
+const tabsId = 'tabs-' + Math.random().toString(36).slice(2, 8);
+let labels = [...(propLabels || propItems || [])];
+let slotContent = '';
+
+if (Astro.slots.has('default')) {
+  slotContent = await Astro.slots.render('default');
+}
+
+// 兼容命名插槽 slot="tab-1", slot="tab-2" 等
+for (let i = 1; i <= 20; i++) {
+  const slotName = `tab-${i}`;
+  if (Astro.slots.has(slotName)) {
+    const paneHtml = await Astro.slots.render(slotName);
+    const tabLabel = labels[i - 1] || `标签 0${i}`;
+    slotContent += `<div class="tab-pane ${i - 1 === defaultIndex ? 'active' : ''}" data-tab-pane data-tab-label="${tabLabel}" role="tabpanel">${paneHtml}</div>`;
+  }
+}
+
+if (labels.length === 0 && slotContent) {
+  const matches = [...slotContent.matchAll(/data-tab-label="([^"]+)"/g)];
+  labels = matches.map(m => m[1]);
+}
+
+// 确保初始默认首个 tab 面板带有 active 类（保障 SSR 即时渲染无闪烁）
+if (slotContent && !slotContent.includes('class="tab-pane active')) {
+  slotContent = slotContent.replace(/class="tab-pane(\s*)/, 'class="tab-pane active$1');
+}
+---
+
+<div
+  class={`editorial-tabs ${className}`}
+  id={tabsId}
+  data-tabs-container
+  data-default-index={defaultIndex}
+>
+  <!-- 顶部标签导航栏 -->
+  <div class="tabs-nav font-sans" role="tablist">
+    {name && (
+      <div class="tabs-masthead-badge">
+        <span class="badge-icon">§</span>
+        <span class="badge-name">{name}</span>
+      </div>
+    )}
+    {labels.map((label, idx) => (
+      <button
+        type="button"
+        role="tab"
+        aria-selected={idx === defaultIndex ? 'true' : 'false'}
+        class={`tab-btn ${idx === defaultIndex ? 'active' : ''}`}
+        data-tab-index={idx}
+      >
+        <span class="tab-idx">0{idx + 1}.</span>
+        <span class="tab-label">{label}</span>
+      </button>
+    ))}
+  </div>
+  <div class="tabs-panes">
+    <Fragment set:html={slotContent} />
+  </div>
+</div>
+
+<style>
+  .editorial-tabs {
+    margin: 32px 0;
+    border: 2.5px solid var(--line-solid);
+    background: var(--paper-surface);
+    box-shadow: 4px 4px 0 var(--line-solid);
+    border-radius: 2px;
+    text-indent: 0;
+    position: relative;
+  }
+
+  .tabs-nav {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 2.5px solid var(--line-solid);
+    background: var(--paper-contrast);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .tabs-nav {
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  .tabs-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tabs-masthead-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 16px;
+    background: var(--press-red);
+    color: #ffffff;
+    border-right: 2.5px solid var(--line-solid);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .badge-icon {
+    font-size: 13px;
+    line-height: 1;
+  }
+
+  .tab-btn,
+  :global(.tab-btn) {
+    border: none;
+    background: none;
+    padding: 10px 18px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--ink-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-right: 2px solid var(--line-solid);
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    position: relative;
+    user-select: none;
+  }
+
+  .tab-idx,
+  :global(.tab-idx) {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-light);
+    font-weight: 800;
+  }
+
+  .tab-btn:hover,
+  :global(.tab-btn:hover) {
+    color: var(--ink-text);
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .tab-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .tab-btn.active,
+  :global(.tab-btn.active) {
+    color: var(--ink-text);
+    background: var(--paper-surface);
+    font-weight: 900;
+  }
+
+  .tab-btn.active::after,
+  :global(.tab-btn.active::after) {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--press-red);
+  }
+
+  .tab-btn.active .tab-idx,
+  :global(.tab-btn.active .tab-idx) {
+    color: var(--press-red);
+  }
+
+  .tabs-panes {
+    padding: 22px 24px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--ink-text);
+  }
+
+  .tabs-panes :global(> p),
+  .tabs-panes :global(.tab-pane > p) {
+    margin-bottom: 12px;
+  }
+
+  .tabs-panes :global(> p:last-child),
+  .tabs-panes :global(.tab-pane > p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .tabs-panes :global(.tab-pane > :first-child) {
+    margin-top: 0;
+  }
+
+  .tabs-panes :global(.tab-pane > :last-child) {
+    margin-bottom: 0;
+  }
+
+  /* 初始在 JS 执行前只展示首个面板，避免闪烁或重叠 */
+  .editorial-tabs:not([data-tabs-ready="true"]) :global(.tab-pane:first-of-type) {
+    display: block !important;
+  }
+</style>
+
+<script>
+  function initAllTabs() {
+    document.querySelectorAll('[data-tabs-container]').forEach((container) => {
+      if (container.getAttribute('data-tabs-ready') === 'true') return;
+      container.setAttribute('data-tabs-ready', 'true');
+
+      const nav = container.querySelector(':scope > .tabs-nav') || container.querySelector('.tabs-nav');
+      const panes = Array.from(container.querySelectorAll('.tab-pane')).filter(
+        (pane) => pane.closest('[data-tabs-container]') === container
+      );
+      if (!nav || panes.length === 0) return;
+
+      const defaultIdx = Number(container.getAttribute('data-default-index') || 0);
+
+      // 如果 nav 内还没有 tab-btn（未显式传递 labels 属性，由 Tab 子元素的 data-tab-label 动态生成）
+      let buttons = Array.from(nav.querySelectorAll(':scope > .tab-btn'));
+      if (buttons.length === 0) {
+        panes.forEach((pane, idx) => {
+          const label = pane.getAttribute('data-tab-label') || `标签 0${idx + 1}`;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.role = 'tab';
+          btn.className = `tab-btn ${idx === defaultIdx ? 'active' : ''}`;
+          btn.setAttribute('data-tab-index', String(idx));
+          btn.setAttribute('aria-selected', idx === defaultIdx ? 'true' : 'false');
+          btn.innerHTML = `<span class="tab-idx">0${idx + 1}.</span><span class="tab-label">${label}</span>`;
+          nav.appendChild(btn);
+        });
+        buttons = Array.from(nav.querySelectorAll(':scope > .tab-btn'));
+      }
+
+      // 确保初始仅激活 defaultIdx 面板
+      panes.forEach((pane, idx) => {
+        if (idx === defaultIdx) {
+          pane.classList.add('active');
+        } else {
+          pane.classList.remove('active');
+        }
+      });
+
+      // 绑定标签切换交互
+      buttons.forEach((btn, index) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach((b) => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          panes.forEach((p) => p.classList.remove('active'));
+
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+          if (panes[index]) {
+            panes[index].classList.add('active');
+          }
+        });
+      });
+    });
+  }
+
+  // 页面加载和 Astro 页面生命周期时执行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAllTabs);
+  } else {
+    initAllTabs();
+  }
+  document.addEventListener('astro:page-load', initAllTabs);
+</script>

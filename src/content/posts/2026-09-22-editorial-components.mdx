@@ -1,0 +1,81 @@
+---
+title: 用 Editorial 组件排一篇文章
+description: 旁注、引文、图版、标签页和步骤的可编辑示例。
+date: '2026-09-22'
+tags: [MDX, 排版, 示例]
+category: 使用指南
+img: /images/editorial-sample.svg
+preserveHeadingLevels: true
+---
+
+import { Note, PullQuote, Sidenote, Plate, Tabs, Tab, Steps, Step, Notebook, Declassified, Kbd, Seal } from '../../components/editorial';
+
+## 留出阅读的空间
+
+组件可以用来突出少量需要停下来看的内容。旁注<Sidenote id="1" title="旁注示例">这是一条为演示旁注而写的补充说明。</Sidenote>适合放简短的背景解释。
+
+<Note type="info" title="示例说明" code={false} seal={false} font="serif">
+
+本文的文案和插图都是模板示例，方便你直接修改。
+
+</Note>
+
+<PullQuote source="模板示例">
+
+给文字留一点余地，也给读者留一点时间。
+
+</PullQuote>
+
+<Plate src="/images/editorial-sample.svg" alt="纸面几何示例图" fig="图 1" caption="随模板提供的原创 SVG 插图。" />
+
+## 在合适的地方使用交互
+
+<Tabs items={['开始写作', '排版约定']}>
+
+<Tab label="开始写作">
+
+文章放在 `src/content/posts/`，日常短记录放在 `src/content/talks/`。按 <Kbd>Ctrl</Kbd> + <Kbd>K</Kbd> 可以打开站内搜索。
+
+</Tab>
+
+<Tab label="排版约定">
+
+正文标题使用 H2，子标题使用 H3。中文引号可以使用「」和『』，中英文之间留出空格。
+
+</Tab>
+
+</Tabs>
+
+## 完成一次发布
+
+<Steps>
+
+<Step title="写好内容">
+
+填写 Frontmatter，加入正文和图片。
+
+</Step>
+
+<Step title="本地检查">
+
+运行 `pnpm build`，检查文章、链接和图片。
+
+</Step>
+
+</Steps>
+
+<Notebook title="写作备忘" font="serif" type="clean" footerColophon="模板示例">
+
+- 保留原始资料和必要的出处。
+- 标题与段落围绕内容组织。
+- 发布前完整读一遍文章。
+
+</Notebook>
+
+<Declassified summary="查看附注示例" code="" footerText="模板示例">
+
+较长的补充说明可以放在这里，读者需要时再展开。
+
+</Declassified>
+
+<Seal text="随笔" variant="intaglio" size="md" />

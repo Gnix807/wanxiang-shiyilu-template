@@ -1,0 +1,210 @@
+---
+interface Props {
+  color?: 'red' | 'ink' | 'muted' | 'amber' | 'green' | 'blue' | 'primary' | 'secondary';
+  variant?: 'solid' | 'outline' | 'subtle' | 'primary' | 'secondary' | 'pill';
+  size?: 'sm' | 'md';
+  text?: string;
+  className?: string;
+}
+
+let {
+  color = 'red',
+  variant = 'outline',
+  size = 'sm',
+  text,
+  className = '',
+} = Astro.props;
+
+let isPill = false;
+if (variant === 'primary') {
+  variant = 'solid';
+} else if (variant === 'secondary') {
+  variant = 'outline';
+  if (color === 'red') color = 'ink';
+} else if (variant === 'pill') {
+  variant = 'outline';
+  isPill = true;
+}
+
+if (color === 'primary') color = 'red';
+if (color === 'secondary') color = 'ink';
+---
+
+<span class={`editorial-badge color-${color} variant-${variant} size-${size} ${isPill ? 'is-pill' : ''} font-sans ${className}`}>{text ? text : <slot />}</span>
+
+<style>
+  .editorial-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    max-width: max-content;
+    text-indent: 0 !important;
+    font-family: var(--font-mono);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-transform: uppercase;
+    position: relative;
+    user-select: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    margin: 0 2px;
+  }
+
+  .editorial-badge :global(*) {
+    text-indent: 0 !important;
+  }
+
+  .size-sm {
+    font-size: 11px;
+    padding: 2px 7px;
+  }
+
+  .size-md {
+    font-size: 12.5px;
+    padding: 3.5px 9px;
+  }
+
+  .editorial-badge.is-pill {
+    border-radius: 9999px !important;
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+
+  .editorial-badge:hover {
+    transform: translate(-0.5px, -0.5px);
+  }
+
+  /* Outline 风格（传统金石双线印签） */
+  .variant-outline {
+    background: var(--paper-surface);
+    border: 1.5px solid currentColor;
+    border-radius: 0;
+    box-shadow: 1.5px 1.5px 0 currentColor;
+  }
+
+  .variant-outline:hover {
+    box-shadow: 2.5px 2.5px 0 currentColor;
+  }
+
+  .variant-outline.color-red {
+    color: var(--press-red);
+  }
+
+  .variant-outline.color-ink {
+    color: var(--ink-text);
+  }
+
+  .variant-outline.color-muted {
+    color: var(--ink-light);
+    box-shadow: 1.5px 1.5px 0 currentColor;
+  }
+
+  .variant-outline.color-green {
+    color: #245e28;
+  }
+
+  .variant-outline.color-blue {
+    color: #1e4c72;
+  }
+
+  .variant-outline.color-amber {
+    color: #925c0e;
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .variant-outline.color-green {
+    color: #48a24e;
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .variant-outline.color-blue {
+    color: #4a8cc7;
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .variant-outline.color-amber {
+    color: #e09935;
+  }
+
+  /* Solid 风格（纯色印签） */
+  .variant-solid {
+    border: 1.5px solid var(--line-solid);
+    border-radius: 0;
+    box-shadow: 2px 2px 0 var(--line-solid);
+  }
+
+  .variant-solid:hover {
+    box-shadow: 3px 3px 0 var(--line-solid);
+  }
+
+  .variant-solid.color-red {
+    background: var(--press-red);
+    border-color: var(--line-solid);
+    color: #ffffff !important;
+  }
+
+  .variant-solid.color-ink {
+    background: var(--ink-text);
+    border-color: var(--line-solid);
+    color: var(--paper-bg) !important;
+    box-shadow: 2px 2px 0 var(--press-red);
+  }
+
+  .variant-solid.color-green {
+    background: #245e28;
+    border-color: var(--line-solid);
+    color: #ffffff !important;
+  }
+
+  .variant-solid.color-blue {
+    background: #1e4c72;
+    border-color: var(--line-solid);
+    color: #ffffff !important;
+  }
+
+  .variant-solid.color-amber {
+    background: #925c0e;
+    border-color: var(--line-solid);
+    color: #ffffff !important;
+  }
+
+  /* Subtle 风格（典雅纸本浅印） */
+  .variant-subtle {
+    background: rgba(44, 40, 37, 0.04);
+    border: 1.5px solid currentColor;
+    border-radius: 0;
+    box-shadow: 1.5px 1.5px 0 currentColor;
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .variant-subtle {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .variant-subtle.color-red {
+    color: var(--press-red);
+    background: var(--press-red-soft);
+  }
+
+  .variant-subtle.color-ink {
+    color: var(--ink-secondary);
+  }
+
+  .variant-subtle.color-muted {
+    color: var(--ink-light);
+  }
+
+  .variant-subtle.color-green {
+    color: #245e28;
+    background: rgba(36, 94, 40, 0.08);
+  }
+
+  .variant-subtle.color-blue {
+    color: #1e4c72;
+    background: rgba(30, 76, 114, 0.08);
+  }
+
+  .variant-subtle.color-amber {
+    color: #925c0e;
+    background: rgba(146, 92, 14, 0.08);
+  }
+</style>

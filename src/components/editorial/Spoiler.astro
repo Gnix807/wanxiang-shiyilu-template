@@ -1,0 +1,73 @@
+---
+interface Props {
+  tip?: string;
+  className?: string;
+}
+
+const {
+  tip = '隐藏内容：点击显现',
+  className = '',
+} = Astro.props;
+---
+
+<span class={`editorial-spoiler ${className}`} title={tip} tabindex="0" role="button" onclick="this.classList.toggle('revealed')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('revealed')}"><span class="spoiler-inner"><slot /></span></span><style>
+  .editorial-spoiler {
+    display: inline;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    background: var(--ink-text);
+    color: transparent;
+    border-radius: 2px;
+    padding: 1.5px 6px;
+    margin: 0 2px;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid var(--ink-text);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    text-indent: 0 !important;
+    position: relative;
+    vertical-align: baseline;
+  }
+
+  .editorial-spoiler .spoiler-inner {
+    opacity: 0;
+    filter: blur(4px);
+    transition: opacity 0.2s ease, filter 0.2s ease;
+    color: var(--press-red);
+    font-weight: 700;
+  }
+
+  /* 悬停、键盘聚焦或触屏点击时解密显现 */
+  .editorial-spoiler:hover,
+  .editorial-spoiler:focus,
+  .editorial-spoiler:active,
+  .editorial-spoiler.revealed {
+    background: var(--press-red-soft);
+    color: var(--press-red);
+    border: 1px solid var(--press-red);
+    box-shadow: 1.5px 1.5px 0 var(--press-red);
+    user-select: text;
+  }
+
+  .editorial-spoiler:hover .spoiler-inner,
+  .editorial-spoiler:focus .spoiler-inner,
+  .editorial-spoiler:active .spoiler-inner,
+  .editorial-spoiler.revealed .spoiler-inner {
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .editorial-spoiler {
+    background: #383531;
+    border-color: #4a453e;
+  }
+
+  :global(:is(.dark, [data-theme="dark"])) .editorial-spoiler:hover,
+  :global(:is(.dark, [data-theme="dark"])) .editorial-spoiler:focus,
+  :global(:is(.dark, [data-theme="dark"])) .editorial-spoiler:active,
+  :global(:is(.dark, [data-theme="dark"])) .editorial-spoiler.revealed {
+    background: rgba(217, 83, 79, 0.15);
+    border-color: var(--press-red);
+    box-shadow: 1.5px 1.5px 0 var(--press-red);
+  }
+</style>
