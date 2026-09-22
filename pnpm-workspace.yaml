@@ -6,3 +6,5 @@ allowBuilds:
 
 overrides:
   'ansi-regex@5.0.0': 5.0.1
+  # v1.0.0 exposes a nested CJS default incompatible with the MDX compiler.
+  'style-to-js@^1.0.0': 1.1.21
