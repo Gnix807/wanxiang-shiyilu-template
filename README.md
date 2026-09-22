@@ -1,54 +1,112 @@
 # 万象拾遗录 · Astro 博客模板
 
-一套以纸面、墨色和朱红为基础的个人博客模板。支持 Markdown / MDX、文章归档、标签与分类、说说、RSS / Atom、站内搜索，以及旁注、引文、图版、标签页和步骤等 Editorial 组件。
+[English](README.en.md) · [部署文档](docs/deployment.md) · [组件示例](src/content/posts/2026-09-22-editorial-components.mdx) · [问题反馈](https://github.com/Gnix807/wanxiang-shiyilu-template/issues)
 
-模板包含两篇示例文章、一条示例说说和原创 SVG 占位图，不附带原博客的真实文章、个人照片、评论数据或历史记录。评论、访问统计、天气与个人账号资料请求默认关闭。
+基于 Astro 的个人博客模板，以纸面质感、衬线字体和朱红点缀构建阅读界面，适合发布技术文章、随笔与日常记录。支持 Markdown / MDX 写作，可部署至 Cloudflare Pages 等静态托管平台。
 
-![桌面预览](docs/images/preview-desktop.png)
+本项目基于 [ImUpXuu/xuhome](https://github.com/ImUpXuu/xuhome) 进行二次开发，并从「万象拾遗录」博客中整理为可复用模板。
 
-[查看手机预览](docs/images/preview-mobile.png) · [发布验证记录](docs/validation.md)
+![博客桌面端预览](docs/images/preview-desktop.png)
 
-## 参考项目与致谢
+[查看移动端预览](docs/images/preview-mobile.png)
 
-本模板基于 [ImUpXuu/xuhome](https://github.com/ImUpXuu/xuhome) 修改，它也是「万象拾遗录」博客搭建时的主要参考。感谢 [ImUpXuu](https://github.com/ImUpXuu) 开源博客源码。
+## 主要功能
 
-在上游项目的基础上，我们调整了纸面风格与文章排版，加入 Editorial MDX 组件，再将个人内容和配置替换为示例，整理成这个可复用的模板。上游署名和许可说明保留在仓库中。
+- **内容管理**：支持 Markdown / MDX 文章、说说、分类、标签和归档。
+- **Editorial 排版**：提供引文、旁注、图版、标签页、步骤、笔记和印章等组件。
+- **阅读体验**：支持站内搜索、主题切换和图片灯箱。
+- **内容订阅**：提供 RSS / Atom 订阅源。
+- **本地字体**：内置 Inter、Noto Serif SC、Noto Sans SC 和 JetBrains Mono，并附字体许可。
+- **静态部署**：提供 Cloudflare Pages 配置与 GitHub Actions 构建检查。
+
+模板采用 Astro、TypeScript、React、Svelte 和 Tailwind CSS。仓库包含两篇示例文章、一条示例说说及 SVG 占位插图；评论、访问统计、天气和个人账号资料请求默认关闭。
 
 ## 快速开始
 
-需要 Node.js 24 和 pnpm 11.2.2。
+### 环境要求
 
-1. 点击仓库上的 **Use this template** 创建自己的仓库，然后克隆到本地。
-2. 运行 `pnpm install --frozen-lockfile`。
-3. 修改 `src/config/site.ts` 和 `src/config/about.md`。
-4. 运行 `pnpm dev`，在本地查看。
-5. 运行 `pnpm build` 验证，`pnpm preview` 预览构建结果。
+使用 **Node.js 24** 和 **pnpm 11.2.2**，与仓库 CI 配置保持一致。依赖版本由 `pnpm-lock.yaml` 固定。
 
-`package.json` 中的 `private: true` 用来防止误发布到 npm，不影响 GitHub 模板使用。
+### 创建站点
 
-## 必须先修改的内容
+1. 点击仓库页面的 **Use this template**，创建自己的 GitHub 仓库。
+2. 克隆新仓库，进入项目根目录。
+3. 安装依赖并启动开发服务器：
 
-| 文件或设置 | 用途 |
+```sh
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+开发服务器地址以终端输出为准。完成站点配置和内容替换后，构建并预览：
+
+```sh
+pnpm build
+pnpm preview
+```
+
+构建产物位于 `dist/`。`package.json` 中的 `private: true` 用于防止将项目发布到 npm，不影响 GitHub 模板功能。
+
+### 常用命令
+
+| 命令 | 说明 |
 | --- | --- |
-| `src/config/site.ts` | 名称、作者、社交链接、封面、栏目与可选服务 |
-| `PUBLIC_SITE_URL` | 最终域名，例如 `https://your-blog.example`；不要使用默认的 example.com 上线 |
-| `src/config/about.md` | 关于页正文 |
-| `src/config/friends.json` | 友链，默认空列表 |
-| `public/avatar.svg` | 导航栏和作者头像 |
-| `public/robots.txt` | 如需添加 Sitemap 指令，填写自己的域名 |
-| `src/pages/privacy.astro` | 根据实际启用的服务填写隐私说明 |
-| `src/config/site.ts` 中的内容许可 | 选择适用于你新增文章的许可 |
+| `pnpm dev` | 启动本地开发服务器 |
+| `pnpm build` | 检查 MDX 样式转换与字体资源，生成提交索引并构建站点 |
+| `pnpm preview` | 预览已生成的静态站点 |
+| `pnpm lint` | 执行 TypeScript 类型检查 |
+| `pnpm check:assets` | 检查字体文件及许可文件是否完整 |
+| `pnpm check:mdx` | 检查 MDX 内联样式转换依赖 |
+| `pnpm commit-index` | 更新文章提交历史索引 |
 
-默认配置中的邮箱、名称和示例内容都只是占位值。真实密钥使用本地环境变量或平台 Secrets；不要放进 `src/config/`，也不要使用 `PUBLIC_` 前缀。
+## 项目结构
 
-## 写文章
+```text
+src/
+├── components/       # 页面与交互组件
+│   └── editorial/    # Editorial 排版组件
+├── config/           # 站点、作者、关于页与友链配置
+├── content/
+│   ├── posts/        # Markdown / MDX 文章
+│   └── talks/        # 说说
+├── data/             # 页面使用的结构化数据
+├── layouts/          # 页面布局
+├── pages/            # 路由与订阅源
+├── plugins/          # Markdown / MDX 处理插件
+└── styles/           # 全局样式与字体定义
+public/               # 图片、字体等静态资源
+scripts/              # 构建检查与数据生成脚本
+docs/                 # 部署与验证文档
+```
 
-文章位于 `src/content/posts/`，支持 `.md` 和 `.mdx`：
+## 站点配置
+
+首次使用时，请替换以下示例配置与资源：
+
+| 配置位置 | 说明 |
+| --- | --- |
+| [`src/config/site.ts`](src/config/site.ts) | 站点名称、作者资料、导航、社交链接、内容许可与可选服务 |
+| [`src/config/about.md`](src/config/about.md) | 关于页正文 |
+| [`src/config/friends.json`](src/config/friends.json) | 友链数据，默认为空列表 |
+| [`public/avatar.svg`](public/avatar.svg) | 站点与作者头像 |
+| `src/content/posts/`、`src/content/talks/` | 示例文章与说说 |
+| [`public/robots.txt`](public/robots.txt) | 爬虫规则；如添加 Sitemap 指令，应使用实际域名 |
+| [`src/pages/privacy.astro`](src/pages/privacy.astro) | 与实际启用服务对应的隐私说明 |
+
+参考 [`.env.example`](.env.example) 创建本地 `.env`，部署时在托管平台设置环境变量。上线前必须将 `PUBLIC_SITE_URL` 设置为站点的完整 HTTPS 地址，结尾不加 `/`，并替换配置中的名称、邮箱和 `example.com` 占位值。
+
+敏感变量不得使用 `PUBLIC_` 前缀。评论、统计等可选服务通过 `src/config/site.ts` 配置，启用时应同步更新隐私说明。
+
+## 内容编写
+
+### 文章与元数据
+
+文章存放在 `src/content/posts/`，支持 `.md` 和 `.mdx`。建议按 `YYYY-MM-DD-slug.mdx` 命名，并填写以下 Frontmatter：
 
 ```yaml
 ---
 title: 第一篇文章
-description: 一段简短的介绍。
+description: 一段简短的文章摘要。
 date: '2026-09-22'
 tags: [随笔]
 category: 生活
@@ -56,33 +114,62 @@ preserveHeadingLevels: true
 ---
 ```
 
-正文使用 `##`、`###` 组织标题。`preserveHeadingLevels: true` 保持源码标题层级，页面文章标题由布局提供。旧式从 H1 起排的文章可以不设置这个字段，由兼容插件自动降一级。
+文章标题由页面布局生成，正文从 H2（`##`）开始，子标题依次使用 H3、H4。`preserveHeadingLevels: true` 保留源文件标题层级；未设置该字段的旧文章沿用标题降一级的兼容规则。中文正文优先使用「」与『』。
 
-MDX 组件从 `../../components/editorial` 导入，参考示例文章 `2026-09-22-editorial-components.mdx`。普通 Markdown 图片和 `Plate` 都可使用自带的图片灯箱。
+### Editorial 组件
 
-说说位于 `src/content/talks/`，同样使用 Frontmatter 填写标题、日期和标签。
+MDX 文件在 Frontmatter 之后按需导入组件：
+
+```mdx
+import { PullQuote, Sidenote, Plate } from '../../components/editorial';
+
+<PullQuote source="示例">
+
+给文字留一点余地，也给读者留一点时间。
+
+</PullQuote>
+```
+
+完整用法见 [Editorial 示例文章](src/content/posts/2026-09-22-editorial-components.mdx) 与 [组件目录](src/components/editorial)。普通 Markdown 图片和 `Plate` 图版均支持图片灯箱。
+
+说说存放在 `src/content/talks/`，使用 Markdown 与 Frontmatter，可参考 [示例说说](src/content/talks/2026-09-22-hello.md)。
 
 ## 部署到 Cloudflare Pages
 
-- 框架选择 Astro，构建命令 `pnpm build`，输出目录 `dist`。
-- 使用 Node.js 24、pnpm 11.2.2。
-- 设置 `PUBLIC_SITE_URL` 为最终访问域名。
-- `wrangler.toml` 已采用 Pages 的输出目录配置，修改项目名后可用于自己的项目。
+在 Cloudflare Pages 中连接自己的 GitHub 仓库，并使用以下设置：
 
-详见 [部署说明](docs/deployment.md)。本仓库的 GitHub Actions 只执行构建检查，托管部署由你连接的 Pages 项目负责。
+| 配置项 | 值 |
+| --- | --- |
+| 生产分支 | `main` |
+| 框架预设 | Astro |
+| 构建命令 | `pnpm build` |
+| 输出目录 | `dist` |
+| Node.js | `24` |
+| pnpm | `11.2.2` |
+| `PUBLIC_SITE_URL` | 站点实际访问地址 |
 
-## 字体、历史和外部服务
+[`wrangler.toml`](wrangler.toml) 已配置静态输出目录，使用前应修改其中的项目名。GitHub Actions 执行构建检查并保存静态产物，自动部署由连接的 Pages 项目负责。
 
-四组字体已随仓库提供并附 OFL 许可；`pnpm check:assets` 检查 CSS 与文件是否一致，不依赖本机绝对路径。
+完整步骤及可选构建变量见 [部署文档](docs/deployment.md)。
 
-`src/data/commit-index.json` 是页面使用的结构化数据，不应删除。构建会从当前仓库生成提交索引，GitHub API 补充默认关闭。未配置账号的模板不会在构建时请求个人 Bilibili 资料。
+## 维护与贡献
 
-可选评论与统计在 `src/config/site.ts` 中配置。启用外部服务后，请相应更新隐私说明。
+欢迎通过 [Issues](https://github.com/Gnix807/wanxiang-shiyilu-template/issues) 报告问题或提出改进建议。报告问题时请提供复现步骤、运行环境及相关日志。
 
-本地撤下文章后，使用新的构建输出目录或自行清理旧输出，避免旧页面残留；CI 和 Pages 使用干净检出。
+代码变更提交 Pull Request 前，请运行 `pnpm lint` 和 `pnpm build`；涉及界面或文章排版的修改，请附桌面端与移动端截图。现有验证范围见 [验证记录](docs/validation.md)。
 
-## 来源与许可
+`src/data/commit-index.json` 为页面所需数据，构建时会按当前仓库更新，应保留在版本控制中。GitHub API 补充提交历史默认关闭。
 
-基于 [ImUpXuu/xuhome](https://github.com/ImUpXuu/xuhome) 修改，保留上游署名。程序采用 MIT；`src/types.ts` 保留 Apache-2.0 文件头，字体采用 OFL。详情见 [LICENSE](LICENSE)、[NOTICE.md](NOTICE.md) 和 [CONTENT_LICENSE.md](CONTENT_LICENSE.md)。
+本地撤下文章后，应在新的输出目录构建，或手动清理对应的旧产物，避免预览残留页面。CI 与 Pages 使用干净检出。
 
-已移除 Fancyapps UI 的接入，图片浏览使用模板内的灯箱组件。示例文章和原创 SVG 可按 MIT 修改使用；这不改变使用者自行添加内容的授权。
+## 项目来源与致谢
+
+[ImUpXuu/xuhome](https://github.com/ImUpXuu/xuhome) 是本项目的上游代码来源与主要设计参考。感谢 [ImUpXuu](https://github.com/ImUpXuu) 及上游贡献者的开源工作。
+
+本项目在上游基础上调整视觉样式与文章排版，增加 Editorial MDX 组件，并提供示例内容和 Cloudflare Pages 配置。原项目署名及第三方许可说明均予以保留。
+
+## 许可证
+
+程序代码采用 [MIT License](LICENSE)。部分文件与资源适用独立许可：`src/types.ts` 保留 Apache-2.0 许可声明，随附字体采用 SIL Open Font License。详见 [NOTICE.md](NOTICE.md)。
+
+模板自带的示例文章、说说、关于页与原创 SVG 按 MIT 许可提供。使用者新增内容的授权由其自行声明，具体说明见 [内容授权说明](CONTENT_LICENSE.md)。
