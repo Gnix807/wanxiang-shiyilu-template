@@ -1,5 +1,5 @@
 name: 🤝 申请友链
-description: 申请与 UpXuu 的博客交换友链
+description: 申请与「万象拾遗录」交换友情链接
 title: "[友链申请] "
 labels: ["友链申请"]
 body:
@@ -8,18 +8,19 @@ body:
       value: |
         # 🤝 友链申请
 
-        请填写以下信息，我们将在收到申请后尽快审核。
-        由于博主实在学业繁忙 action运行失败时可能不能及时手动添加 请见谅
+        本表单用于申请与「万象拾遗录」交换友情链接，申请公开保存在本仓库中。
+        请填写以下信息，站长审核后会手动更新友链页面。请勿在申请中填写密码、密钥等私密信息。
+
         ## 申请要求
         1. 在你的网站添加本站友链
         2. 内容符合法律法规
         3. 全球可联通
 
         ## 友链信息
-        - **名称**: UpXuu's blog
-        - **链接**: `https://example.com`
-        - **头像**: `https://example.com/avatar.svg`
-        - **描述**: 逐光而上
+        - **名称**: 万象拾遗录
+        - **链接**: `https://omnigazette.dev`
+        - **头像**: `https://omnigazette.dev/avatar.jpg`
+        - **描述**: 记录翻译实践、历史考据、现代 Web 排版与生活思考。
 
   - type: input
     id: name

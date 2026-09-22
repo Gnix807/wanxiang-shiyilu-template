@@ -156,6 +156,8 @@ import { PullQuote, Sidenote, Plate } from '../../components/editorial';
 
 欢迎通过 [Issues](https://github.com/Gnix807/wanxiang-shiyilu-template/issues) 报告问题或提出改进建议。报告问题时请提供复现步骤、运行环境及相关日志。
 
+本仓库同时接收[「万象拾遗录」的友链申请](https://github.com/Gnix807/wanxiang-shiyilu-template/issues/new?template=friend-request.yml)。使用模板创建自己的站点时，请将 `.github/ISSUE_TEMPLATE/friend-request.yml` 中的站点资料和友链页的申请入口改为自己的配置。
+
 代码变更提交 Pull Request 前，请运行 `pnpm lint` 和 `pnpm build`；涉及界面或文章排版的修改，请附桌面端与移动端截图。现有验证范围见 [验证记录](docs/validation.md)。
 
 `src/data/commit-index.json` 为页面所需数据，构建时会按当前仓库更新，应保留在版本控制中。GitHub API 补充提交历史默认关闭。

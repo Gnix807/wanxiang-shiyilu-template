@@ -156,6 +156,8 @@ See the [deployment guide](docs/deployment.md) for full instructions and optiona
 
 Use [Issues](https://github.com/Gnix807/wanxiang-shiyilu-template/issues) to report bugs or suggest improvements. Include reproduction steps, environment details and relevant logs when reporting a problem.
 
+This repository also accepts [friend-link requests for Wanxiang Shiyilu](https://github.com/Gnix807/wanxiang-shiyilu-template/issues/new?template=friend-request.yml). When creating your own site from this template, update the site details in `.github/ISSUE_TEMPLATE/friend-request.yml` and the application link on the friends page.
+
 Run `pnpm lint` and `pnpm build` before submitting code changes in a pull request. Include desktop and mobile screenshots for changes to the interface or article typography. The [validation record](docs/validation.md) documents the existing checks.
 
 Keep `src/data/commit-index.json` in version control: pages depend on this data, and the build updates it from the current repository. Supplementing commit history through the GitHub API is disabled by default.
