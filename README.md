@@ -8,6 +8,12 @@
 
 [查看手机预览](docs/images/preview-mobile.png) · [发布验证记录](docs/validation.md)
 
+## 参考项目与致谢
+
+本模板基于 [ImUpXuu/xuhome](https://github.com/ImUpXuu/xuhome) 修改，它也是「万象拾遗录」博客搭建时的主要参考。感谢 [ImUpXuu](https://github.com/ImUpXuu) 开源博客源码。
+
+在上游项目的基础上，我们调整了纸面风格与文章排版，加入 Editorial MDX 组件，再将个人内容和配置替换为示例，整理成这个可复用的模板。上游署名和许可说明保留在仓库中。
+
 ## 快速开始
 
 需要 Node.js 24 和 pnpm 11.2.2。

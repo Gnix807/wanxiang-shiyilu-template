@@ -9,3 +9,9 @@ Use GitHub's **Use this template** button to create your own repository. Edit `s
 For Cloudflare Pages use the Astro preset, build command `pnpm build`, output directory `dist`, Node.js 24 and pnpm 11.2.2. The included workflow only checks the build; it does not deploy to a server.
 
 See [the Chinese guide](README.md) and [deployment notes](docs/deployment.md). Code is MIT with the Apache-2.0 and OFL exceptions documented in [NOTICE.md](NOTICE.md). Original example content and SVGs are covered by [CONTENT_LICENSE.md](CONTENT_LICENSE.md). Upstream: [ImUpXuu/xuhome](https://github.com/ImUpXuu/xuhome).
+
+## Acknowledgements
+
+This template is based on [ImUpXuu/xuhome](https://github.com/ImUpXuu/xuhome), the main reference for the Wanxiang Shiyilu blog. Thanks to [ImUpXuu](https://github.com/ImUpXuu) for sharing the blog's source code.
+
+The blog adds paper-inspired styling, article typography and Editorial MDX components. This reusable template replaces its personal content and configuration with examples while retaining upstream attribution and license notices.
