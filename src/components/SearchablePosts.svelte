@@ -1,5 +1,4 @@
 <script lang="ts">
-  import PageViews from './PageViews.svelte';
   import { afterUpdate, onMount } from 'svelte';
   import { flip } from 'svelte/animate';
   import { fade } from 'svelte/transition';
@@ -481,7 +480,6 @@
             
             <div class="mt-2 md:mt-3.5 flex flex-wrap items-center gap-2 shrink-0">
               <span class="text-xs md:text-sm font-bold text-stone-500 dark:text-stone-400 shrink-0 font-mono">{post.date}</span>
-              <PageViews path={post.slug} />
               {#if post.category}
                 <a 
                   href={`/category/${post.category}`}

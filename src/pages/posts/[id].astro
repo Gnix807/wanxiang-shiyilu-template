@@ -8,7 +8,6 @@ import { calculateReadingTime } from '../../utils/readingTime';
 import { WalineComment } from '../../components/WalineComment';
 
 import ShareButton from '../../components/ShareButton.svelte';
-import PageViews from '../../components/PageViews.svelte';
 import LeftSidebar from '../../components/LeftSidebar.astro';
 import { commitIndex, historySummaryOf } from '../../utils/commitStats';
 
@@ -101,7 +100,6 @@ const relatedPosts = (() => {
               <div class="flex flex-wrap items-center gap-3.5 justify-center md:justify-start">
                 <span class="text-neutral-500 dark:text-neutral-400 font-extrabold font-mono text-sm">{post.date}</span>
                 <span class="text-neutral-500 dark:text-neutral-400 font-extrabold font-mono text-sm">/ {i18nConfig.post.readingTime} {readTime} {i18nConfig.post.readingTimeUnit}</span>
-                <PageViews path={post.slug} client:idle />
                 
                 {post.category && (
                   <a 

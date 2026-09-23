@@ -6,23 +6,13 @@
   let loading = true;
 
   onMount(async () => {
-    try {
-      // 浏览量统计接口已解绑原作者后端，可在配置自定义 API 后重新启用
-      views = 0;
-    } catch {}
+    // 浏览量统计接口已解绑原作者后端；如后续接入自定义 API 且 views > 0 时才会渲染
+    views = 0;
     loading = false;
   });
 </script>
 
-{#if loading}
-  <span class="inline-flex items-center gap-1 text-xs sm:text-sm font-extrabold text-slate-500 dark:text-slate-400 shrink-0">
-    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
-      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-    </svg>
-    <span class="opacity-50">--</span>
-  </span>
-{:else}
+{#if !loading && views > 0}
   <span class="inline-flex items-center gap-1 text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-400 shrink-0">
     <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
       <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

@@ -2,7 +2,6 @@
   import type { TalkItem } from '../utils/postsFetcher';
   import SvelteLightbox from './SvelteLightbox.svelte';
   import TalkShareModal from './TalkShareModal.svelte';
-  import PageViews from './PageViews.svelte';
   import { siteConfig } from '../config/site';
 
   export let talk: TalkItem;
@@ -87,7 +86,6 @@
          </div>
          <div class="flex items-center gap-2 mt-1 leading-none">
             <span class="text-xs text-slate-500 font-mono font-bold">{talk.date}</span>
-            <PageViews path={`/talk/${talk.slug}`} />
          </div>
       </div>
     </div>
