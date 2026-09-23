@@ -93,7 +93,7 @@ const relatedPosts = (() => {
     <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start w-full">
       
       {/* Main post body center panel */}
-      <div class="flex-1 min-w-0 w-full space-y-8 lg:order-2">
+      <div class="flex-1 min-w-0 w-full space-y-8 lg:order-2 relative z-20">
         <article class="article-paper bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-4 sm:p-6 md:p-10 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] sm:shadow-[8px_8px_0px_0px_#1a1a1a] dark:sm:shadow-[8px_8px_0px_0px_#e8e6e3] rounded-sm animate-card-entrance opacity-0">
           <div class="border-b-3 sm:border-b-4 border-[#1a1a1a] dark:border-[#e8e6e3] pb-6 mb-8 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
@@ -294,7 +294,7 @@ const relatedPosts = (() => {
       </div>
 
       {/* Left Sidebar - AFTER main content in DOM for SEO */}
-      <aside class="hidden lg:flex w-[260px] shrink-0 flex-col gap-6 sticky top-[100px] lg:order-1">
+      <aside class="hidden xl:flex w-[260px] shrink-0 flex-col gap-6 sticky top-[100px] xl:order-1 z-10">
         <LeftSidebar posts={allPosts.map(p => ({ slug: p.slug, title: p.title, date: p.date, description: p.description }))} tags={allTags} showTags={false} />
       </aside>
 
@@ -475,7 +475,8 @@ const relatedPosts = (() => {
     enhanceCodeBlocks();
     // Desktop TOC highlight via IntersectionObserver
     const tocNavLinks = Array.from(document.querySelectorAll('.toc-nav-link'));
-    const articleHeadings = Array.from(document.querySelectorAll('.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6'));
+    const articleHeadings = Array.from(document.querySelectorAll('.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6'))
+      .filter(heading => heading.id && !heading.hasAttribute('data-editorial-heading'));
     let activeId = '';
     let isNavigating = false;
 

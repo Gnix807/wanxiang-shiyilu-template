@@ -579,8 +579,8 @@ const isMusicPage = false; // 音乐页已归档禁用
         el.style.backgroundColor = isDark ? '#141413' : '#f6eddc';
         el.style.backgroundImage = isDark
           ? 'radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)'
-          : 'repeating-linear-gradient(0deg, rgba(112, 82, 42, 0.025) 0, rgba(112, 82, 42, 0.025) 1px, transparent 1px, transparent 4px), repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0, rgba(255, 255, 255, 0.12) 1px, transparent 1px, transparent 7px)';
-        el.style.backgroundSize = isDark ? '24px 24px' : 'auto';
+          : 'radial-gradient(circle, rgba(26,26,26,0.045) 1px, transparent 1px)';
+        el.style.backgroundSize = '24px 24px';
         el.style.backgroundPosition = '0 0';
         el.style.backgroundRepeat = 'repeat';
         el.style.backgroundAttachment = isArticle ? 'fixed' : 'scroll';
@@ -937,7 +937,8 @@ const isMusicPage = false; // 音乐页已归档禁用
       }
 
       if (wrapBtn) {
-        let isWrapped = false;
+        let isWrapped = contentBox?.classList.contains('whitespace-pre-wrap') || false;
+        if (pre) pre.style.whiteSpace = isWrapped ? 'pre-wrap' : 'pre';
         wrapBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           isWrapped = !isWrapped;
@@ -1009,6 +1010,7 @@ const isMusicPage = false; // 音乐页已归档禁用
       const trigger = target.closest('.footnote-trigger');
       if (trigger) {
         e.stopPropagation();
+        e.preventDefault();
         const anchor = trigger.closest('.footnote-anchor');
         if (anchor) {
           const isPinned = anchor.classList.contains('pinned');
@@ -1076,33 +1078,334 @@ const isMusicPage = false; // 音乐页已归档禁用
         adjustPopoverPlacement(anchor);
       }
     });
+
+    window.addEventListener('resize', () => {
+      document.querySelectorAll('.footnote-anchor.pinned').forEach(adjustPopoverPlacement);
+    });
   }
 
   function adjustPopoverPlacement(anchor) {
     const popover = anchor.querySelector('.footnote-popover');
     if (!popover) return;
-    const margin = 12;
+    const margin = 16;
     const arrow = popover.querySelector('.popover-arrow');
+    const articlePaper = anchor.closest('.article-paper') || anchor.closest('article');
     const pane = anchor.closest('#preview-scroll-wrap') || anchor.closest('.win7-window-body');
-    const bounds = pane?.getBoundingClientRect();
+    const bounds = pane ? pane.getBoundingClientRect() : (articlePaper ? articlePaper.getBoundingClientRect() : null);
     const left = Math.max(margin, (bounds?.left ?? 0) + margin);
     const right = Math.min(window.innerWidth - margin, (bounds?.right ?? window.innerWidth) - margin);
     popover.style.transform = '';
-    if (arrow) arrow.style.transform = '';
-    if (pane) popover.style.maxWidth = `${Math.max(0, right - left)}px`;
-    const rect = popover.getBoundingClientRect();
-    if (rect.left < left) {
-      const shift = left - rect.left;
-      popover.style.transform = `translateX(calc(-50% + ${shift}px)) translateY(0)`;
-      if (arrow) arrow.style.transform = `translateX(calc(-50% - ${shift}px)) rotate(45deg)`;
-    } else if (rect.right > right) {
-      const shift = rect.right - right;
-      popover.style.transform = `translateX(calc(-50% - ${shift}px)) translateY(0)`;
-      if (arrow) arrow.style.transform = `translateX(calc(-50% - ${shift}px)) rotate(45deg)`;
+    popover.style.left = '50%';
+    popover.style.top = '';
+    popover.style.bottom = '';
+    popover.style.maxHeight = 'none';
+    popover.style.overflowY = '';
+    popover.style.maxWidth = `${Math.max(0, right - left)}px`;
+    const anchorRect = anchor.getBoundingClientRect();
+    const navHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height')) || 0;
+    const top = pane ? Math.max(navHeight + margin, bounds.top + margin) : (navHeight + margin);
+    const bottom = pane ? Math.min(window.innerHeight - margin, bounds.bottom - margin) : (window.innerHeight - margin);
+    const above = Math.max(0, anchorRect.top - top - 16);
+    const below = Math.max(0, bottom - anchorRect.bottom - 16);
+    const height = popover.offsetHeight;
+    const placeBelow = height > above && below > above;
+    const availableHeight = placeBelow ? below : above;
+    popover.dataset.placement = placeBelow ? 'below' : 'above';
+    if (placeBelow) {
+      popover.style.bottom = 'auto';
+      popover.style.top = 'calc(100% + 16px)';
     } else {
-      popover.style.transform = '';
-      if (arrow) arrow.style.transform = '';
+      popover.style.top = 'auto';
+      popover.style.bottom = 'calc(100% + 16px)';
     }
+    if (height > availableHeight) {
+      popover.style.maxHeight = `${availableHeight}px`;
+      popover.style.overflowY = 'auto';
+    }
+    if (arrow) {
+      arrow.style.top = placeBelow ? '-6px' : '';
+      arrow.style.bottom = placeBelow ? 'auto' : '';
+    }
+    // Anchor geometry is stable while the popover's transform is animating.
+    const naturalLeft = anchorRect.left + anchorRect.width / 2 - popover.offsetWidth / 2;
+    const shift = Math.max(left, Math.min(naturalLeft, right - popover.offsetWidth)) - naturalLeft;
+    popover.style.left = `calc(50% + ${shift}px)`;
+    if (arrow) {
+      const arrowLeft = Math.max(16, Math.min(popover.offsetWidth - 16, popover.offsetWidth / 2 - shift));
+      arrow.style.left = `${arrowLeft}px`;
+      arrow.style.transform = `translateX(-50%) rotate(${placeBelow ? 225 : 45}deg)`;
+    }
+  }
+
+  // 全局文献引用即时浮层 (Citation Popover & Archival Card System)
+  function setupCitationPopovers() {
+    const refLinks = document.querySelectorAll('article a[href^="#ref-"], .prose a[href^="#ref-"], .article-paper a[href^="#ref-"]');
+    if (!refLinks.length) return;
+
+    refLinks.forEach((link) => {
+      if (link.dataset.citationInited === '1') return;
+      link.dataset.citationInited = '1';
+
+      const href = link.getAttribute('href');
+      if (!href || !href.startsWith('#ref-')) return;
+      const targetId = href.slice(1);
+      const targetEl = document.getElementById(targetId);
+      if (!targetEl) return;
+
+      // 获取文献具体条目内容
+      let contentEl = targetEl.nextElementSibling;
+      while (contentEl && contentEl.tagName !== 'P' && contentEl.tagName !== 'LI') {
+        contentEl = contentEl.nextElementSibling;
+      }
+      if (!contentEl) {
+        contentEl = targetEl.closest('p, li, div') || targetEl.parentElement;
+      }
+      if (!contentEl) return;
+
+      // 提取文献作者/标题
+      const strongEl = contentEl.querySelector('strong');
+      const authorTitle = strongEl ? strongEl.textContent.trim() : '文献考据';
+
+      // 克隆内容以保持原书目干净
+      const clone = contentEl.cloneNode(true);
+      clone.querySelectorAll('a').forEach((a) => {
+        a.setAttribute('target', '_blank');
+        a.setAttribute('rel', 'noopener noreferrer');
+        a.addEventListener('click', (e) => e.stopPropagation());
+      });
+      const citationHtml = clone.innerHTML;
+
+      // 创建外层锚点包装容器
+      const anchor = document.createElement('span');
+      anchor.className = 'footnote-anchor citation-anchor';
+      anchor.dataset.sidenoteTitle = authorTitle;
+
+      // 将链接移入 anchor
+      link.parentNode?.insertBefore(anchor, link);
+      anchor.appendChild(link);
+
+      link.classList.add('footnote-trigger', 'citation-link');
+      link.setAttribute('role', 'button');
+      link.setAttribute('tabindex', '0');
+      link.setAttribute('aria-haspopup', 'dialog');
+      link.setAttribute('aria-expanded', 'false');
+      link.setAttribute('title', '点击查看考据出处');
+      link.dataset.targetId = targetId;
+      // 彻底移除 href 属性，杜绝一切浏览器底层原生锚点跳转
+      link.removeAttribute('href');
+
+      // 悬停延迟保护定时器（解决指针从链接移入浮层时的瞬时断连）
+      let hoverTimer = null;
+      const clearHoverTimer = () => {
+        if (hoverTimer) {
+          clearTimeout(hoverTimer);
+          hoverTimer = null;
+        }
+      };
+
+      anchor.addEventListener('mouseenter', () => {
+        clearHoverTimer();
+        document.querySelectorAll('.footnote-anchor.is-hovering').forEach((a) => {
+          if (a !== anchor) a.classList.remove('is-hovering');
+        });
+        anchor.classList.add('is-hovering');
+        anchor.classList.remove('is-closed');
+        adjustPopoverPlacement(anchor);
+      });
+
+      anchor.addEventListener('mouseleave', () => {
+        clearHoverTimer();
+        hoverTimer = setTimeout(() => {
+          anchor.classList.remove('is-hovering');
+        }, 200);
+      });
+
+      // 绑定直接点击事件，固定 (pinned) 浮层状态
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const isPinned = anchor.classList.contains('pinned');
+        document.querySelectorAll('.footnote-anchor.pinned').forEach((a) => {
+          a.classList.remove('pinned');
+          const tr = a.querySelector('.footnote-trigger');
+          if (tr) tr.setAttribute('aria-expanded', 'false');
+        });
+
+        if (!isPinned) {
+          anchor.classList.remove('is-closed');
+          anchor.classList.add('pinned');
+          link.setAttribute('aria-expanded', 'true');
+          adjustPopoverPlacement(anchor);
+        } else {
+          anchor.classList.add('is-closed');
+          anchor.classList.remove('pinned', 'is-hovering');
+          link.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // 创建浮层弹窗
+      const popover = document.createElement('span');
+      popover.className = 'footnote-popover citation-popover font-serif';
+      popover.setAttribute('role', 'dialog');
+      popover.setAttribute('aria-modal', 'false');
+
+      // 避免在浮层内部拖拽选中文本时触发 document click 导致浮层意外关闭
+      popover.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+      });
+      popover.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+
+      const cleanMeta = targetId.replace(/^ref-/, '').toUpperCase();
+
+      popover.innerHTML = `
+        <span class="popover-arrow"></span>
+        <span class="citation-popover-header font-sans">
+          <span class="citation-masthead">
+            <span class="citation-tag font-mono">§ 考据档案</span>
+            <span class="citation-meta font-mono">${cleanMeta}</span>
+          </span>
+          <button type="button" class="popover-close-btn" aria-label="关闭引用卡片" title="关闭">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </span>
+        <div class="citation-content-wrapper">
+          <span class="popover-content citation-content font-serif">
+            ${citationHtml}
+          </span>
+        </div>
+        <span class="citation-popover-footer font-mono">
+          <span class="citation-source-indicator">
+            <span class="indicator-dot"></span>
+            <span>原始文献 · 馆藏核验</span>
+          </span>
+          <button type="button" class="citation-jump-btn" data-target-id="${targetId}" title="跳转至文末书目完整条目">
+            <span>检索文末档案</span>
+            <span class="jump-arrow">⤓</span>
+          </button>
+        </span>
+      `;
+
+      anchor.appendChild(popover);
+
+      // 关闭按钮事件
+      const closeBtn = popover.querySelector('.popover-close-btn');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          anchor.classList.remove('pinned', 'is-hovering');
+          anchor.classList.add('is-closed');
+          link.setAttribute('aria-expanded', 'false');
+        });
+      }
+
+      // 绑定“检索文末档案”事件
+      const jumpBtn = popover.querySelector('.citation-jump-btn');
+      if (jumpBtn) {
+        jumpBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const returnAnchor = anchor;
+          const citeLabel = link.textContent?.trim() || '';
+
+          // 关闭浮层
+          anchor.classList.remove('pinned', 'is-hovering');
+          anchor.classList.add('is-closed');
+          link.setAttribute('aria-expanded', 'false');
+
+          // 若目标在折叠面板内则自动展开
+          const details = targetEl.closest('details');
+          if (details && !details.open) {
+            details.open = true;
+          }
+
+          // 平滑滚动定位至文献目标
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+          // 目标高亮提示
+          const targetP = targetEl.nextElementSibling;
+          if (targetP) {
+            targetP.classList.add('citation-target-highlight');
+            setTimeout(() => targetP.classList.remove('citation-target-highlight'), 2200);
+          }
+
+          const cleanLabel = citeLabel.replace(/[()（）]/g, '').trim();
+
+          // 在文末书目条目处添加内联“返回正文引用处”按钮
+          document.querySelectorAll('.biblio-inline-return').forEach((el) => el.remove());
+          const returnBar = document.createElement('div');
+          returnBar.className = 'biblio-inline-return font-mono';
+          returnBar.innerHTML = `
+            <button type="button" class="biblio-inline-return-btn" title="点击返回正文阅读位置">
+              <span>↩ 返回正文引用处</span>
+              <span class="biblio-return-tag">${cleanLabel ? `· ${cleanLabel}` : ''}</span>
+            </button>
+          `;
+          if (targetP) {
+            targetP.after(returnBar);
+          } else {
+            targetEl.after(returnBar);
+          }
+
+          const onReturn = () => {
+            returnAnchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            returnAnchor.classList.add('footnote-flash');
+            setTimeout(() => returnAnchor.classList.remove('footnote-flash'), 2200);
+            returnBar.remove();
+            const pillEl = document.getElementById('citation-return-pill');
+            if (pillEl) pillEl.remove();
+          };
+
+          returnBar.querySelector('.biblio-inline-return-btn')?.addEventListener('click', (evt) => {
+            evt.preventDefault();
+            onReturn();
+          });
+
+          // 唤出屏幕下方中央“返回正文阅读处”浮动胶囊
+          showCitationReturnPill(returnAnchor, cleanLabel, onReturn);
+        });
+      }
+    });
+  }
+
+  // 浮动返回阅读位置胶囊
+  function showCitationReturnPill(returnAnchor, cleanLabel, onReturn) {
+    let pill = document.getElementById('citation-return-pill');
+    if (pill) pill.remove();
+
+    pill = document.createElement('div');
+    pill.id = 'citation-return-pill';
+    pill.className = 'citation-return-pill font-mono';
+
+    pill.innerHTML = `
+      <button type="button" class="pill-return-action" title="点击返回正文阅读位置">
+        <span class="pill-icon">↩</span>
+        <span class="pill-title">返回正文阅读处</span>
+        ${cleanLabel ? `<span class="pill-label">· ${cleanLabel}</span>` : ''}
+      </button>
+      <button type="button" class="pill-dismiss-btn" aria-label="关闭提示" title="关闭提示">×</button>
+    `;
+
+    document.body.appendChild(pill);
+
+    pill.querySelector('.pill-return-action')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onReturn();
+    });
+
+    pill.querySelector('.pill-dismiss-btn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      pill.remove();
+    });
   }
 
   // 执行页面级增强函数
@@ -1110,6 +1413,7 @@ const isMusicPage = false; // 音乐页已归档禁用
     setupBackToTop();
     setupUnifiedCodeBlocks();
     setupFootnoteInteractions();
+    setupCitationPopovers();
   }
 
   // 1. 同步执行或在 DOM 就绪后立即执行
@@ -1126,7 +1430,6 @@ const isMusicPage = false; // 音乐页已归档禁用
   // 3. 挂载到全局 window 供页面组件主动调用
   window.__setupUnifiedCodeBlocks = setupUnifiedCodeBlocks;
   window.__setupFootnoteInteractions = setupFootnoteInteractions;
+  window.__setupCitationPopovers = setupCitationPopovers;
 }
 </script>
-
-

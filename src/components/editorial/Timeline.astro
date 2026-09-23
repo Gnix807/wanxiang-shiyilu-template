@@ -48,7 +48,7 @@ const showHeaderBlock = header && (showKicker || showTitle || subtitle);
             {subtitle && <span class="timeline-subtitle">{subtitle}</span>}
           </div>
         )}
-        {showTitle && displayTitle && <h3 class="timeline-title font-sans">{displayTitle}</h3>}
+        {showTitle && displayTitle && <h3 class="timeline-title font-sans" data-editorial-heading>{displayTitle}</h3>}
         <div class="timeline-divider" aria-hidden="true">
           <span class="divider-line"></span>
           <span class="divider-mark">◆</span>

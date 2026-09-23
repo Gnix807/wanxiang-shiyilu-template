@@ -78,6 +78,10 @@ if (slotContent && !slotContent.includes('class="tab-pane active')) {
 
 <style>
   .editorial-tabs {
+    container-type: inline-size;
+    container-name: editorial-tabs;
+    min-width: 0;
+    max-width: 100%;
     margin: 32px 0;
     border: 2.5px solid var(--line-solid);
     background: var(--paper-surface);
@@ -127,6 +131,7 @@ if (slotContent && !slotContent.includes('class="tab-pane active')) {
 
   .tab-btn,
   :global(.tab-btn) {
+    flex-shrink: 0;
     border: none;
     background: none;
     padding: 10px 18px;
@@ -187,6 +192,7 @@ if (slotContent && !slotContent.includes('class="tab-pane active')) {
   }
 
   .tabs-panes {
+    min-width: 0;
     padding: 22px 24px;
     font-size: 15px;
     line-height: 1.8;
@@ -211,6 +217,12 @@ if (slotContent && !slotContent.includes('class="tab-pane active')) {
     margin-bottom: 0;
   }
 
+  @container editorial-tabs (max-width: 420px) {
+    .tabs-panes {
+      padding: 18px 12px;
+    }
+  }
+
   /* 初始在 JS 执行前只展示首个面板，避免闪烁或重叠 */
   .editorial-tabs:not([data-tabs-ready="true"]) :global(.tab-pane:first-of-type) {
     display: block !important;
@@ -229,11 +241,15 @@ if (slotContent && !slotContent.includes('class="tab-pane active')) {
       );
       if (!nav || panes.length === 0) return;
 
-      const defaultIdx = Number(container.getAttribute('data-default-index') || 0);
+      const requestedIndex = Number(container.getAttribute('data-default-index') || 0);
+      const defaultIdx = Number.isFinite(requestedIndex)
+        ? Math.max(0, Math.min(panes.length - 1, Math.trunc(requestedIndex)))
+        : 0;
 
       // 如果 nav 内还没有 tab-btn（未显式传递 labels 属性，由 Tab 子元素的 data-tab-label 动态生成）
       let buttons = Array.from(nav.querySelectorAll(':scope > .tab-btn'));
-      if (buttons.length === 0) {
+      if (buttons.length !== panes.length) {
+        buttons.forEach(button => button.remove());
         panes.forEach((pane, idx) => {
           const label = pane.getAttribute('data-tab-label') || `标签 0${idx + 1}`;
           const btn = document.createElement('button');
@@ -242,35 +258,33 @@ if (slotContent && !slotContent.includes('class="tab-pane active')) {
           btn.className = `tab-btn ${idx === defaultIdx ? 'active' : ''}`;
           btn.setAttribute('data-tab-index', String(idx));
           btn.setAttribute('aria-selected', idx === defaultIdx ? 'true' : 'false');
-          btn.innerHTML = `<span class="tab-idx">0${idx + 1}.</span><span class="tab-label">${label}</span>`;
+          const number = document.createElement('span');
+          number.className = 'tab-idx';
+          number.textContent = `${String(idx + 1).padStart(2, '0')}.`;
+          const text = document.createElement('span');
+          text.className = 'tab-label';
+          text.textContent = label;
+          btn.append(number, text);
           nav.appendChild(btn);
         });
         buttons = Array.from(nav.querySelectorAll(':scope > .tab-btn'));
       }
 
-      // 确保初始仅激活 defaultIdx 面板
-      panes.forEach((pane, idx) => {
-        if (idx === defaultIdx) {
-          pane.classList.add('active');
-        } else {
-          pane.classList.remove('active');
-        }
-      });
+      // Keep the selected label and its owned panel in sync, including nested tabs.
+      function activate(index: number) {
+        buttons.forEach((button, idx) => {
+          const selected = idx === index;
+          button.classList.toggle('active', selected);
+          button.setAttribute('aria-selected', String(selected));
+        });
+        panes.forEach((pane, idx) => pane.classList.toggle('active', idx === index));
+      }
+      activate(defaultIdx);
 
       // 绑定标签切换交互
       buttons.forEach((btn, index) => {
         btn.addEventListener('click', () => {
-          buttons.forEach((b) => {
-            b.classList.remove('active');
-            b.setAttribute('aria-selected', 'false');
-          });
-          panes.forEach((p) => p.classList.remove('active'));
-
-          btn.classList.add('active');
-          btn.setAttribute('aria-selected', 'true');
-          if (panes[index]) {
-            panes[index].classList.add('active');
-          }
+          activate(index);
         });
       });
     });

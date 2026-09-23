@@ -2,7 +2,8 @@
 import { ChevronDown } from 'lucide-astro';
 
 interface Props {
-  summary: string;
+  summary?: string;
+  title?: string;
   seal?: string;
   kicker?: string;
   code?: string;
@@ -15,7 +16,8 @@ interface Props {
 }
 
 const {
-  summary,
+  summary = '',
+  title = '',
   seal,
   kicker,
   code = 'ARCHIVE-REF',
@@ -27,10 +29,11 @@ const {
   className = ''
 } = Astro.props;
 
+const rawSummary = summary || title || '详情附录';
 const displaySeal = kicker ?? seal ?? '详情附录 · DETAILS';
 
 // 清洗可能存在的“点击展开：”前缀
-const cleanSummary = summary.replace(/^点击展开[：:]\s*/, '');
+const cleanSummary = String(rawSummary).replace(/^点击展开[：:]\s*/, '');
 ---
 
 <details class={`editorial-declassified ${className}`} open={open}>

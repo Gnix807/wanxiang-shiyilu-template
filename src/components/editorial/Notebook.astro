@@ -148,11 +148,14 @@ const stamp = propStamp || propBadge || (type === 'grid' ? 'GRID NOTE' : type ==
 
   .header-left {
     display: flex;
+    min-width: 0;
+    flex-wrap: wrap;
     align-items: center;
     gap: 10px;
   }
 
   .notebook-stamp {
+    flex-shrink: 0;
     font-family: var(--font-mono);
     font-size: 10px;
     font-weight: 900;
@@ -175,6 +178,8 @@ const stamp = propStamp || propBadge || (type === 'grid' ? 'GRID NOTE' : type ==
 
   .header-right {
     display: flex;
+    min-width: 0;
+    flex-wrap: wrap;
     align-items: center;
     gap: 16px;
     font-size: 11.5px;
@@ -362,6 +367,7 @@ const stamp = propStamp || propBadge || (type === 'grid' ? 'GRID NOTE' : type ==
   /* 记事本底部微型封印 */
   .notebook-footer {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     padding: 8px 20px;
@@ -403,6 +409,7 @@ const stamp = propStamp || propBadge || (type === 'grid' ? 'GRID NOTE' : type ==
 
   .footer-dots {
     flex: 1;
+    min-width: 0;
     overflow: hidden;
     white-space: nowrap;
     opacity: 0.4;

@@ -27,7 +27,7 @@ const cite = citeProp ?? sourceProp;
 ---
 
 {variant === 'broadsheet' ? (
-  <figure class="pull-quote variant-broadsheet">
+  <figure class="pull-quote variant-broadsheet" data-editorial-figure>
     <div class="pull-masthead font-sans" aria-hidden="true">
       <span class="pull-kicker">§ {kicker || '重点引述 · PULL QUOTE'} §</span>
     </div>
@@ -35,7 +35,7 @@ const cite = citeProp ?? sourceProp;
       <span class="rule-thick"></span>
       <span class="rule-thin"></span>
     </div>
-    <blockquote class="pull-body font-serif">
+    <blockquote class="pull-body font-serif" data-editorial-quote>
       <span class="pull-quote-mark open font-serif" aria-hidden="true">“</span>
       <div class="pull-text font-serif">
         {quote ? quote : <slot />}
@@ -60,7 +60,7 @@ const cite = citeProp ?? sourceProp;
     )}
   </figure>
 ) : (
-  <figure class="pull-quote variant-dispatch">
+  <figure class="pull-quote variant-dispatch" data-editorial-figure>
     <div class="dispatch-frame">
       <div class="dispatch-header font-mono">
         <span class="dispatch-badge">
@@ -70,7 +70,7 @@ const cite = citeProp ?? sourceProp;
         <span class="dispatch-ref font-mono">{dispatchRef}</span>
       </div>
       <div class="dispatch-divider" aria-hidden="true"></div>
-      <blockquote class="dispatch-body font-serif">
+      <blockquote class="dispatch-body font-serif" data-editorial-quote>
         <div class="dispatch-text font-serif">
           {quote ? quote : <slot />}
         </div>

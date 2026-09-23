@@ -138,7 +138,7 @@ if (!domainName || domainName === '#') {
       <!-- Text & Meta Column -->
       <div class="card-content-col">
         <div class="card-text-body">
-          <h4 class="card-title font-serif">{title}</h4>
+          <h4 class="card-title font-serif" data-editorial-heading>{title}</h4>
           {desc && <p class="card-desc font-sans">{desc}</p>}
         </div>
 
@@ -202,11 +202,18 @@ if (!domainName || domainName === '#') {
   /* ---------------- Top Header Bar ---------------- */
   .card-header {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
     user-select: none;
     line-height: 1;
+  }
+
+  .card-header > * {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
 
   .card-stamp {

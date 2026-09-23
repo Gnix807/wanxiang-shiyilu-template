@@ -120,6 +120,11 @@ const hasHeader = (speaker !== false && cleanSpeaker) || role || badge || time;
 </div>
 
 <style>
+  /* Prose image margins must not push picture avatars below their bubbles. */
+  .im-avatar > img {
+    margin: 0;
+  }
+
   /* 统一全局硬质投影：通过 drop-shadow 作用于气泡矩形与尖角合并轮廓 */
   .im-bubble-container {
     filter: drop-shadow(2.5px 2.5px 0 #1a1a1a);

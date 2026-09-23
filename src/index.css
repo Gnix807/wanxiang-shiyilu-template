@@ -264,10 +264,10 @@ html {
 }
 
 /* Figure/figcaption for post images (rehype plugin) */
-.prose figure {
+.prose figure:not([data-editorial-figure]) {
   margin: 1.5em 0;
 }
-.prose figure img {
+.prose figure:not([data-editorial-figure]) img {
   display: block;
   margin: 0 auto;
   width: auto;
@@ -279,11 +279,11 @@ html {
   border: 2px solid #1a1a1a;
   box-shadow: 3px 3px 0 0 #1a1a1a;
 }
-.dark .prose figure img {
+.dark .prose figure:not([data-editorial-figure]) img {
   border-color: #e8e6e3;
   box-shadow: 3px 3px 0 0 #2d2b28;
 }
-.prose figcaption {
+.prose figcaption:not(:where([data-editorial-figure] *)) {
   display: block;
   text-align: center;
   font-style: italic;
@@ -291,7 +291,7 @@ html {
   font-size: 0.875rem;
   margin-top: 0.25rem;
 }
-:root.dark .prose figcaption {
+:root.dark .prose figcaption:not(:where([data-editorial-figure] *)) {
   color: #64748b;
 }
 
@@ -299,17 +299,16 @@ html {
 .article-paper-shell {
   background-color: var(--paper-bg);
   background-image:
-    repeating-linear-gradient(0deg, rgba(112, 82, 42, 0.025) 0, rgba(112, 82, 42, 0.025) 1px, transparent 1px, transparent 4px),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0, rgba(255, 255, 255, 0.12) 1px, transparent 1px, transparent 7px);
+    radial-gradient(circle, rgba(26,26,26,0.045) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 .article-paper {
   background-color: var(--paper-surface);
   background-image:
-    radial-gradient(circle at 15% 25%, rgba(116, 82, 39, 0.055) 0 0.7px, transparent 0.9px),
-    radial-gradient(circle at 78% 68%, rgba(255, 255, 255, 0.22) 0 0.8px, transparent 1px),
-    repeating-linear-gradient(2deg, transparent 0, transparent 5px, rgba(112, 82, 42, 0.018) 6px);
-  background-size: 17px 19px, 23px 21px, auto;
+    radial-gradient(circle at 15% 25%, rgba(116, 82, 39, 0.04) 0 0.7px, transparent 0.9px),
+    radial-gradient(circle at 78% 68%, rgba(255, 255, 255, 0.22) 0 0.8px, transparent 1px);
+  background-size: 17px 19px, 23px 21px;
 }
 
 .dark .article-paper-shell,
@@ -421,34 +420,34 @@ html {
 }
 
 /* Headings */
-.prose h1,
-.prose h2,
-.prose h3,
-.prose h4 {
+.prose h1:not([data-editorial-heading]),
+.prose h2:not([data-editorial-heading]),
+.prose h3:not([data-editorial-heading]),
+.prose h4:not([data-editorial-heading]) {
   font-family: var(--font-sans);
   font-weight: 800;
   letter-spacing: 0.02em;
   scroll-margin-top: calc(var(--navbar-height) + 24px);
 }
-.prose h2 {
+.prose h2:not([data-editorial-heading]) {
   border-bottom: 2px solid #1a1a1a;
   padding-bottom: 0.35em;
   box-shadow: 0 2px 0 0 #e6e4df;
 }
-.dark .prose h2 {
+.dark .prose h2:not([data-editorial-heading]) {
   border-bottom-color: #e8e6e3;
   box-shadow: 0 2px 0 0 #2d2b28;
 }
-.prose h3 {
+.prose h3:not([data-editorial-heading]) {
   border-left: 3px solid #9e2a2b;
   padding-left: 0.65em;
 }
-.dark .prose h3 {
+.dark .prose h3:not([data-editorial-heading]) {
   border-left-color: #d9534f;
 }
 
 /* Blockquote */
-.prose blockquote {
+.prose blockquote:not([data-editorial-quote]) {
   border-left: 3px solid #9e2a2b;
   background: #f4efe6;
   box-shadow: 2px 2px 0 0 #e6e4df;
@@ -462,7 +461,7 @@ html {
 .prose blockquote p:last-of-type::after {
   content: none;
 }
-.dark .prose blockquote {
+.dark .prose blockquote:not([data-editorial-quote]) {
   background: #242220;
   color: #e8e6e3;
   border-left-color: #d9534f;
@@ -575,6 +574,10 @@ pre, code, kbd, samp,
   background: #faf8f5;
   color: #24292e;
 }
+.code-content-box.whitespace-pre-wrap pre {
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere;
+}
 .dark .code-content-box {
   background: #141413;
   color: #e8e6e3;
@@ -613,9 +616,13 @@ pre, code, kbd, samp,
 }
 .prose hr::after {
   content: "§";
-  display: inline-block;
-  position: relative;
-  top: -14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, calc(-50% - 2px));
   padding: 0 14px;
   background: var(--paper-surface);
   color: var(--press-red);
@@ -707,7 +714,7 @@ pre, code, kbd, samp,
 .editorial-table-wrapper table,
 .prose table {
   width: 100% !important;
-  min-width: 0 !important;
+  min-width: 100% !important;
   border-collapse: collapse !important;
   margin: 0 !important;
   font-family: var(--font-sans) !important;
@@ -716,12 +723,12 @@ pre, code, kbd, samp,
   border: none !important;
   box-shadow: none !important;
   background: transparent !important;
-  table-layout: auto !important;
+  table-layout: auto;
 }
 
 @media (max-width: 640px) {
   .editorial-table-wrapper table {
-    min-width: 440px !important;
+    min-width: 540px !important;
   }
 }
 
@@ -745,16 +752,18 @@ pre, code, kbd, samp,
   background: var(--paper-contrast) !important;
   border: none !important;
   border-bottom: 2.5px solid var(--line-solid) !important;
-  padding: 10px 14px !important;
+  padding: 10px 11px !important;
   font-family: var(--font-sans) !important;
   font-weight: 800 !important;
   text-align: left !important;
   vertical-align: middle !important;
-  letter-spacing: 0.04em !important;
+  letter-spacing: 0.02em !important;
   color: var(--ink-text) !important;
   font-size: 13px !important;
-  white-space: nowrap !important;
   user-select: none;
+  white-space: normal !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
 }
 
 /* Subtle separator between header columns */
@@ -780,13 +789,13 @@ pre, code, kbd, samp,
 
 .prose tbody td,
 .prose td {
-  padding: 11px 14px !important;
+  padding: 11px 11px !important;
   border: none !important;
   color: var(--ink-text) !important;
   vertical-align: top !important;
   font-family: var(--font-sans) !important;
   font-size: 13.5px !important;
-  line-height: 1.65 !important;
+  line-height: 1.6 !important;
   word-break: normal !important;
   overflow-wrap: break-word !important;
 }
@@ -802,35 +811,42 @@ pre, code, kbd, samp,
   border-right-color: rgba(232, 230, 227, 0.12) !important;
 }
 
-/* Column 1: Item / Name / Identifier Column - fits snugly and never awkward wrap */
-.prose thead th:first-child,
-.prose tbody td:first-child {
+/* Default: First column bold and snug for 2-column and 3-column tables */
+.prose table:not(:has(th:nth-child(4))) thead th:first-child,
+.prose table:not(:has(th:nth-child(4))) tbody td:first-child {
   font-weight: 700 !important;
   white-space: nowrap !important;
   width: 1% !important;
 }
 
-/* Short attribute / category / usage column */
-.prose thead th:nth-child(2),
-.prose tbody td:nth-child(2) {
-  white-space: nowrap !important;
-  width: 1% !important;
+/* 4-column tables: balanced proportions avoiding awkward squashing */
+.prose table:has(th:nth-child(4):last-child) {
+  table-layout: fixed !important;
 }
 
-/* Last column (notes / descriptions / URLs) expands and wraps cleanly */
-.prose thead th:last-child,
-.prose tbody td:last-child {
-  width: auto !important;
+.prose table:has(th:nth-child(4):last-child) thead th:first-child,
+.prose table:has(th:nth-child(4):last-child) tbody td:first-child {
+  font-weight: 700 !important;
   white-space: normal !important;
-  word-break: normal !important;
-  overflow-wrap: break-word !important;
+  width: 22.5% !important;
 }
 
-/* If a table has only 2 columns, make sure the 2nd column (last-child) is the description and wraps */
-.prose thead th:first-child:nth-last-child(2) ~ th:last-child,
-.prose tbody td:first-child:nth-last-child(2) ~ td:last-child {
-  width: auto !important;
+.prose table:has(th:nth-child(4):last-child) th:nth-child(2),
+.prose table:has(th:nth-child(4):last-child) td:nth-child(2) {
   white-space: normal !important;
+  width: 17.5% !important;
+}
+
+.prose table:has(th:nth-child(4):last-child) th:nth-child(3),
+.prose table:has(th:nth-child(4):last-child) td:nth-child(3) {
+  white-space: normal !important;
+  width: 30% !important;
+}
+
+.prose table:has(th:nth-child(4):last-child) th:nth-child(4),
+.prose table:has(th:nth-child(4):last-child) td:nth-child(4) {
+  white-space: normal !important;
+  width: 30% !important;
 }
 
 /* Links inside table cells */
@@ -1400,18 +1416,16 @@ body { font-weight: 450 !important; background-color: var(--paper-bg); color: va
 #site-bg {
   background-color: var(--paper-bg);
   background-image:
-    repeating-linear-gradient(0deg, rgba(112, 82, 42, 0.025) 0, rgba(112, 82, 42, 0.025) 1px, transparent 1px, transparent 4px),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0, rgba(255, 255, 255, 0.12) 1px, transparent 1px, transparent 7px);
-  background-size: auto;
+    radial-gradient(circle, rgba(26,26,26,0.045) 1px, transparent 1px);
+  background-size: 24px 24px;
   background-position: 0 0;
   background-repeat: repeat;
   background-attachment: scroll;
 }
 body[data-is-article="true"] #site-bg {
   background-image:
-    repeating-linear-gradient(0deg, rgba(112, 82, 42, 0.025) 0, rgba(112, 82, 42, 0.025) 1px, transparent 1px, transparent 4px),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0, rgba(255, 255, 255, 0.12) 1px, transparent 1px, transparent 7px);
-  background-size: auto;
+    radial-gradient(circle, rgba(26,26,26,0.045) 1px, transparent 1px);
+  background-size: 24px 24px;
   background-position: 0 0;
   background-repeat: repeat;
   background-attachment: fixed;

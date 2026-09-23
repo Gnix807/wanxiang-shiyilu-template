@@ -40,7 +40,7 @@ const normalizedCols: 1 | 2 | 'auto' =
 const parsedLines = parsePoetry(rawSlot, normalizedCols, title);
 ---
 
-<figure class={`editorial-poetry-card variant-${variant} ${className}`}>
+<figure class={`editorial-poetry-card variant-${variant} ${className}`} data-editorial-figure>
   <!-- 四角古典折角花纹 (Corner Brackets) -->
   <span class="p-corner p-corner-tl" aria-hidden="true">⌜</span>
   <span class="p-corner p-corner-tr" aria-hidden="true">⌝</span>
@@ -56,7 +56,7 @@ const parsedLines = parsePoetry(rawSlot, normalizedCols, title);
       <span class="kicker-leaf">❦</span>
       <span class="kicker-line"></span>
     </div>
-    {title && <h3 class="poetry-title font-serif">{title}</h3>}
+    {title && <h3 class="poetry-title font-serif" data-editorial-heading>{title}</h3>}
     {author && (
       <div class="poetry-author font-sans">
         <span class="author-label">{authorLabel}</span>
@@ -254,6 +254,8 @@ const parsedLines = parsePoetry(rawSlot, normalizedCols, title);
   }
 
   .poetry-content {
+    container-type: inline-size;
+    container-name: poetry-lines;
     font-family: var(--font-serif);
     font-size: 17.5px;
     line-height: 2.35;
@@ -286,12 +288,14 @@ const parsedLines = parsePoetry(rawSlot, normalizedCols, title);
 
   .poetry-line.is-couplet .hemistich-left {
     flex: 1;
+    min-width: 0;
     text-align: right;
     white-space: nowrap;
   }
 
   .poetry-line.is-couplet .hemistich-right {
     flex: 1;
+    min-width: 0;
     text-align: left;
     white-space: nowrap;
   }
@@ -410,6 +414,23 @@ const parsedLines = parsePoetry(rawSlot, normalizedCols, title);
     max-width: 660px;
     border: 2px solid var(--line-solid);
     padding: 34px 44px 26px;
+  }
+
+  /* Nested cards respond to their writing area, not only the viewport. */
+  @container poetry-lines (max-width: 260px) {
+    .poetry-line.is-couplet {
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .poetry-line.is-couplet .poetry-hemistich {
+      flex: none;
+      max-width: 100%;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      text-align: center;
+    }
   }
 
   /* 响应式微调 */

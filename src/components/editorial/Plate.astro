@@ -9,7 +9,7 @@ interface Props {
 const { src, alt = '图版', fig = '图 1.0', caption } = Astro.props;
 ---
 
-<figure class="editorial-plate">
+<figure class="editorial-plate" data-editorial-figure>
   <div class="plate-matting">
     <div class="plate-frame">
       <img src={src} alt={alt} loading="lazy" />

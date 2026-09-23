@@ -131,6 +131,11 @@ const displayTrigger = label || `[${id}]`;
   }
 
   /* 桥接鼠标悬停区域，防止指针移入卡片时闪退 */
+  .footnote-anchor:not(:hover):not(.pinned) .footnote-popover,
+  .footnote-anchor.is-closed .footnote-popover {
+    display: none;
+  }
+
   .footnote-popover::after {
     content: '';
     position: absolute;
@@ -139,6 +144,11 @@ const displayTrigger = label || `[${id}]`;
     width: 100%;
     height: 18px;
     background: transparent;
+  }
+
+  .footnote-popover[data-placement="below"]::after {
+    top: auto;
+    bottom: 100%;
   }
 
   /* Popover 小三角指示箭头 */
@@ -318,4 +328,3 @@ const displayTrigger = label || `[${id}]`;
     }
   }
 </style>
-
