@@ -95,6 +95,25 @@ Build pages from Markdown / MDX, use the bundled local fonts and publish to Clou
 > [!NOTE]
 > The template includes two articles, one short post and SVG artwork. Comments, analytics, weather and profile requests stay off until you configure them.
 
+<details>
+<summary>View the feature list and setup requirements</summary>
+
+| Feature | Default state | Usage |
+| --- | --- | --- |
+| Markdown / MDX and Editorial components | Included | Import quotes, sidenotes, figures, steps and other components as needed |
+| Categories, tags, archives and writing calendar | Included | Browsing entries come from the content collections |
+| Article list filtering | Included | Matches titles, descriptions, categories and tags |
+| Themes, table of contents and lightbox | Included | Reading and image viewing tools |
+| RSS / Atom feeds | Included | Subscribe to all content, one content type or recent entries |
+| Waline comments | Unconfigured | Requires your Waline server |
+| Umami / Clarity and visit statistics | Unconfigured | Set your identifiers or compatible endpoints |
+| GitHub / Bilibili profiles | Unconfigured | Set your accounts; sync the Bilibili video list manually |
+| Welcome message and weather | Disabled | Enable the welcome message; weather needs a compatible endpoint |
+
+AI model lists are retained configuration fields. Standard pages do not currently integrate summary or chat interfaces. See the [configuration guide](docs/configuration.en.md#4-enable-services-as-needed) for optional services.
+
+</details>
+
 ## Quick start
 
 Use **Node.js 24** and **pnpm 11.2.2** to match CI.
@@ -109,6 +128,8 @@ pnpm dev
 ```
 
 Open the local URL printed in the terminal. Update the site details, replace the examples, then build and publish.
+
+See the [configuration guide](docs/configuration.en.md) for each setting and the [writing guide](docs/writing.en.md) for complete article and short-post examples.
 
 ### Make it yours
 
@@ -170,6 +191,7 @@ description: A short article summary.
 date: '2026-10-15'
 tags: [Notes]
 category: Life
+img: /images/editorial-sample.svg
 preserveHeadingLevels: true
 ---
 ```
@@ -177,6 +199,8 @@ preserveHeadingLevels: true
 The layout shows the article title, so start body headings at H2 (`##`). Set `preserveHeadingLevels: true` to keep source heading levels. Older articles without this field retain the rule that shifts headings down one level. Chinese prose uses 「」 and 『』 for quotations.
 
 Short posts go in `src/content/talks/`. Start from the [example short post](src/content/talks/2026-09-22-hello.md).
+
+The [writing guide](docs/writing.en.md) covers image credits, cover URLs and MDX import paths.
 
 ## Deploy to Cloudflare Pages
 
@@ -211,6 +235,35 @@ pnpm sync:bili
 Review `src/data/bilibili-videos.json` and `src/data/bilibili-cache.json` before building. Both caches and the account are empty by default, so no Bilibili requests are made.
 
 Builds read static data. The browser refreshes cards near the viewport through JSONP, reuses results for one hour and cleans up requests on navigation. Authored titles, descriptions and covers take priority. Failed syncs keep the existing list.
+
+## Subscribe to updates
+
+Append one of these paths to your site's domain and add the resulting URL to your feed reader:
+
+| Feed | Path | Content |
+| --- | --- | --- |
+| [Site RSS](src/pages/rss.xml.ts) | `/rss.xml` | Articles and short posts |
+| [Article RSS](src/pages/posts.xml.ts) | `/posts.xml` | Articles only |
+| [Short-post RSS](src/pages/talk.xml.ts) | `/talk.xml` | Short posts only |
+| [Latest entries](src/pages/latest.xml.ts) | `/latest.xml` | The 10 most recent articles and short posts |
+| [Site Atom](src/pages/atom.xml.ts) | `/atom.xml` | Articles and short posts in Atom format |
+
+Feeds generate public links from `PUBLIC_SITE_URL`. Set it to your domain before publishing.
+
+## Design conventions
+
+<p align="center"><img src="docs/images/readme-palette.svg" alt="Light theme paper background, paper contrast, ink and vermilion swatches" width="840" /></p>
+
+| Role | Light theme value | Use |
+| --- | --- | --- |
+| Paper background | `#F6EDDC` | Page background |
+| Paper contrast | `#F4EFE6` | Labels and secondary surfaces |
+| Ink | `#1A1A1A` | Text, solid borders and offset shadows |
+| Vermilion | `#9E2A2B` | Links, seals and emphasis |
+
+Serif headings and quotes use Noto Serif SC. Body and interface text use Inter / Noto Sans SC; code uses JetBrains Mono. Editorial panels, controls and small labels use 4 / 3 / 2 px corner radii.
+
+Theme and font settings start in [src/index.css](src/index.css); shared body styles live in [editorial-components.css](src/styles/editorial-components.css). Adjust colors, fonts and borders together, then check both themes and nested components.
 
 <details>
 <summary>Command reference and project layout</summary>
@@ -268,6 +321,14 @@ Articles and short posts live in the repository. Builds produce static pages tha
 The `private: true` flag in `package.json` prevents accidental npm publication. It does not affect the open-source code, the GitHub template feature or site deployment.
 
 </details>
+
+## Guides
+
+| Guide | When to read it |
+| --- | --- |
+| [Configuration](docs/configuration.en.md) | Change site details, navigation, author profile and optional services |
+| [Writing](docs/writing.en.md) | Create articles and short posts, add covers and use components |
+| [Deployment](docs/deployment.md) | Set up Cloudflare Pages and the build environment; this guide is in Chinese |
 
 ## Help and contributions
 

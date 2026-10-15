@@ -95,6 +95,25 @@ Markdown / MDX 随构建生成页面，字体随仓库提供，支持发布到 C
 > [!NOTE]
 > 模板附两篇文章、一条说说和 SVG 插图。评论、统计、天气与个人账号请求默认关闭，按需配置后再启用。
 
+<details>
+<summary>查看功能清单与启用条件</summary>
+
+| 功能 | 默认状态 | 使用说明 |
+| --- | --- | --- |
+| Markdown / MDX 与正文组件 | 自带 | 按需导入引文、旁注、图版、步骤等组件 |
+| 分类、标签、归档与创作日历 | 自带 | 根据内容集合生成浏览入口 |
+| 文章列表筛选 | 自带 | 匹配标题、摘要、分类和标签 |
+| 主题、目录与图片灯箱 | 自带 | 用于页面阅读与看图 |
+| RSS / Atom 订阅 | 自带 | 提供全量、分内容类型和最新内容订阅 |
+| Waline 评论 | 待配置 | 需要自己的 Waline 服务端 |
+| Umami / Clarity 与访问统计 | 待配置 | 填写自己的站点标识或兼容接口 |
+| GitHub / B 站个人资料 | 待配置 | 配置自己的账号；B 站视频列表需手动同步 |
+| 欢迎提示与天气 | 默认关闭 | 欢迎提示可开启，天气另需兼容接口 |
+
+AI 模型列表目前仅保留配置字段，常规页面没有接入摘要或对话界面。可选服务的设置见[配置指南](docs/configuration.md#4-按需启用服务)。
+
+</details>
+
 ## 快速开始
 
 准备 **Node.js 24** 和 **pnpm 11.2.2**，与仓库 CI 保持一致。
@@ -109,6 +128,8 @@ pnpm dev
 ```
 
 打开终端给出的本地地址，即可看到示例站点。接下来修改站点资料，替换示例内容，再构建发布。
+
+逐项设置见[配置指南](docs/configuration.md)，完整的文章与说说示例见[写作指南](docs/writing.md)。
 
 ### 先改这些地方
 
@@ -170,6 +191,7 @@ description: 一段简短的文章摘要。
 date: '2026-10-15'
 tags: [随笔]
 category: 生活
+img: /images/editorial-sample.svg
 preserveHeadingLevels: true
 ---
 ```
@@ -177,6 +199,8 @@ preserveHeadingLevels: true
 布局会显示文章标题，正文从 H2（`##`）开始。`preserveHeadingLevels: true` 保留原有标题层级；未设置的旧文章沿用标题降一级的兼容规则。中文正文推荐使用「」与『』。
 
 说说放在 `src/content/talks/`，可从[示例说说](src/content/talks/2026-09-22-hello.md)开始修改。
+
+封面地址、图片来源与 MDX 导入路径的完整写法见[写作指南](docs/writing.md)。
 
 ## 部署到 Cloudflare Pages
 
@@ -211,6 +235,35 @@ pnpm sync:bili
 检查 `src/data/bilibili-videos.json` 和 `src/data/bilibili-cache.json` 的变更后构建。默认账号与缓存为空，不会自动请求 B 站。
 
 构建读取静态数据；浏览器通过 JSONP 刷新接近可见区域的卡片，一小时内复用结果，切页时清理请求。手写标题、简介和封面优先保留，同步失败也会保留已有列表。
+
+## 订阅更新
+
+部署后，在自己的站点域名后加上以下路径，即可添加到订阅阅读器：
+
+| 订阅 | 路径 | 内容 |
+| --- | --- | --- |
+| [全站 RSS](src/pages/rss.xml.ts) | `/rss.xml` | 文章与说说 |
+| [文章 RSS](src/pages/posts.xml.ts) | `/posts.xml` | 仅文章 |
+| [说说 RSS](src/pages/talk.xml.ts) | `/talk.xml` | 仅说说 |
+| [最新内容](src/pages/latest.xml.ts) | `/latest.xml` | 最近 10 条文章与说说 |
+| [全站 Atom](src/pages/atom.xml.ts) | `/atom.xml` | 文章与说说，Atom 格式 |
+
+订阅地址使用 `PUBLIC_SITE_URL` 生成正式链接；发布前应设置为自己的域名。
+
+## 设计约定
+
+<p align="center"><img src="docs/images/readme-palette.svg" alt="浅色主题的纸张底色、纸面衬色、墨色与朱红色色卡" width="840" /></p>
+
+| 角色 | 浅色主题取值 | 用途 |
+| --- | --- | --- |
+| 纸张底色 | `#F6EDDC` | 页面背景 |
+| 纸面衬色 | `#F4EFE6` | 题签与次级表面 |
+| 墨色 | `#1A1A1A` | 正文、实线边框与硬阴影 |
+| 朱红 | `#9E2A2B` | 链接、印章与重点标记 |
+
+衬线标题与引文使用 Noto Serif SC，正文与界面使用 Inter / Noto Sans SC，代码使用 JetBrains Mono。正文组件的面板、控件与小标记分别采用 4 / 3 / 2 px 圆角。
+
+主题与字体入口在 [src/index.css](src/index.css)，共享正文样式在 [editorial-components.css](src/styles/editorial-components.css)。修改时将颜色、字体与边框作为一组调整，并检查明暗主题和嵌套组件。
 
 <details>
 <summary>命令速查与项目结构</summary>
@@ -268,6 +321,14 @@ docs/             部署与验证说明
 `package.json` 中的 `private: true` 用于防止误发到 npm，不影响代码开源、GitHub 模板功能或站点部署。
 
 </details>
+
+## 使用文档
+
+| 文档 | 适合什么时候阅读 |
+| --- | --- |
+| [配置指南](docs/configuration.md) | 修改名称、导航、作者资料与可选服务 |
+| [写作指南](docs/writing.md) | 新建文章与说说，添加封面和正文组件 |
+| [部署文档](docs/deployment.md) | 配置 Cloudflare Pages 和构建环境 |
 
 ## 参与维护
 

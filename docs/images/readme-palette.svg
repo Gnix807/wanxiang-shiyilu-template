@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="144" viewBox="0 0 840 144" role="img" aria-labelledby="title desc">
+  <title id="title">Light theme color palette</title>
+  <desc id="desc">Paper background F6EDDC, paper contrast F4EFE6, ink 1A1A1A and vermilion 9E2A2B. Values come from src/index.css.</desc>
+  <rect x="1" y="1" width="838" height="142" rx="4" fill="#fff" stroke="#d9cca9"/>
+  <g fill="#1a1a1a">
+    <rect x="22" y="22" width="180" height="77" rx="3"/>
+    <rect x="230" y="22" width="180" height="77" rx="3"/>
+    <rect x="438" y="22" width="180" height="77" rx="3"/>
+    <rect x="646" y="22" width="180" height="77" rx="3"/>
+  </g>
+  <g stroke="#1a1a1a" stroke-width="1.5">
+    <rect x="18" y="18" width="180" height="77" rx="3" fill="#f6eddc"/>
+    <rect x="226" y="18" width="180" height="77" rx="3" fill="#f4efe6"/>
+    <rect x="434" y="18" width="180" height="77" rx="3" fill="#1a1a1a"/>
+    <rect x="642" y="18" width="180" height="77" rx="3" fill="#9e2a2b"/>
+  </g>
+  <g fill="#1a1a1a" font-family="ui-monospace,Consolas,monospace" font-size="16" font-weight="600" text-anchor="middle">
+    <text x="108" y="124">#F6EDDC</text>
+    <text x="316" y="124">#F4EFE6</text>
+    <text x="524" y="124">#1A1A1A</text>
+    <text x="732" y="124">#9E2A2B</text>
+  </g>
+</svg>
