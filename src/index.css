@@ -46,6 +46,17 @@
   --shadow-craft-deep: 4px 4px 0 var(--line-solid);
   --shadow-paper: 4px 4px 0 var(--line-solid);
 
+  /* Editorial Component Radius Tokens */
+  --editorial-radius-panel: 4px;
+  --editorial-radius-inner: 3px;
+  --editorial-radius-control: 3px;
+  --editorial-radius-small: 2px;
+
+  /* Global Tactile & Motion Tokens */
+  --transition-snappy: 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.12s ease;
+  --transition-press: transform 0.08s ease, box-shadow 0.08s ease;
+
   /* Typography & Calligraphy Stacks */
   --font-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", Georgia, serif;
   --font-sans: "Inter", "Inter Variable", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
@@ -379,7 +390,7 @@ html {
 }
 
 /* Links */
-.prose a:not([data-fancybox]):not(.editorial-link):not(.ex-libris-card) {
+.prose a:not([data-fancybox]):not(.editorial-link):not(.ex-libris-card):not(.editorial-button):not(.citation-link):not(.footnote-trigger):not(.citation-source-link) {
   color: #9e2a2b;
   font-weight: 600;
   text-decoration: none;
@@ -391,7 +402,7 @@ html {
   );
   transition: color 0.15s ease, background-image 0.15s ease;
 }
-.prose a:not([data-fancybox]):not(.editorial-link):not(.ex-libris-card):hover {
+.prose a:not([data-fancybox]):not(.editorial-link):not(.ex-libris-card):not(.editorial-button):not(.citation-link):not(.footnote-trigger):not(.citation-source-link):hover {
   color: #7f2223;
   background-image: linear-gradient(
     to top,
@@ -400,7 +411,7 @@ html {
     transparent 0.22em
   );
 }
-.dark .prose a:not([data-fancybox]):not(.editorial-link):not(.ex-libris-card) {
+.dark .prose a:not([data-fancybox]):not(.editorial-link):not(.ex-libris-card):not(.editorial-button):not(.citation-link):not(.footnote-trigger):not(.citation-source-link) {
   color: #d9534f;
   background-image: linear-gradient(
     to top,
@@ -409,7 +420,7 @@ html {
     transparent 0.15em
   );
 }
-.dark .prose a:not([data-fancybox]):not(.editorial-link):not(.ex-libris-card):hover {
+.dark .prose a:not([data-fancybox]):not(.editorial-link):not(.ex-libris-card):not(.editorial-button):not(.citation-link):not(.footnote-trigger):not(.citation-source-link):hover {
   color: #f28b82;
   background-image: linear-gradient(
     to top,

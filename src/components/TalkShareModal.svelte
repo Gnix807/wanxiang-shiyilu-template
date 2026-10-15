@@ -286,12 +286,12 @@
     on:click={handleBackdropClick}
   >
     <div
-      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] sm:w-[400px] max-h-[85vh] bg-[#fbfbf9] dark:bg-[#141413] border-[5px] border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm shadow-[8px_8px_0px_0px_#1a1a1a] dark:shadow-[8px_8px_0px_0px_#e8e6e3] overflow-y-auto"
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] sm:w-[400px] max-h-[85vh] bg-[#fbfbf9] dark:bg-[#141413] border-[5px] border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[4px] shadow-[8px_8px_0px_0px_#1a1a1a] dark:shadow-[8px_8px_0px_0px_#e8e6e3] overflow-y-auto"
       on:click|stopPropagation
     >
       <div class="flex items-center justify-between p-4 border-b-4 border-[#1a1a1a] dark:border-[#e8e6e3] bg-white dark:bg-[#1c1b1a] sticky top-0 z-10">
         <h3 class="font-black text-[#1a1a1a] dark:text-[#e8e6e3] text-lg uppercase tracking-wider font-sans">分享</h3>
-        <button on:click={close} class="w-10 h-10 flex items-center justify-center hover:bg-[#f4efe6] dark:hover:bg-[#242220] rounded-sm transition-all text-[#1a1a1a] dark:text-[#e8e6e3] cursor-pointer border-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-white dark:bg-[#1c1b1a] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] active:translate-y-0.5 active:shadow-none">
+        <button on:click={close} class="w-10 h-10 flex items-center justify-center hover:bg-[#f4efe6] dark:hover:bg-[#242220] rounded-[3px] transition-all duration-150 text-[#1a1a1a] dark:text-[#e8e6e3] cursor-pointer border-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-white dark:bg-[#1c1b1a] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0px_0px_#1a1a1a] dark:hover:shadow-[3.5px_3.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -302,9 +302,9 @@
         <button
           on:click={generatePoster}
           disabled={generatingPoster}
-          class="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all disabled:opacity-50 cursor-pointer"
+          class="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5.5px_5.5px_0px_0px_#1a1a1a] dark:hover:shadow-[5.5px_5.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#1a1a1a] transition-all duration-150 disabled:opacity-50 cursor-pointer"
         >
-          <div class="w-10 h-10 flex items-center justify-center bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm shrink-0">
+          <div class="w-10 h-10 flex items-center justify-center bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#9e2a2b] dark:text-[#d9534f]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
@@ -319,11 +319,11 @@
         </button>
 
         {#if posterDataUrl}
-          <div class="bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm p-3 shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3]">
-            <img src={posterDataUrl} alt="海报预览" class="w-full h-auto rounded-sm" />
+          <div class="bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[4px] p-3 shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3]">
+            <img src={posterDataUrl} alt="海报预览" class="w-full h-auto rounded-[3px]" />
             <div class="mt-3 flex gap-2">
-              <button on:click={sharePoster} class="flex-1 bg-[#9e2a2b] dark:bg-[#d9534f] text-white font-black py-2.5 border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all text-sm uppercase tracking-wider cursor-pointer">分享</button>
-              <button on:click={downloadPoster} class="flex-1 bg-white dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] font-black py-2.5 border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all text-sm uppercase tracking-wider cursor-pointer">下载</button>
+              <button on:click={sharePoster} class="flex-1 bg-[#9e2a2b] dark:bg-[#d9534f] text-white font-black py-2.5 border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0px_0px_#1a1a1a] dark:hover:shadow-[4.5px_4.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 text-sm uppercase tracking-wider cursor-pointer">分享</button>
+              <button on:click={downloadPoster} class="flex-1 bg-white dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] font-black py-2.5 border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0px_0px_#1a1a1a] dark:hover:shadow-[4.5px_4.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 text-sm uppercase tracking-wider cursor-pointer">下载</button>
             </div>
           </div>
         {/if}
@@ -332,8 +332,8 @@
           <p class="text-[#9e2a2b] dark:text-[#d9534f] text-xs font-bold text-center">{posterError}</p>
         {/if}
 
-        <button on:click={shareToQQ} class="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all cursor-pointer">
-          <div class="w-10 h-10 flex items-center justify-center bg-[#9e2a2b] dark:bg-[#d9534f] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm shrink-0">
+        <button on:click={shareToQQ} class="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5.5px_5.5px_0px_0px_#1a1a1a] dark:hover:shadow-[5.5px_5.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#1a1a1a] transition-all duration-150 cursor-pointer">
+          <div class="w-10 h-10 flex items-center justify-center bg-[#9e2a2b] dark:bg-[#d9534f] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.5 14h-9c-.83 0-1.5-.67-1.5-1.5S6.67 13 7.5 13h9c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5zm0-5h-9c-.83 0-1.5-.67-1.5-1.5S6.67 8 7.5 8h9c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/></svg>
           </div>
           <div class="text-left">
@@ -342,8 +342,8 @@
           </div>
         </button>
 
-        <button on:click={shareToX} class="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all cursor-pointer">
-          <div class="w-10 h-10 flex items-center justify-center bg-black border-2 border-black rounded-sm shrink-0">
+        <button on:click={shareToX} class="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5.5px_5.5px_0px_0px_#1a1a1a] dark:hover:shadow-[5.5px_5.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#1a1a1a] transition-all duration-150 cursor-pointer">
+          <div class="w-10 h-10 flex items-center justify-center bg-black border-2 border-black rounded-[3px] shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           </div>
           <div class="text-left">
@@ -352,8 +352,8 @@
           </div>
         </button>
 
-        <button on:click={shareToWeChat} class="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all cursor-pointer">
-          <div class="w-10 h-10 flex items-center justify-center bg-[#07c160] border-2 border-[#07c160] rounded-sm shrink-0">
+        <button on:click={shareToWeChat} class="w-full flex items-center gap-4 p-4 bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5.5px_5.5px_0px_0px_#1a1a1a] dark:hover:shadow-[5.5px_5.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#1a1a1a] transition-all duration-150 cursor-pointer">
+          <div class="w-10 h-10 flex items-center justify-center bg-[#07c160] border-2 border-[#07c160] rounded-[3px] shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18zm2.869 3.714c-.482 0-.872.396-.872.884 0 .489.39.885.872.885.481 0 .872-.396.872-.885a.878.878 0 00-.872-.884zm-4.951.004c-.481 0-.872.396-.872.884 0 .489.39.885.872.885.481 0 .872-.396.872-.885a.878.878 0 00-.872-.884zm1.256 4.403c-2.092 0-3.95.586-5.122 1.443 1.426.936 3.252 1.486 5.222 1.486.799 0 1.568-.11 2.29-.308a.864.864 0 01.716.098l1.904 1.114a.326.326 0 00.167.054c.16 0 .29-.132.29-.295 0-.072-.029-.143-.048-.213l-.39-1.48a.59.59 0 01.213-.665c1.19-.942 2.02-2.294 2.228-3.826-1.215.652-2.662 1.035-4.27 1.035-1.09 0-2.124-.177-3.04-.488z"/></svg>
           </div>
           <div class="text-left">
@@ -362,8 +362,8 @@
           </div>
         </button>
 
-        <button on:click={copyLink} class="copy-link-btn w-full flex items-center gap-4 p-4 bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all cursor-pointer">
-          <div class="w-10 h-10 flex items-center justify-center bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm shrink-0">
+        <button on:click={copyLink} class="copy-link-btn w-full flex items-center gap-4 p-4 bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5.5px_5.5px_0px_0px_#1a1a1a] dark:hover:shadow-[5.5px_5.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#1a1a1a] transition-all duration-150 cursor-pointer">
+          <div class="w-10 h-10 flex items-center justify-center bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#9e2a2b] dark:text-[#d9534f]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
           </div>
           <div class="text-left">

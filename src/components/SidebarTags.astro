@@ -8,7 +8,7 @@ const { tags, activeTag } = Astro.props;
 ---
 
 {tags.length > 0 && (
-  <div class="bg-white dark:bg-[#1c1b1a] border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-5 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm w-full animate-card-entrance opacity-0" style="animation-delay: 0.1s">
+  <div class="bg-white dark:bg-[#1c1b1a] border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-5 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-[4px] w-full animate-card-entrance opacity-0" style="animation-delay: 0.1s">
     <h3 class="font-black text-[#1a1a1a] dark:text-[#e8e6e3] text-lg mb-4 flex items-center gap-2 border-b-2 border-dashed border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 pb-2">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
@@ -20,10 +20,10 @@ const { tags, activeTag } = Astro.props;
       {tags.map((tag, idx) => (
         <a
           href={`/tag/${tag.name}`}
-          class={`tag-item text-xs px-2.5 py-1 rounded-sm font-bold transition-all border-2 flex items-center gap-1 border-[#1a1a1a] dark:border-[#e8e6e3] ${
+          class={`tag-item text-xs px-2.5 py-1 rounded-[2px] font-bold transition-all duration-150 border-2 flex items-center gap-1 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[1.5px_1.5px_0px_0px_#1a1a1a] dark:shadow-[1.5px_1.5px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0px_0px_#1a1a1a] dark:hover:shadow-[2.5px_2.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none ${
             activeTag === tag.name
               ? "bg-[#9e2a2b] text-white"
-              : "bg-[#fbfbf9] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] dark:hover:bg-[#d9534f] dark:hover:text-white dark:hover:border-[#d9534f] hover:translate-y-[-1px]"
+              : "bg-[#fbfbf9] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] dark:hover:bg-[#d9534f] dark:hover:text-white dark:hover:border-[#d9534f]"
           } ${idx >= 18 && !activeTag ? 'hidden' : ''}`}
         >
           <span>{tag.name}</span>
@@ -35,7 +35,7 @@ const { tags, activeTag } = Astro.props;
     {tags.length > 18 && !activeTag && (
       <button
         id="toggle-tags-btn"
-        class="w-full mt-4 flex items-center justify-center gap-1 text-xs font-black text-[#1a1a1a] dark:text-[#e8e6e3] hover:text-[#9e2a2b] dark:hover:text-[#d9534f] hover:bg-[#f4efe6] dark:hover:bg-[#242220] transition-all py-1.5 bg-[#fbfbf9] dark:bg-[#242220] border-2 border-dashed border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 rounded-sm cursor-pointer"
+        class="w-full mt-4 flex items-center justify-center gap-1 text-xs font-black text-[#1a1a1a] dark:text-[#e8e6e3] hover:text-[#9e2a2b] dark:hover:text-[#d9534f] hover:bg-[#f4efe6] dark:hover:bg-[#242220] transition-all duration-150 active:translate-y-0.5 py-1.5 bg-[#fbfbf9] dark:bg-[#242220] border-2 border-dashed border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 rounded-[3px] cursor-pointer"
       >
         <span>展开更多...</span>
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="toggle-tags-chevron">

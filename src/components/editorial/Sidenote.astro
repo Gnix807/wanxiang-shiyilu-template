@@ -71,7 +71,7 @@ const displayTrigger = label || `[${id}]`;
     height: 15px;
     padding: 0 2.5px;
     color: var(--press-red);
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-small, 2px);
     cursor: pointer;
     border: 1px solid transparent;
     transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
@@ -95,7 +95,7 @@ const displayTrigger = label || `[${id}]`;
     color: #ffffff !important;
     text-decoration: none !important;
     box-shadow: 1px 1px 0 var(--line-solid) !important;
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-small, 2px);
   }
 
   :global(:is(.dark, [data-theme="dark"])) .footnote-anchor:hover .footnote-trigger,
@@ -117,38 +117,55 @@ const displayTrigger = label || `[${id}]`;
     max-width: min(280px, calc(100vw - 32px));
     background-color: var(--paper-surface);
     border: 2px solid var(--line-solid);
-    border-radius: 0;
+    border-radius: var(--editorial-radius-panel, 4px);
     box-shadow: 4px 4px 0 var(--line-solid);
     padding: 10px 12px;
     z-index: 100;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+    transform: translateX(-50%) translateY(8px) scale(0.96);
+    transform-origin: center bottom;
+    transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.22s;
     pointer-events: none;
     cursor: text;
     user-select: text;
     text-align: left;
   }
 
-  /* 桥接鼠标悬停区域，防止指针移入卡片时闪退 */
-  .footnote-anchor:not(:hover):not(.pinned) .footnote-popover,
-  .footnote-anchor.is-closed .footnote-popover {
-    display: none;
+  .footnote-popover[data-placement="below"] {
+    transform: translateX(-50%) translateY(-8px) scale(0.96);
+    transform-origin: center top;
   }
 
   .footnote-popover::after {
     content: '';
     position: absolute;
-    top: 100%;
     left: 0;
+    right: 0;
     width: 100%;
-    height: 18px;
+    height: 24px;
     background: transparent;
+    pointer-events: auto;
+    z-index: 10;
   }
 
   .footnote-popover[data-placement="below"]::after {
-    top: auto;
-    bottom: 100%;
+    top: -24px !important;
+    bottom: auto !important;
+    height: 24px !important;
+  }
+
+  .footnote-popover:not([data-placement="below"])::after,
+  .footnote-popover[data-placement="above"]::after {
+    top: auto !important;
+    bottom: -24px !important;
+    height: 24px !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .footnote-popover {
+      transition: none !important;
+    }
   }
 
   /* Popover 小三角指示箭头 */
@@ -170,14 +187,28 @@ const displayTrigger = label || `[${id}]`;
     opacity: 0 !important;
     visibility: hidden !important;
     pointer-events: none !important;
-    transform: translateX(-50%) translateY(4px) !important;
+    transition: none !important;
+    transform: translateX(-50%) translateY(8px) scale(0.96) !important;
   }
 
+  .footnote-anchor.is-closed .footnote-popover[data-placement="below"] {
+    transform: translateX(-50%) translateY(-8px) scale(0.96) !important;
+  }
+
+  /* 全局单例锁定：当有任何注解卡片被固定（pinned）时，抑制其他所有浮层的 hover 唤起 */
+  :global(:root.has-pinned-annotation) .footnote-anchor:not(.pinned) .footnote-popover {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  .footnote-anchor.is-hovering:not(.is-closed) .footnote-popover,
   .footnote-anchor:hover:not(.is-closed) .footnote-popover,
   :global(.footnote-anchor.pinned:not(.is-closed)) .footnote-popover {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(0) scale(1) !important;
     pointer-events: auto;
   }
 
@@ -208,7 +239,7 @@ const displayTrigger = label || `[${id}]`;
     border: 1.5px solid var(--press-red);
     box-shadow: 1.5px 1.5px 0 var(--press-red);
     padding: 0.5px 5px;
-    border-radius: 0;
+    border-radius: var(--editorial-radius-small, 2px);
     line-height: 1.2;
     flex-shrink: 0;
   }
@@ -246,7 +277,7 @@ const displayTrigger = label || `[${id}]`;
     margin: -2px -2px -2px 4px;
     color: var(--ink-light);
     cursor: pointer;
-    border-radius: 0;
+    border-radius: var(--editorial-radius-control, 3px);
     transition: all 0.15s ease;
     flex-shrink: 0;
   }
@@ -308,7 +339,7 @@ const displayTrigger = label || `[${id}]`;
     color: #ffffff !important;
     box-shadow: 0 0 8px rgba(158, 42, 43, 0.55);
     transform: scale(1.15);
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-small, 2px);
   }
 
   /* 侧栏跳转时的平滑轻量高亮动效 */

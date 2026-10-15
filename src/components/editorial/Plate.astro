@@ -33,7 +33,7 @@ const { src, alt = '图版', fig = '图 1.0', caption } = Astro.props;
     background: var(--paper-surface);
     border: 2.5px solid var(--line-solid);
     box-shadow: 4px 4px 0 var(--line-solid);
-    border-radius: 0;
+    border-radius: var(--editorial-radius-panel, 4px);
     padding: 12px 12px 14px;
     transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -47,13 +47,14 @@ const { src, alt = '图版', fig = '图 1.0', caption } = Astro.props;
     border: 1.5px solid var(--line-solid);
     background-color: var(--paper-bg);
     overflow: hidden;
-    border-radius: 0;
+    border-radius: var(--editorial-radius-inner, 3px);
   }
 
   .plate-frame img {
     width: 100%;
     height: auto;
     display: block;
+    border-radius: calc(var(--editorial-radius-inner, 3px) - 1px);
   }
 
   .plate-caption {

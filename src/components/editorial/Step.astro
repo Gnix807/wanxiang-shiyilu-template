@@ -138,7 +138,7 @@ const localPrefix = phasePrefix ?? prefix;
     padding: 0 6px;
     background: var(--paper-surface);
     border: 2px solid var(--line-solid);
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-control, 3px);
     box-shadow: 2.5px 2.5px 0 var(--line-solid);
     display: inline-flex;
     align-items: center;
@@ -182,7 +182,7 @@ const localPrefix = phasePrefix ?? prefix;
     border: 2px solid var(--line-solid);
     border-left: 5px solid var(--press-red);
     box-shadow: 3.5px 3.5px 0 var(--line-solid);
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-panel, 4px);
     padding: 16px 20px;
     position: relative;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -216,7 +216,7 @@ const localPrefix = phasePrefix ?? prefix;
     padding: 1.5px 6px;
     border: 1.5px solid var(--press-red);
     display: inline-block;
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-small, 2px);
   }
 
   .counter-phase::before {
@@ -242,7 +242,7 @@ const localPrefix = phasePrefix ?? prefix;
     background: rgba(43, 122, 45, 0.08);
     border: 1px solid rgba(43, 122, 45, 0.25);
     padding: 1px 6px;
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-small, 2px);
   }
 
   :global(:is(.dark, [data-theme="dark"])) .step-status {

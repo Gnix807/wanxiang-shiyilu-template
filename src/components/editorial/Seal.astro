@@ -257,7 +257,10 @@ const leftCol = isFourChar ? [cleanText[2], cleanText[3]] : [];
      ======================================================= */
   /* 正统方印：纯正直角与金石破口 */
   .shape-square {
-    border-radius: 0;
+    border-radius: var(--editorial-radius-small, 2px);
+  }
+  .shape-square.size-xs {
+    border-radius: 1.5px;
   }
 
   /* 圆印 */
@@ -281,10 +284,10 @@ const leftCol = isFourChar ? [cleanText[2], cleanText[3]] : [];
   .shape-rect {
     width: auto;
     height: 28px;
-    border-radius: 0;
+    border-radius: var(--editorial-radius-small, 2px);
     padding: 2px 8px;
   }
-  .shape-rect.size-xs { height: 20px; padding: 1px 5px; }
+  .shape-rect.size-xs { height: 20px; padding: 1px 5px; border-radius: 1.5px; }
   .shape-rect.size-md { height: 38px; padding: 3px 12px; }
   .shape-rect.size-lg { height: 56px; padding: 4px 16px; }
 
@@ -356,7 +359,7 @@ const leftCol = isFourChar ? [cleanText[2], cleanText[3]] : [];
 
   .shape-square.variant-wax .wax-seal-inner,
   .shape-rect.variant-wax .wax-seal-inner {
-    border-radius: 3px;
+    border-radius: var(--editorial-radius-small, 2px);
     width: 82%;
     height: 82%;
   }
@@ -452,7 +455,7 @@ const leftCol = isFourChar ? [cleanText[2], cleanText[3]] : [];
     background: var(--seal-soft);
     padding: 3px 8px;
     box-shadow: 2px 2px 0 var(--seal-shadow);
-    border-radius: 0;
+    border-radius: var(--editorial-radius-small, 2px);
   }
 
   .stamp-wrapper {

@@ -81,7 +81,7 @@ if (color === 'secondary') color = 'ink';
   .variant-outline {
     background: var(--paper-surface);
     border: 1.5px solid currentColor;
-    border-radius: 0;
+    border-radius: var(--editorial-radius-small, 2px);
     box-shadow: 1.5px 1.5px 0 currentColor;
   }
 
@@ -129,7 +129,7 @@ if (color === 'secondary') color = 'ink';
   /* Solid 风格（纯色印签） */
   .variant-solid {
     border: 1.5px solid var(--line-solid);
-    border-radius: 0;
+    border-radius: var(--editorial-radius-small, 2px);
     box-shadow: 2px 2px 0 var(--line-solid);
   }
 
@@ -172,7 +172,7 @@ if (color === 'secondary') color = 'ink';
   .variant-subtle {
     background: rgba(44, 40, 37, 0.04);
     border: 1.5px solid currentColor;
-    border-radius: 0;
+    border-radius: var(--editorial-radius-small, 2px);
     box-shadow: 1.5px 1.5px 0 currentColor;
   }
 

@@ -43,7 +43,7 @@ const { categories, activeCategory, postsDataUrl = '' } = Astro.props;
 {categories.length > 0 && (
   <>
     <div 
-      class="bg-white dark:bg-[#1c1b1a] border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-3 shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] rounded-sm mb-6 flex items-center gap-3 overflow-x-auto hide-scrollbar custom-scrollbar pb-2 animate-card-entrance opacity-0"
+      class="bg-white dark:bg-[#1c1b1a] border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-3 shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] rounded-[4px] mb-6 flex items-center gap-3 overflow-x-auto hide-scrollbar custom-scrollbar pb-2 animate-card-entrance opacity-0"
       transition:name="horizontal-categories"
     >
       <div class="flex items-center gap-1 font-black text-[#1a1a1a] dark:text-[#e8e6e3] shrink-0 text-sm">
@@ -55,10 +55,10 @@ const { categories, activeCategory, postsDataUrl = '' } = Astro.props;
       
       <a
         href="/"
-        class={`shrink-0 px-3 py-1 rounded-sm font-bold text-xs transition-all border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] ${
+        class={`shrink-0 px-3 py-1 rounded-[3px] font-bold text-xs transition-all duration-150 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] dark:hover:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none ${
           activeCategory === null
             ? "bg-[#9e2a2b] text-white"
-            : "bg-[#fbfbf9] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#f4efe6] dark:hover:bg-[#2d2b28] hover:translate-y-[-1px]"
+            : "bg-[#fbfbf9] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#f4efe6] dark:hover:bg-[#2d2b28]"
         }`}
       >
         全部
@@ -67,14 +67,14 @@ const { categories, activeCategory, postsDataUrl = '' } = Astro.props;
       {categories.map((cat) => (
         <a
           href={`/category/${cat.name}`}
-          class={`shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-sm font-bold text-xs transition-all border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] ${
+          class={`shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-[3px] font-bold text-xs transition-all duration-150 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] dark:hover:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none ${
             activeCategory === cat.name
               ? "bg-[#9e2a2b] text-white"
-              : "bg-[#fbfbf9] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#f4efe6] dark:hover:bg-[#2d2b28] hover:translate-y-[-1px]"
+              : "bg-[#fbfbf9] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#f4efe6] dark:hover:bg-[#2d2b28]"
           }`}
         >
           <span>{cat.name}</span>
-          <span class={`px-1.5 py-0.5 text-[9px] rounded-full font-black ${activeCategory === cat.name ? 'bg-white/30 text-white' : 'bg-[#f4efe6] dark:bg-[#141413] text-[#1a1a1a]/70 dark:text-[#e8e6e3]/70 border border-[#1a1a1a]/15 dark:border-[#e8e6e3]/20'}`}>
+          <span class={`px-1.5 py-0.5 text-[9px] rounded-[2px] font-black ${activeCategory === cat.name ? 'bg-white/30 text-white' : 'bg-[#f4efe6] dark:bg-[#141413] text-[#1a1a1a]/70 dark:text-[#e8e6e3]/70 border border-[#1a1a1a]/15 dark:border-[#e8e6e3]/20'}`}>
             {cat.count}
           </span>
         </a>
@@ -83,7 +83,7 @@ const { categories, activeCategory, postsDataUrl = '' } = Astro.props;
       <div class="ml-auto flex xl:hidden shrink-0 sticky right-0 bg-white dark:bg-[#1c1b1a] shadow-[-8px_0_8px_-8px_rgba(0,0,0,0.1)] pl-2">
         <button
           id="mobile-calendar-btn"
-          class="shrink-0 px-2 py-1 rounded-sm font-bold text-xs transition-all border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] bg-[#fbfbf9] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#f4efe6] dark:hover:bg-[#2d2b28] hover:translate-y-[-1px] flex items-center justify-center cursor-pointer"
+          class="shrink-0 px-2 py-1 rounded-[3px] font-bold text-xs transition-all duration-150 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] bg-[#fbfbf9] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#f4efe6] dark:hover:bg-[#2d2b28] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none flex items-center justify-center cursor-pointer"
           aria-label="打开日历"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 stroke-[2.5] text-[#1a1a1a] dark:text-[#e8e6e3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -96,10 +96,10 @@ const { categories, activeCategory, postsDataUrl = '' } = Astro.props;
     <!-- Mobile Calendar Dialog -->
     <dialog 
       id="mobile-calendar-dialog" 
-      class="backdrop:bg-[#141413]/60 backdrop:backdrop-blur-sm p-0 m-auto mt-[15vh] border-0 outline-none overflow-visible shadow-none bg-transparent w-full max-w-[340px] px-4 transition-all duration-300 opacity-0 scale-95"
+      class="backdrop:bg-[#141413]/60 backdrop:backdrop-blur-sm p-0 m-auto mt-[15vh] border-0 outline-none overflow-visible shadow-none bg-transparent w-full max-w-[340px] px-4 transition-all duration-150 opacity-0 scale-95"
     >
       <div class="relative w-full">
-        <button onclick="document.getElementById('mobile-calendar-dialog').close()" class="absolute -top-3 -right-3 w-8 h-8 z-50 bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-full shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] flex items-center justify-center text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white cursor-pointer transition-colors">
+        <button onclick="document.getElementById('mobile-calendar-dialog').close()" class="absolute -top-3 -right-3 w-8 h-8 z-50 bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] flex items-center justify-center text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white cursor-pointer transition-all duration-150 active:scale-95">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>

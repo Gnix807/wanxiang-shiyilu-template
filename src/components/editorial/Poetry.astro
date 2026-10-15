@@ -125,7 +125,7 @@ const parsedLines = parsePoetry(rawSlot, normalizedCols, title);
     border: 2.5px solid var(--line-solid);
     box-shadow: 4px 4px 0 var(--line-solid);
     padding: 34px 44px 30px;
-    border-radius: 0;
+    border-radius: var(--editorial-radius-panel, 4px);
     transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
@@ -364,7 +364,7 @@ const parsedLines = parsePoetry(rawSlot, normalizedCols, title);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 0;
+    border-radius: var(--editorial-radius-small, 2px);
     box-shadow: 
       inset 0 0 0 1px var(--paper-surface, #faf6ed),
       inset 0 0 0 2px var(--press-red),

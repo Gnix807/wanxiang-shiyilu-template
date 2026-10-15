@@ -70,7 +70,7 @@
 </script>
 
 {#if months.length > 0}
-  <div class="bg-white dark:bg-[#1c1b1a] border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-4 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm xl:sticky xl:top-[calc(100px+320px)] w-full animate-card-entrance opacity-0" style="animation-delay: 0.12s">
+  <div class="bg-white dark:bg-[#1c1b1a] border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-4 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-[4px] xl:sticky xl:top-[calc(100px+320px)] w-full animate-card-entrance opacity-0" style="animation-delay: 0.12s">
     <h3 class="font-black text-[#1a1a1a] dark:text-[#e8e6e3] uppercase tracking-wider mb-4 border-b-2 border-dashed border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 pb-2 flex items-center gap-2 text-sm">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -87,11 +87,11 @@
             class="archive-header w-full text-xs font-black text-[#1a1a1a] dark:text-[#e8e6e3] mb-2 relative flex items-center cursor-pointer hover:text-[#9e2a2b] dark:hover:text-[#d9534f] transition-colors select-none text-left"
             on:click={() => toggleGroup(ym)}
           >
-            <span class="w-2 h-2 bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] inline-block mr-2 shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3]"></span>
+            <span class="w-2 h-2 bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[2px] inline-block mr-2 shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3]"></span>
             <span class="flex-1">{ym}</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="w-3.5 h-3.5 stroke-[2.5] chevron-icon transition-transform duration-250 ease-out"
+              class="w-3.5 h-3.5 stroke-[2.5] chevron-icon transition-transform duration-150 ease-out"
               style="transform: {isOpen ? 'rotate(0deg)' : 'rotate(-90deg)'};"
               fill="none"
               viewBox="0 0 24 24"
@@ -103,14 +103,14 @@
 
           {#if isOpen}
             <div
-              transition:slide={{ duration: 250 }}
+              transition:slide={{ duration: 150 }}
               class="archive-posts pl-3 border-l-2 border-dashed border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 ml-[3px] space-y-2 overflow-hidden"
             >
               {#each groupedPosts[ym] as post}
                 <a
                   href={`/posts/${encodeURIComponent(post.slug)}`}
                   data-astro-prefetch
-                  class="block text-[11px] font-bold text-[#1a1a1a]/80 dark:text-[#e8e6e3]/80 hover:text-[#9e2a2b] dark:hover:text-[#d9534f] cursor-pointer truncate transition-colors py-0.5 relative z-10"
+                  class="block text-[11px] font-bold text-[#1a1a1a]/80 dark:text-[#e8e6e3]/80 hover:text-[#9e2a2b] dark:hover:text-[#d9534f] cursor-pointer truncate transition-all duration-150 hover:translate-x-1 py-0.5 relative z-10"
                   title={post.title}
                 >
                   <span class="mr-1.5 text-slate-500 dark:text-slate-400 font-mono text-[9px]">{displayDate(post.date)}</span>
@@ -124,7 +124,7 @@
     </div>
   </div>
 {:else}
-  <div class="bg-white dark:bg-[#1c1b1a] border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-4 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm w-full animate-card-entrance opacity-0" style="animation-delay: 0.12s">
+  <div class="bg-white dark:bg-[#1c1b1a] border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-4 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-[4px] w-full animate-card-entrance opacity-0" style="animation-delay: 0.12s">
     <h3 class="font-black text-[#1a1a1a] dark:text-[#e8e6e3] uppercase tracking-wider mb-2 text-sm">归档目录</h3>
     <p class="text-xs font-bold text-slate-400">加载中...</p>
   </div>

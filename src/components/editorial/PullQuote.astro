@@ -138,7 +138,7 @@ const cite = citeProp ?? sourceProp;
     border: 1.5px solid var(--press-red);
     box-shadow: 1.5px 1.5px 0 var(--press-red);
     padding: 2px 10px;
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-small, 2px);
   }
 
   .pull-rule-double {
@@ -282,7 +282,7 @@ const cite = citeProp ?? sourceProp;
     border: 2.5px solid var(--line-solid);
     border-left: 6px solid var(--press-red);
     box-shadow: 4px 4px 0 var(--line-solid);
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-panel, 4px);
     padding: 22px 28px 20px;
     position: relative;
     overflow: hidden;
@@ -317,7 +317,7 @@ const cite = citeProp ?? sourceProp;
     box-shadow: 1.5px 1.5px 0 var(--press-red);
     padding: 2.5px 9px;
     text-transform: uppercase;
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-small, 2px);
   }
 
   .dispatch-ref {
@@ -393,7 +393,7 @@ const cite = citeProp ?? sourceProp;
     background: var(--press-red-soft, rgba(158, 42, 43, 0.08));
     border: 1.5px solid var(--press-red);
     padding: 2px 9px;
-    border-radius: 0;
+    border-radius: var(--editorial-radius-small, 2px);
     box-shadow: 1.5px 1.5px 0 var(--press-red);
     transform: rotate(-0.6deg);
     transition: transform 0.2s ease, filter 0.2s ease;

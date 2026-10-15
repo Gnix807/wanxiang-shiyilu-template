@@ -103,7 +103,7 @@ const stamp = propStamp || propBadge || (type === 'grid' ? 'GRID NOTE' : type ==
     background: var(--paper-surface);
     border: 2.5px solid var(--line-solid);
     box-shadow: 4px 4px 0 var(--line-solid);
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-panel, 4px);
     overflow: hidden;
   }
 
@@ -164,7 +164,7 @@ const stamp = propStamp || propBadge || (type === 'grid' ? 'GRID NOTE' : type ==
     border: 1.5px solid var(--press-red);
     box-shadow: 1.5px 1.5px 0 var(--press-red);
     padding: 1.5px 6px;
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-small, 2px);
     letter-spacing: 1px;
     text-transform: uppercase;
   }
@@ -391,7 +391,7 @@ const stamp = propStamp || propBadge || (type === 'grid' ? 'GRID NOTE' : type ==
     padding: 2px 7px;
     border: 1.5px solid var(--press-red);
     background: var(--press-red-soft, rgba(158, 42, 43, 0.08));
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-small, 2px);
     box-shadow: 2px 2px 0 var(--press-red);
     user-select: none;
     transition: transform 0.15s ease, box-shadow 0.15s ease;

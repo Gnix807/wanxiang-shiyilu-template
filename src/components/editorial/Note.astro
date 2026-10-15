@@ -158,7 +158,7 @@ const sealText = typeof rawSeal === 'string' && rawSeal ? rawSeal : meta.sealTex
     border: 2.5px solid var(--line-solid);
     border-left: 6px solid var(--note-accent);
     box-shadow: 4px 4px 0 var(--line-solid);
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-panel, 4px);
     margin: 32px 0;
     padding: 18px 22px 15px;
     position: relative;
@@ -204,7 +204,7 @@ const sealText = typeof rawSeal === 'string' && rawSeal ? rawSeal : meta.sealTex
     box-shadow: 1.5px 1.5px 0 var(--note-accent);
     padding: 2.5px 8.5px;
     text-transform: uppercase;
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-small, 2px);
     transition: transform 0.15s ease;
   }
 
@@ -247,7 +247,7 @@ const sealText = typeof rawSeal === 'string' && rawSeal ? rawSeal : meta.sealTex
     text-transform: uppercase;
     padding: 1.5px 6px;
     border: 1.5px solid var(--line-solid);
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-small, 2px);
   }
 
   /* ---------------- Divider ---------------- */
@@ -299,7 +299,7 @@ const sealText = typeof rawSeal === 'string' && rawSeal ? rawSeal : meta.sealTex
     font-family: var(--font-mono);
     font-size: 0.88em;
     padding: 2px 6px;
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-small, 2px);
     background: var(--note-accent-soft);
     color: var(--note-accent);
     border: 1.5px solid var(--note-divider);
@@ -339,7 +339,7 @@ const sealText = typeof rawSeal === 'string' && rawSeal ? rawSeal : meta.sealTex
     border: 1.5px solid var(--note-accent);
     box-shadow: 1.5px 1.5px 0 var(--note-accent);
     padding: 2px 8px;
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-small, 2px);
     transition: transform 0.15s ease;
   }
 

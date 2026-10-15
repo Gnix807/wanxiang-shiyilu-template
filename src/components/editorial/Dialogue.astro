@@ -50,18 +50,18 @@ const hasHeader = (speaker !== false && cleanSpeaker) || role || badge || time;
   {/* 说话人与身份（若存在，置于气泡上方，留出头像槽位边距） */}
   {hasHeader && (
     <div class={`im-header-row flex items-center gap-1.5 mb-1 px-0.5 text-xs text-neutral-500 dark:text-neutral-400 font-sans select-none ${
-      isRight 
-        ? 'flex-row-reverse mr-[46px] sm:mr-[52px]' 
+      isRight
+        ? 'flex-row-reverse mr-[46px] sm:mr-[52px]'
         : 'flex-row ml-[46px] sm:ml-[52px]'
     }`}>
       {cleanSpeaker && <span class="font-extrabold text-[#1a1a1a] dark:text-[#e8e6e3]">{cleanSpeaker}</span>}
       {role && (
-        <span class="text-[10px] font-mono font-bold bg-black/5 dark:bg-white/10 px-1.5 py-0.2 rounded-xs border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 text-neutral-700 dark:text-neutral-200">
+        <span class="text-[10px] font-mono font-bold bg-black/5 dark:bg-white/10 px-1.5 py-0.2 rounded-[2px] border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 text-neutral-700 dark:text-neutral-200">
           {role}
         </span>
       )}
       {badge && (
-        <span class="text-[10px] bg-[#9e2a2b]/10 dark:bg-[#d9534f]/20 text-[#9e2a2b] dark:text-[#d9534f] font-mono font-black px-1.5 py-0.2 rounded-xs border border-[#9e2a2b] dark:border-[#d9534f] shadow-[1px_1px_0px_0px_#9e2a2b]">
+        <span class="text-[10px] bg-[#9e2a2b]/10 dark:bg-[#d9534f]/20 text-[#9e2a2b] dark:text-[#d9534f] font-mono font-black px-1.5 py-0.2 rounded-[2px] border border-[#9e2a2b] dark:border-[#d9534f] shadow-[1px_1px_0px_0px_#9e2a2b]">
           {badge}
         </span>
       )}
@@ -74,16 +74,16 @@ const hasHeader = (speaker !== false && cleanSpeaker) || role || badge || time;
     {/* 头像 */}
     <div class="im-avatar shrink-0 select-none">
       {resolvedAvatar ? (
-        <img 
-          src={resolvedAvatar} 
-          alt={cleanSpeaker} 
-          class="w-9 h-9 sm:w-10 sm:h-10 rounded-sm object-cover border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3]" 
+        <img
+          src={resolvedAvatar}
+          alt={cleanSpeaker}
+          class="w-9 h-9 sm:w-10 sm:h-10 rounded-[3px] object-cover border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3]"
           loading="lazy"
         />
       ) : (
-        <div class={`w-9 h-9 sm:w-10 sm:h-10 rounded-sm flex items-center justify-center font-black text-sm font-mono border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] ${
-          isRight 
-            ? 'bg-[#9e2a2b] text-white' 
+        <div class={`w-9 h-9 sm:w-10 sm:h-10 rounded-[3px] flex items-center justify-center font-black text-sm font-mono border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] ${
+          isRight
+            ? 'bg-[#9e2a2b] text-white'
             : 'bg-[#e2ded5] dark:bg-[#33312e] text-[#1a1a1a] dark:text-[#e8e6e3]'
         }`}>
           {displayInitial}
@@ -92,7 +92,7 @@ const hasHeader = (speaker !== false && cleanSpeaker) || role || badge || time;
     </div>
 
     {/* 聊天气泡 */}
-    <div class={`im-bubble-container relative max-w-[84%] sm:max-w-[78%] px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-sm text-sm sm:text-[14.5px] leading-relaxed break-words font-sans border-2 border-[#1a1a1a] dark:border-[#e8e6e3] ${
+    <div class={`im-bubble-container relative max-w-[84%] sm:max-w-[78%] px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-[4px] text-sm sm:text-[14.5px] leading-relaxed break-words font-sans border-2 border-[#1a1a1a] dark:border-[#e8e6e3] ${
       isRight
         ? variant === 'qq'
           ? 'bg-[#12b7f5] dark:bg-[#0288d1] text-white im-bubble-right im-qq-right'

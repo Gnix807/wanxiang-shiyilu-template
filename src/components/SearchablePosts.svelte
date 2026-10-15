@@ -423,7 +423,7 @@
       value={searchQuery}
       on:input={handleSearchInput}
       toolparamdescription="搜索关键词，支持按文章标题、描述、标签或分类进行模糊匹配"
-      class="w-full bg-white dark:bg-[#242220] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] font-bold focus:outline-none px-4 sm:px-5 py-3 rounded-sm text-sm text-[#1a1a1a] dark:text-[#e8e6e3] placeholder-stone-400 shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#2d2b28] focus:shadow-[5px_5px_0px_0px_#9e2a2b] focus:-translate-x-0.5 focus:-translate-y-0.5 transition-all outline-none"
+      class="w-full bg-white dark:bg-[#242220] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] font-bold focus:outline-none px-4 sm:px-5 py-3 rounded-[3px] text-sm text-[#1a1a1a] dark:text-[#e8e6e3] placeholder-stone-400 shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#2d2b28] focus:shadow-[5px_5px_0px_0px_#9e2a2b] focus:-translate-x-0.5 focus:-translate-y-0.5 transition-all duration-150 outline-none"
     />
     <div class="absolute right-4.5 top-1/2 -translate-y-1/2 text-[#1a1a1a] dark:text-[#e8e6e3] flex items-center gap-2">
       {#if searchQuery}
@@ -442,11 +442,11 @@
 
   <div bind:this={feedEl} class="flex flex-col gap-4 sm:gap-6 md:gap-8 mt-2 sm:mt-1">
     {#if isLoadingPosts}
-      <div class="bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] p-12 shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#2d2b28] rounded-sm text-center">
+      <div class="bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] p-12 shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#2d2b28] rounded-[4px] text-center">
         <p class="text-[#1a1a1a] dark:text-[#e8e6e3] font-bold tracking-widest uppercase">文章加载中...</p>
       </div>
     {:else if displayedPosts.length === 0}
-      <div class="bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] p-12 shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#2d2b28] rounded-sm text-center">
+      <div class="bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] p-12 shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#2d2b28] rounded-[4px] text-center">
         <p class="text-[#1a1a1a] dark:text-[#e8e6e3] font-bold tracking-widest uppercase">{loadFailed ? '文章数据加载失败' : i18nConfig.search.noResults}</p>
       </div>
     {/if}
@@ -467,7 +467,7 @@
             ></div>
           </div>
         {/if}
-        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm p-0 flex flex-row overflow-hidden shadow-[4px_4px_0px_0px_#1a1a1a] sm:shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] sm:dark:shadow-[6px_6px_0px_0px_#e8e6e3] hover:shadow-[6px_6px_0px_0px_#9e2a2b] sm:hover:shadow-[8px_8px_0px_0px_#9e2a2b] dark:hover:shadow-[6px_6px_0px_0px_#d9534f] sm:dark:hover:shadow-[8px_8px_0px_0px_#d9534f] hover:-translate-y-0.5 transition-all duration-300">
+        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[4px] p-0 flex flex-row overflow-hidden shadow-[4px_4px_0px_0px_#1a1a1a] sm:shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] sm:dark:shadow-[6px_6px_0px_0px_#e8e6e3] hover:shadow-[6px_6px_0px_0px_#9e2a2b] sm:hover:shadow-[8px_8px_0px_0px_#9e2a2b] dark:hover:shadow-[6px_6px_0px_0px_#d9534f] sm:dark:hover:shadow-[8px_8px_0px_0px_#d9534f] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all duration-150">
           <div class="flex-1 p-3.5 sm:p-5 md:p-6 flex flex-col justify-between min-w-0">
             <a href={`/posts/${encodeURIComponent(post.slug)}/`} class="block group">
               <h2 class="text-sm sm:text-base md:text-xl font-black text-[#1a1a1a] dark:text-[#e8e6e3] mb-1 md:mb-2 group-hover:text-[#9e2a2b] dark:group-hover:text-[#d9534f] transition-colors leading-snug font-sans">
@@ -483,7 +483,7 @@
               {#if post.category}
                 <a 
                   href={`/category/${post.category}`}
-                  class="bg-[#f4efe6] dark:bg-[#242220] border border-[#1a1a1a] dark:border-[#e8e6e3] px-2 py-0.5 shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3] text-[#9e2a2b] dark:text-[#d9534f] font-bold text-[10px] md:text-xs hover:bg-[#9e2a2b] hover:text-white transition-colors uppercase cursor-pointer shrink-0"
+                  class="bg-[#f4efe6] dark:bg-[#242220] border border-[#1a1a1a] dark:border-[#e8e6e3] px-2 py-0.5 rounded-[2px] shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3] text-[#9e2a2b] dark:text-[#d9534f] font-bold text-[10px] md:text-xs hover:bg-[#9e2a2b] hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#9e2a2b] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 uppercase cursor-pointer shrink-0"
                 >
                   {post.category}
                 </a>
@@ -492,7 +492,7 @@
                 {#each post.tags.slice(0, 2) as tag}
                   <a 
                     href={`/tag/${tag}`}
-                    class="bg-[#f4efe6] dark:bg-[#242220] border border-[#1a1a1a] dark:border-[#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] px-2 py-0.5 shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3] font-bold text-[10px] md:text-xs hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] dark:hover:bg-[#d9534f] dark:hover:text-white dark:hover:border-[#d9534f] transition-all cursor-pointer shrink-0"
+                    class="bg-[#f4efe6] dark:bg-[#242220] border border-[#1a1a1a] dark:border-[#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] px-2 py-0.5 rounded-[2px] shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3] font-bold text-[10px] md:text-xs hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] dark:hover:bg-[#d9534f] dark:hover:text-white dark:hover:border-[#d9534f] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_#9e2a2b] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 cursor-pointer shrink-0"
                   >
                     #{tag}
                   </a>
@@ -502,7 +502,7 @@
           </div>
           
           <a href={`/posts/${encodeURIComponent(post.slug)}/`} class="w-[100px] sm:w-[130px] md:w-[190px] shrink-0 border-l-3 sm:border-l-4 border-[#1a1a1a] dark:border-[#e8e6e3] relative bg-[#f4efe6] dark:bg-[#242220] flex items-center justify-center overflow-hidden">
-            <img src={post.img || placeholderImg} alt={post.title} width="190" height="120" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" referrerpolicy="no-referrer" on:error={(e) => { const imgEl = e.currentTarget as HTMLImageElement; if (imgEl.src !== placeholderImg) { imgEl.src = placeholderImg; } }} />
+            <img src={post.img || placeholderImg} alt={post.title} width="190" height="120" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" referrerpolicy="no-referrer" on:error={(e) => { const imgEl = e.currentTarget as HTMLImageElement; if (imgEl.src !== placeholderImg) { imgEl.src = placeholderImg; } }} />
           </a>
         </div>
       </article>
@@ -515,7 +515,7 @@
             on:click={prevPage}
             disabled={currentPage === 1}
             aria-label="Previous Page"
-            class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white dark:bg-[#1c1b1a] border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm {currentPage === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer shadow-[2px_2px_0px_0px_#1a1a1a] sm:shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] sm:dark:shadow-[3px_3px_0px_0px_#e8e6e3]'} "
+            class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white dark:bg-[#1c1b1a] border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] {currentPage === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer shadow-[2px_2px_0px_0px_#1a1a1a] sm:shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] sm:dark:shadow-[3px_3px_0px_0px_#e8e6e3]'} "
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 sm:w-6 sm:h-6 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
@@ -525,7 +525,7 @@
           <!-- Page numbers hidden on small screens, show only arrows -->
           <div class="hidden sm:flex items-center gap-2 sm:gap-3">
             {#if pageNumbers[0] > 1}
-              <button on:click={() => goToPage(1)} class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white dark:bg-[#1c1b1a] border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm font-bold text-sm sm:text-base text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white transition-colors shadow-[2px_2px_0px_0px_#1a1a1a] sm:shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] sm:dark:shadow-[3px_3px_0px_0px_#e8e6e3] cursor-pointer">1</button>
+              <button on:click={() => goToPage(1)} class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white dark:bg-[#1c1b1a] border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] font-bold text-sm sm:text-base text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none shadow-[2px_2px_0px_0px_#1a1a1a] sm:shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] sm:dark:shadow-[3px_3px_0px_0px_#e8e6e3] cursor-pointer">1</button>
               {#if pageNumbers[0] > 2}
                 <span class="text-[#1a1a1a] dark:text-[#e8e6e3] font-bold px-1">...</span>
               {/if}
@@ -534,7 +534,7 @@
             {#each pageNumbers as p}
               <button
                 on:click={() => goToPage(p)}
-                class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm font-bold text-sm sm:text-base transition-all cursor-pointer shadow-[2px_2px_0px_0px_#1a1a1a] sm:shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] sm:dark:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-y-0.5 active:shadow-none {currentPage === p ? 'bg-[#1a1a1a] dark:bg-[#e8e6e3] text-white dark:text-[#141413]' : 'bg-white dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b]'}"
+                class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] font-bold text-sm sm:text-base transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 cursor-pointer shadow-[2px_2px_0px_0px_#1a1a1a] sm:shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] sm:dark:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none {currentPage === p ? 'bg-[#1a1a1a] dark:bg-[#e8e6e3] text-white dark:text-[#141413]' : 'bg-white dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b]'}"
               >
                 {p}
               </button>
@@ -544,12 +544,12 @@
               {#if pageNumbers[pageNumbers.length - 1] < totalPages - 1}
                 <span class="text-[#1a1a1a] dark:text-[#e8e6e3] font-bold px-1">...</span>
               {/if}
-              <button on:click={() => goToPage(totalPages)} class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white dark:bg-[#1c1b1a] border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm font-bold text-sm sm:text-base text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white transition-colors shadow-[2px_2px_0px_0px_#1a1a1a] sm:shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] sm:dark:shadow-[3px_3px_0px_0px_#e8e6e3] cursor-pointer">{totalPages}</button>
+              <button on:click={() => goToPage(totalPages)} class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-white dark:bg-[#1c1b1a] border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] font-bold text-sm sm:text-base text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none shadow-[2px_2px_0px_0px_#1a1a1a] sm:shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] sm:dark:shadow-[3px_3px_0px_0px_#e8e6e3] cursor-pointer">{totalPages}</button>
             {/if}
           </div>
 
           <!-- Mobile page indicator -->
-          <div class="sm:hidden px-4 h-10 flex items-center justify-center font-bold text-sm font-mono text-[#1a1a1a] dark:text-[#e8e6e3] bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] rounded-sm">
+          <div class="sm:hidden px-4 h-10 flex items-center justify-center font-bold text-sm font-mono text-[#1a1a1a] dark:text-[#e8e6e3] bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] rounded-[3px]">
             {currentPage} / {totalPages}
           </div>
 

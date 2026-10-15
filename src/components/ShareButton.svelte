@@ -494,7 +494,7 @@
 
 <button
   on:click={toggle}
-  class="inline-flex items-center gap-2 h-11 px-4 rounded-sm border-[3px] border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] font-black text-sm cursor-pointer shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3] hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#1a1a1a] dark:hover:shadow-[4px_4px_0px_0px_#e8e6e3] active:translate-y-0 active:shadow-none transition-all duration-150 shrink-0"
+  class="inline-flex items-center gap-2 h-11 px-4 rounded-[3px] border-[3px] border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] font-black text-sm cursor-pointer shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0px_0px_#1a1a1a] dark:hover:shadow-[4.5px_4.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 shrink-0"
   aria-label="分享文章"
 >
   <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -507,7 +507,7 @@
   <div use:portal class="fixed inset-0 z-[2147483000] flex items-end sm:items-center justify-center p-0 sm:p-6" role="presentation" on:click={closeShare}>
     <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
     <section
-      class="relative w-full sm:max-w-lg max-h-[88vh] overflow-y-auto rounded-t-[20px] sm:rounded-[12px] bg-[#fbfbf9] dark:bg-[#1c1b1a] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[8px_8px_0px_0px_#1a1a1a] dark:shadow-[8px_8px_0px_0px_#e8e6e3]"
+      class="relative w-full sm:max-w-lg max-h-[88vh] overflow-y-auto rounded-t-[12px] sm:rounded-[4px] bg-[#fbfbf9] dark:bg-[#1c1b1a] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[8px_8px_0px_0px_#1a1a1a] dark:shadow-[8px_8px_0px_0px_#e8e6e3]"
       role="dialog" aria-modal="true" aria-labelledby="share-dialog-title" on:click|stopPropagation
     >
       <div class="sticky top-0 z-10 flex items-center justify-between gap-4 px-5 py-4 border-b-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#f4efe6] dark:bg-[#242220]">
@@ -515,18 +515,18 @@
           <h2 id="share-dialog-title" class="text-lg font-black text-[#1a1a1a] dark:text-[#e8e6e3]">分享这篇文章</h2>
           <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">选择方式，把内容分享给朋友</p>
         </div>
-        <button type="button" on:click={closeShare} aria-label="关闭分享窗口" class="w-9 h-9 shrink-0 rounded-full border border-[#1a1a1a] dark:border-[#e8e6e3] bg-white dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white transition-colors flex items-center justify-center cursor-pointer">
+        <button type="button" on:click={closeShare} aria-label="关闭分享窗口" class="w-9 h-9 shrink-0 rounded-[3px] border border-[#1a1a1a] dark:border-[#e8e6e3] bg-white dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 flex items-center justify-center cursor-pointer">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
       </div>
 
       <div class="p-5 sm:p-6">
-        <div class="flex items-start gap-3 p-4 rounded-sm bg-white dark:bg-[#242220] border-2 border-[#1a1a1a]/15 dark:border-[#e8e6e3]/20">
+        <div class="flex items-start gap-3 p-4 rounded-[3px] bg-white dark:bg-[#242220] border-2 border-[#1a1a1a]/15 dark:border-[#e8e6e3]/20">
           {#if image}
             <img
               src={image}
               alt=""
-              class="w-14 h-14 rounded-sm object-cover shrink-0 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20"
+              class="w-14 h-14 rounded-[3px] object-cover shrink-0 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20"
               on:error={(e) => { e.currentTarget.style.display = 'none'; }}
             />
           {/if}
@@ -537,8 +537,8 @@
         </div>
 
         {#if showWechatQR}
-          <div class="flex flex-col items-center text-center p-4 bg-white dark:bg-[#242220] rounded-sm border-2 border-[#1a1a1a]/15 dark:border-[#e8e6e3]/20 mt-4 animate-fade-in">
-            <div class="p-2.5 bg-white rounded border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3]">
+          <div class="flex flex-col items-center text-center p-4 bg-white dark:bg-[#242220] rounded-[4px] border-2 border-[#1a1a1a]/15 dark:border-[#e8e6e3]/20 mt-4 animate-fade-in">
+            <div class="p-2.5 bg-white rounded-[3px] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3]">
               {#if wechatQrDataUrl}
                 <img
                   src={wechatQrDataUrl}
@@ -561,7 +561,7 @@
               <button
                 type="button"
                 on:click={copyLink}
-                class="flex-1 py-2 px-3 text-xs font-black rounded-sm border-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#fbfbf9] dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#f4efe6] dark:hover:bg-[#2e2a27] active:translate-y-0.5 active:shadow-none transition-all cursor-pointer"
+                class="flex-1 py-2 px-3 text-xs font-black rounded-[3px] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#fbfbf9] dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#f4efe6] dark:hover:bg-[#2e2a27] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] dark:hover:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 cursor-pointer"
               >
                 {#if copied}
                   <span class="inline-flex items-center justify-center gap-1 text-emerald-600 dark:text-emerald-400">
@@ -575,7 +575,7 @@
               <button
                 type="button"
                 on:click={() => showWechatQR = false}
-                class="flex-1 py-2 px-3 text-xs font-black rounded-sm border-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#9e2a2b] text-white shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#852324] active:translate-y-0.5 active:shadow-none transition-all cursor-pointer"
+                class="flex-1 py-2 px-3 text-xs font-black rounded-[3px] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#9e2a2b] text-white shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#852324] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] dark:hover:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 cursor-pointer"
               >
                 ← 返回方式列表
               </button>
@@ -588,7 +588,7 @@
               type="button"
               on:click={() => { closeShare(); generatePoster(); }}
               disabled={generatingPoster}
-              class="min-h-15 rounded-sm bg-[#9e2a2b] text-white font-black text-xs sm:text-sm border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#852324] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] dark:hover:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-y-0 active:shadow-none transition-all disabled:opacity-60 flex flex-col items-center justify-center gap-1.5 p-2 cursor-pointer"
+              class="min-h-15 rounded-[3px] bg-[#9e2a2b] text-white font-black text-xs sm:text-sm border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#852324] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0px_0px_#1a1a1a] dark:hover:shadow-[3.5px_3.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 disabled:opacity-60 flex flex-col items-center justify-center gap-1.5 p-2 cursor-pointer"
             >
               {#if generatingPoster}
                 <svg class="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg>
@@ -607,7 +607,7 @@
             <button
               type="button"
               on:click={copyLink}
-              class="min-h-15 rounded-sm bg-[#fbfbf9] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] font-black text-xs sm:text-sm hover:bg-[#f4efe6] dark:hover:bg-[#2e2a27] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] dark:hover:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-y-0 active:shadow-none transition-all flex flex-col items-center justify-center gap-1.5 p-2 cursor-pointer"
+              class="min-h-15 rounded-[3px] bg-[#fbfbf9] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] font-black text-xs sm:text-sm hover:bg-[#f4efe6] dark:hover:bg-[#2e2a27] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0px_0px_#1a1a1a] dark:hover:shadow-[3.5px_3.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 flex flex-col items-center justify-center gap-1.5 p-2 cursor-pointer"
             >
               {#if copied}
                 <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -627,7 +627,7 @@
             <button
               type="button"
               on:click={shareToWeChat}
-              class="min-h-15 rounded-sm bg-[#fbfbf9] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] font-black text-xs sm:text-sm hover:bg-[#f4efe6] dark:hover:bg-[#2e2a27] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] dark:hover:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-y-0 active:shadow-none transition-all flex flex-col items-center justify-center gap-1.5 p-2 cursor-pointer"
+              class="min-h-15 rounded-[3px] bg-[#fbfbf9] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] font-black text-xs sm:text-sm hover:bg-[#f4efe6] dark:hover:bg-[#2e2a27] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0px_0px_#1a1a1a] dark:hover:shadow-[3.5px_3.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 flex flex-col items-center justify-center gap-1.5 p-2 cursor-pointer"
             >
               <svg class="w-5 h-5 text-[#07c160]" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 0 1-.023-.156.49.49 0 0 1 .201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-6.656-6.088V8.89c-.135-.01-.27-.027-.407-.03zm-2.53 3.274c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.969-.982z"/>
@@ -639,7 +639,7 @@
             <button
               type="button"
               on:click={shareToQQ}
-              class="min-h-15 rounded-sm bg-[#fbfbf9] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] font-black text-xs sm:text-sm hover:bg-[#f4efe6] dark:hover:bg-[#2e2a27] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] dark:hover:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-y-0 active:shadow-none transition-all flex flex-col items-center justify-center gap-1.5 p-2 cursor-pointer"
+              class="min-h-15 rounded-[3px] bg-[#fbfbf9] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] font-black text-xs sm:text-sm hover:bg-[#f4efe6] dark:hover:bg-[#2e2a27] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0px_0px_#1a1a1a] dark:hover:shadow-[3.5px_3.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 flex flex-col items-center justify-center gap-1.5 p-2 cursor-pointer"
             >
               <svg class="w-5 h-5 text-[#f5a623]" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M23.9868 9.2012c-.032-.099-.127-.223-.334-.258-.207-.036-7.352-1.4063-7.352-1.4063s-.105-.022-.198-.07c-.092-.047-.127-.167-.127-.167S12.4472.954 12.3491.7679c-.099-.187-.245-.238-.349-.238-.104 0-.251.051-.349.238C11.5531.954 8.0245 7.3 8.0245 7.3s-.035.12-.128.167c-.092.047-.197.07-.197.07S.5546 8.9071.3466 8.9421c-.208.036-.302.16-.333.258a.477.477 0 00.125.4491L5.5013 15.14s.072.08.119.172c.016.104.005.21.005.21s-1.1891 7.243-1.2201 7.451c-.031.208.075.369.159.4301.083.062.233.106.421.013.189-.093 6.813-3.2614 6.813-3.2614s.098-.044.201-.061c.103-.017.201.061.201.061s6.624 3.1684 6.813 3.2614c.188.094.338.049.421-.013a.463.463 0 00.159-.43c-.021-.14-.93-5.6778-.93-5.6778.876-.5401 1.4251-1.0392 1.8492-1.7473-2.5944.9692-6.0069 1.7173-9.4163 1.8663-.9152.041-2.4104.097-3.4735-.015-.6781-.071-1.1702-.144-1.2432-.438-.053-.2151.054-.4601.5451-.8312a2640.8625 2640.8625 0 012.8614-2.1553c1.2852-.9681 3.5595-2.4703 3.5595-2.7314 0-.285-2.1443-.781-4.0376-.781-1.9452 0-2.2753.132-2.8114.168-.488.034-.769.005-.804-.138-.06-.2481.183-.3891.588-.5682.7091-.314 1.8603-.594 1.9843-.626.194-.052 3.0824-.8051 5.6188-.5351 1.3181.14 3.2444.668 3.2444 1.2762 0 .342-1.7212 1.4942-3.2254 2.5973-1.1492.8431-2.2173 1.5612-2.2173 1.6883 0 .342 3.5334 1.2411 6.6899 1.01l.003-.022c.048-.092.119-.172.119-.172l5.3627-5.4907a.477.477 0 00.127-.449z"/>
@@ -651,7 +651,7 @@
             <button
               type="button"
               on:click={shareToWeibo}
-              class="min-h-15 rounded-sm bg-[#fbfbf9] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] font-black text-xs sm:text-sm hover:bg-[#f4efe6] dark:hover:bg-[#2e2a27] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] dark:hover:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-y-0 active:shadow-none transition-all flex flex-col items-center justify-center gap-1.5 p-2 cursor-pointer"
+              class="min-h-15 rounded-[3px] bg-[#fbfbf9] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] font-black text-xs sm:text-sm hover:bg-[#f4efe6] dark:hover:bg-[#2e2a27] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0px_0px_#1a1a1a] dark:hover:shadow-[3.5px_3.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 flex flex-col items-center justify-center gap-1.5 p-2 cursor-pointer"
             >
               <svg class="w-5 h-5 text-[#e6162d]" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.737 5.439l-.002.004zM9.05 17.219c-.384.616-1.208.884-1.829.602-.612-.279-.793-.991-.406-1.593.379-.595 1.176-.861 1.793-.601.622.263.82.972.442 1.592zm1.27-1.627c-.141.237-.449.353-.689.253-.236-.09-.313-.361-.177-.586.138-.227.436-.346.672-.24.239.09.315.36.18.601l.014-.028zm.176-2.719c-1.893-.493-4.033.45-4.857 2.118-.836 1.704-.026 3.591 1.886 4.21 1.983.64 4.318-.341 5.132-2.179.8-1.793-.201-3.642-2.161-4.149zm7.563-1.224c-.346-.105-.57-.18-.405-.615.375-.977.42-1.804 0-2.404-.781-1.112-2.915-1.053-5.364-.03 0 0-.766.331-.571-.271.376-1.217.315-2.224-.27-2.809-1.338-1.337-4.869.045-7.888 3.08C1.309 10.87 0 13.273 0 15.348c0 3.981 5.099 6.395 10.086 6.395 6.536 0 10.888-3.801 10.888-6.82 0-1.822-1.547-2.854-2.915-3.284v.01zm1.908-5.092c-.766-.856-1.908-1.187-2.96-.962-.436.09-.706.511-.616.932.09.42.511.691.932.602.511-.105 1.067.044 1.442.465.376.421.466.977.316 1.473-.136.406.089.856.51.992.405.119.857-.105.992-.512.33-1.021.12-2.178-.646-3.035l.03.045zm2.418-2.195c-1.576-1.757-3.905-2.419-6.054-1.968-.496.104-.812.587-.706 1.081.104.496.586.813 1.082.707 1.532-.331 3.185.15 4.296 1.383 1.112 1.246 1.429 2.943.947 4.416-.165.48.106 1.007.586 1.157.479.165.991-.104 1.157-.586.675-2.088.241-4.478-1.338-6.235l.03.045z"/>
@@ -663,7 +663,7 @@
             <button
               type="button"
               on:click={shareToX}
-              class="min-h-15 rounded-sm bg-[#fbfbf9] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] font-black text-xs sm:text-sm hover:bg-[#f4efe6] dark:hover:bg-[#2e2a27] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] dark:hover:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-y-0 active:shadow-none transition-all flex flex-col items-center justify-center gap-1.5 p-2 cursor-pointer"
+              class="min-h-15 rounded-[3px] bg-[#fbfbf9] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] font-black text-xs sm:text-sm hover:bg-[#f4efe6] dark:hover:bg-[#2e2a27] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0px_0px_#1a1a1a] dark:hover:shadow-[3.5px_3.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 flex flex-col items-center justify-center gap-1.5 p-2 cursor-pointer"
             >
               <svg class="w-5 h-5 text-[#1a1a1a] dark:text-[#e8e6e3]" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M14.234 10.162 22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299-.929-1.329L3.076 1.56h3.182l5.965 8.532.929 1.329 7.754 11.09h-3.182z"/>
@@ -674,7 +674,7 @@
         {/if}
 
         {#if toastMessage}
-          <div class="mt-3 py-1.5 px-3 rounded-sm bg-[#1a1a1a] dark:bg-[#e8e6e3] text-white dark:text-[#1a1a1a] text-xs font-bold text-center shadow-sm">
+          <div class="mt-3 py-1.5 px-3 rounded-[3px] bg-[#1a1a1a] dark:bg-[#e8e6e3] text-white dark:text-[#1a1a1a] text-xs font-bold text-center shadow-sm">
             {toastMessage}
           </div>
         {/if}
@@ -686,18 +686,18 @@
 
 {#if showPoster && posterDataUrl}
   <div use:portal class="fixed inset-0 z-[2147483001] flex items-end sm:items-center justify-center p-0 sm:p-6" style="background: rgba(20,20,19,0.5); backdrop-filter: blur(8px);" role="dialog" aria-modal="true" on:click={closePoster}>
-    <div class="w-full sm:max-w-[480px] max-h-[94vh] overflow-y-auto bg-[#fbfbf9] dark:bg-[#1c1b1a] rounded-t-[20px] sm:rounded-[12px] shadow-[8px_8px_0px_0px_#1a1a1a] dark:shadow-[8px_8px_0px_0px_#e8e6e3] border-2 border-[#1a1a1a] dark:border-[#e8e6e3]" on:click|stopPropagation>
+    <div class="w-full sm:max-w-[480px] max-h-[94vh] overflow-y-auto bg-[#fbfbf9] dark:bg-[#1c1b1a] rounded-t-[12px] sm:rounded-[4px] shadow-[8px_8px_0px_0px_#1a1a1a] dark:shadow-[8px_8px_0px_0px_#e8e6e3] border-2 border-[#1a1a1a] dark:border-[#e8e6e3]" on:click|stopPropagation>
       <div class="flex items-center justify-between px-5 py-4 border-b-2 border-[#1a1a1a] dark:border-[#e8e6e3] sticky top-0 z-10 bg-[#f4efe6] dark:bg-[#242220]">
         <div><h3 class="font-black text-[#1a1a1a] dark:text-[#e8e6e3] text-base">分享海报</h3><p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">下载或复制给朋友</p></div>
-        <button on:click={closePoster} aria-label="关闭" class="w-9 h-9 flex items-center justify-center rounded-full border border-[#1a1a1a] dark:border-[#e8e6e3] bg-white dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer">
+        <button on:click={closePoster} aria-label="关闭" class="w-9 h-9 flex items-center justify-center rounded-[3px] border border-[#1a1a1a] dark:border-[#e8e6e3] bg-white dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 cursor-pointer">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
       </div>
       <div class="p-4 sm:p-5">
-        <img src={posterDataUrl} alt="海报" class="w-full h-auto rounded-sm border-2 border-[#1a1a1a] dark:border-[#e8e6e3]" />
+        <img src={posterDataUrl} alt="海报" class="w-full h-auto rounded-[3px] border-2 border-[#1a1a1a] dark:border-[#e8e6e3]" />
         <div class="mt-4 flex gap-3">
-          <button on:click={downloadPoster} class="flex-1 bg-[#9e2a2b] text-white font-black py-2.5 rounded-sm border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#852324] transition-colors text-sm cursor-pointer">下载海报</button>
-          <button on:click={copyPoster} class="flex-1 bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] font-black py-2.5 rounded-sm border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#eae3d5] transition-colors text-sm cursor-pointer">复制图片</button>
+          <button on:click={downloadPoster} class="flex-1 bg-[#9e2a2b] text-white font-black py-2.5 rounded-[3px] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#852324] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0px_0px_#1a1a1a] dark:hover:shadow-[3.5px_3.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 text-sm cursor-pointer">下载海报</button>
+          <button on:click={copyPoster} class="flex-1 bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] font-black py-2.5 rounded-[3px] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#eae3d5] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0px_0px_#1a1a1a] dark:hover:shadow-[3.5px_3.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 text-sm cursor-pointer">复制图片</button>
         </div>
       </div>
     </div>

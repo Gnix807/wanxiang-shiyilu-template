@@ -25,7 +25,7 @@ const { className = '' } = Astro.props;
     background: var(--paper-surface);
     border: 1.5px solid var(--line-solid);
     border-bottom: 3px solid var(--line-solid);
-    border-radius: 1px;
+    border-radius: var(--editorial-radius-control, 3px);
     box-shadow: 1px 1px 0 var(--line-solid);
     margin: 0 2px;
     vertical-align: 0.5px;
@@ -39,7 +39,7 @@ const { className = '' } = Astro.props;
   }
 
   :global(:is(.dark, [data-theme="dark"])) .editorial-kbd {
-    background: #242220;
+    background: var(--paper-surface);
     border-color: var(--line-solid);
     border-bottom-color: var(--line-solid);
   }

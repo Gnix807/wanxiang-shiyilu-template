@@ -86,7 +86,7 @@ if (slotContent && !slotContent.includes('class="tab-pane active')) {
     border: 2.5px solid var(--line-solid);
     background: var(--paper-surface);
     box-shadow: 4px 4px 0 var(--line-solid);
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-panel, 4px);
     text-indent: 0;
     position: relative;
   }
@@ -98,6 +98,8 @@ if (slotContent && !slotContent.includes('class="tab-pane active')) {
     background: var(--paper-contrast);
     overflow-x: auto;
     scrollbar-width: none;
+    border-top-left-radius: calc(var(--editorial-radius-panel, 4px) - 2.5px);
+    border-top-right-radius: calc(var(--editorial-radius-panel, 4px) - 2.5px);
   }
 
   :global(:is(.dark, [data-theme="dark"])) .tabs-nav {
@@ -122,6 +124,7 @@ if (slotContent && !slotContent.includes('class="tab-pane active')) {
     letter-spacing: 0.8px;
     text-transform: uppercase;
     flex-shrink: 0;
+    border-top-left-radius: calc(var(--editorial-radius-panel, 4px) - 2.5px);
   }
 
   .badge-icon {

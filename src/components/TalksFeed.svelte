@@ -46,7 +46,7 @@
     // 删除线
     html = html.replace(/~~([^\n~]+?)~~/g, '<del>$1</del>');
     // 行内代码
-    html = html.replace(/`([^`\n]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-[#1a1a1a]/5 dark:bg-[#e8e6e3]/10 font-mono text-[13px] border border-[#1a1a1a]/10 dark:border-[#e8e6e3]/15">$1</code>');
+    html = html.replace(/`([^`\n]+)`/g, '<code class="px-1.5 py-0.5 rounded-[2px] bg-[#1a1a1a]/5 dark:bg-[#e8e6e3]/10 font-mono text-[13px] border border-[#1a1a1a]/10 dark:border-[#e8e6e3]/15">$1</code>');
     // 超链接
     html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a class="text-[#9e2a2b] dark:text-[#d9534f] font-bold underline underline-offset-2 hover:opacity-80" href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
     return html.split('\n\n').map(p => `<p class="mb-3.5 leading-relaxed break-words">${p.replace(/\n/g, '<br/>')}</p>`).join('');
@@ -109,7 +109,7 @@
         ? 'linear-gradient(to top, #1c1b1a, transparent)'
         : 'linear-gradient(to top, #fbfbf9, transparent)';
       const btn = document.createElement('button');
-      btn.className = 'pointer-events-auto bg-[#9e2a2b] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] text-white font-black px-5 py-1.5 flex items-center gap-2 shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:bg-[#852324] hover:translate-x-0.5 hover:translate-y-0.5 transition-all text-xs rounded-sm uppercase tracking-wider cursor-pointer';
+      btn.className = 'pointer-events-auto bg-[#9e2a2b] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] text-white font-black px-5 py-1.5 flex items-center gap-2 shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:bg-[#852324] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5.5px_5.5px_0px_0px_#1a1a1a] dark:hover:shadow-[5.5px_5.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#1a1a1a] transition-all duration-150 text-xs rounded-[3px] uppercase tracking-wider cursor-pointer';
       btn.innerHTML = '展开阅读全文 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
       overlay.appendChild(btn);
       el.appendChild(overlay);
@@ -121,7 +121,7 @@
           const collapseWrap = document.createElement('div');
           collapseWrap.className = 'talk-collapse-wrap flex justify-center pt-3 pb-1';
           const collapseBtn = document.createElement('button');
-          collapseBtn.className = 'bg-white dark:bg-[#1c1b1a] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] font-black px-3 py-1 flex items-center gap-2 shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3] hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:translate-x-0.5 hover:translate-y-0.5 transition-all text-[10px] rounded-sm uppercase tracking-wider cursor-pointer';
+          collapseBtn.className = 'bg-white dark:bg-[#1c1b1a] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] font-black px-3 py-1 flex items-center gap-2 shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3] hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0px_0px_#1a1a1a] dark:hover:shadow-[4.5px_4.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#1a1a1a] transition-all duration-150 text-[10px] rounded-[3px] uppercase tracking-wider cursor-pointer';
           collapseBtn.innerHTML = '收起 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>';
           collapseWrap.appendChild(collapseBtn);
           el.after(collapseWrap);
@@ -169,7 +169,7 @@
       {#each allTags as tag}
         <button
           on:click={() => handleTagSelect(tag)}
-          class="text-xs px-2.5 py-1 rounded-sm font-bold transition-all border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] cursor-pointer flex items-center gap-1 {selectedTag === tag ? 'bg-[#9e2a2b] text-white' : 'bg-[#fbfbf9] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#f4efe6] dark:hover:bg-[#2d2b28] hover:translate-y-[-1px]'}"
+          class="text-xs px-2.5 py-1 rounded-[2px] font-bold transition-all duration-150 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] cursor-pointer flex items-center gap-1 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0px_0px_#1a1a1a] dark:hover:shadow-[3.5px_3.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none {selectedTag === tag ? 'bg-[#9e2a2b] text-white' : 'bg-[#fbfbf9] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#f4efe6] dark:hover:bg-[#2d2b28]'}"
         >
           <span>#{tag}</span>
         </button>
@@ -177,7 +177,7 @@
       {#if selectedTag}
         <button
           on:click={() => handleTagSelect(null)}
-          class="text-xs px-2.5 py-1 rounded-sm font-bold transition-all border-2 border-red-500 shadow-[2px_2px_0px_0px_red-500] cursor-pointer bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50"
+          class="text-xs px-2.5 py-1 rounded-[2px] font-bold transition-all duration-150 border-2 border-red-500 shadow-[2px_2px_0px_0px_red-500] cursor-pointer bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0px_0px_var(--press-red)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
         >
           清除筛选
         </button>
@@ -185,7 +185,7 @@
     </div>
   {/if}
     {#if displayedTalks.length === 0}
-      <div class="bg-white dark:bg-[#1c1b1a] border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-12 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm text-center">
+      <div class="bg-white dark:bg-[#1c1b1a] border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-12 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-[4px] text-center">
         <p class="text-[#1a1a1a] dark:text-[#e8e6e3] font-black tracking-widest uppercase">哎呀，没有找到相关的说说</p>
       </div>
     {/if}
@@ -198,14 +198,14 @@
       <!-- svelte-ignore a11y-no-static-element-interactions -->
       <div 
         id={`talk-${talk.id}`}
-        class="bg-white dark:bg-[#1c1b1a] border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-5 md:p-6 shadow-[8px_8px_0px_0px_#1a1a1a] dark:shadow-[8px_8px_0px_0px_#e8e6e3] hover:-translate-y-1 transition-all rounded-sm relative group cursor-pointer animate-card-entrance opacity-0"
+        class="bg-white dark:bg-[#1c1b1a] border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-5 md:p-6 shadow-[8px_8px_0px_0px_#1a1a1a] dark:shadow-[8px_8px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[10px_10px_0px_0px_#1a1a1a] dark:hover:shadow-[10px_10px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[6px_6px_0px_0px_#1a1a1a] dark:active:shadow-[6px_6px_0px_0px_#e8e6e3] transition-all duration-150 rounded-[4px] relative group cursor-pointer animate-card-entrance opacity-0"
         style="animation-delay: {0.2 + (i % 12) * 0.05}s"
         on:click={() => window.location.href = `/talk/${talk.slug}`}
       >
         <!-- Share Button -->
         <button
           on:click={(e) => openShare(talk, e)}
-          class="absolute top-4 right-4 p-1.5 sm:p-2 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] text-xs font-black rounded-sm transition-all cursor-pointer z-10 flex items-center justify-center gap-1 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] h-8 sm:h-9 bg-[#fbfbf9] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:-translate-y-0.5 active:translate-y-0 active:shadow-none"
+          class="absolute top-4 right-4 p-1.5 sm:p-2 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] text-xs font-black rounded-[3px] transition-all duration-150 cursor-pointer z-10 flex items-center justify-center gap-1 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] h-8 sm:h-9 bg-[#fbfbf9] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0px_0px_#1a1a1a] dark:hover:shadow-[3.5px_3.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
           title="分享 / Share"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -216,7 +216,7 @@
 
         <!-- Avatar & Meta Header -->
         <div class="flex gap-4 items-center mb-4 select-none">
-          <div class="rounded-sm bg-[#9e2a2b] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] flex-shrink-0 flex items-center justify-center transform -rotate-3 overflow-hidden w-10 h-10">
+          <div class="rounded-[3px] bg-[#9e2a2b] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] flex-shrink-0 flex items-center justify-center transform -rotate-3 overflow-hidden w-10 h-10">
              <img src={siteConfig.avatar || "/images/me.jpg"} alt={siteConfig.author} class="w-full h-full object-cover" />
           </div>
           <div>
@@ -255,7 +255,7 @@
               {#each images as src, idx}
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <div 
-                  class="w-full overflow-hidden rounded-sm border-2 border-[#1a1a1a] dark:border-[#e8e6e3] hover:border-[#9e2a2b] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] transition-all cursor-pointer bg-slate-50 relative group-hover:scale-[1.015] {images.length === 1 ? 'aspect-video sm:aspect-[4/3] max-h-80' : 'aspect-square'}"
+                  class="w-full overflow-hidden rounded-[3px] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] hover:border-[#9e2a2b] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] transition-all duration-150 cursor-pointer bg-slate-50 relative group-hover:scale-[1.015] {images.length === 1 ? 'aspect-video sm:aspect-[4/3] max-h-80' : 'aspect-square'}"
                   on:click|stopPropagation={(e) => openLightbox(images.map(i => i.src), idx, e)}
                 >
                    <img src={src.src} alt={src.alt || `${talk.title || '说说'} 配图 ${idx + 1}`} class="w-full h-full object-cover transition-transform duration-550 hover:scale-[1.06]" loading="lazy" decoding="async" />
@@ -295,7 +295,7 @@
       <div class="flex justify-center mt-8 pb-12">
         <button
           on:click={loadMore}
-          class="px-6 py-2.5 bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm font-black text-sm text-[#1a1a1a] dark:text-[#e8e6e3] uppercase tracking-wider hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] active:translate-y-1 active:shadow-none"
+          class="px-6 py-2.5 bg-white dark:bg-[#1c1b1a] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] font-black text-sm text-[#1a1a1a] dark:text-[#e8e6e3] uppercase tracking-wider hover:bg-[#9e2a2b] hover:text-white hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[5.5px_5.5px_0px_0px_#1a1a1a] dark:hover:shadow-[5.5px_5.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 cursor-pointer shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3]"
         >
           加载更多
         </button>

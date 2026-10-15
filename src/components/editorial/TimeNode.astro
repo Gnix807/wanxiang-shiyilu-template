@@ -118,7 +118,7 @@ const displaySymbol = typeof symbol === 'string' ? symbol : '§';
     box-sizing: border-box;
     background: var(--press-red);
     border: 2px solid var(--line-solid);
-    border-radius: 0;
+    border-radius: 2px;
     z-index: 2;
     display: flex;
     align-items: center;
@@ -159,7 +159,7 @@ const displaySymbol = typeof symbol === 'string' ? symbol : '§';
     border: 2px solid var(--line-solid);
     border-left: 5px solid var(--press-red);
     box-shadow: 3.5px 3.5px 0 var(--line-solid);
-    border-radius: 0;
+    border-radius: var(--editorial-radius-panel, 4px);
     padding: 14px 18px;
     transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -193,7 +193,7 @@ const displaySymbol = typeof symbol === 'string' ? symbol : '§';
     background: var(--paper-bg);
     border: 1.5px solid var(--line-solid);
     padding: 2px 8px;
-    border-radius: 0;
+    border-radius: var(--editorial-radius-small, 2px);
     box-shadow: 1.5px 1.5px 0 var(--line-solid);
   }
 
@@ -229,7 +229,7 @@ const displaySymbol = typeof symbol === 'string' ? symbol : '§';
     font-weight: 800;
     letter-spacing: 1px;
     padding: 2px 7px;
-    border-radius: 0;
+    border-radius: var(--editorial-radius-small, 2px);
     text-transform: uppercase;
   }
 

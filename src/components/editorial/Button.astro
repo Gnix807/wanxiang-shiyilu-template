@@ -45,7 +45,9 @@ const isExternal = target === '_blank' || (href && /^https?:\/\//.test(href));
 }
 
 <style>
-  .editorial-button {
+  .editorial-button,
+  a.editorial-button,
+  button.editorial-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -59,7 +61,16 @@ const isExternal = target === '_blank' || (href && /^https?:\/\//.test(href));
     user-select: none;
     vertical-align: middle;
     line-height: 1;
-    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease, border-color 0.15s ease;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .editorial-button,
+    a.editorial-button,
+    button.editorial-button,
+    .button-icon {
+      transition: none !important;
+    }
   }
 
   .button-label {
@@ -88,7 +99,7 @@ const isExternal = target === '_blank' || (href && /^https?:\/\//.test(href));
     background: var(--press-red);
     color: #ffffff !important;
     border: 2px solid var(--line-solid);
-    border-radius: 0;
+    border-radius: var(--editorial-radius-control, 3px);
     box-shadow: 3px 3px 0 var(--line-solid);
   }
 
@@ -103,12 +114,12 @@ const isExternal = target === '_blank' || (href && /^https?:\/\//.test(href));
     box-shadow: 1px 1px 0 var(--line-solid);
   }
 
-  /* Outline 风格（传统出版物外框按纽） */
+  /* Outline 风格（传统出版物外框按钮） */
   .variant-outline {
     background: var(--paper-surface);
     color: var(--ink-text);
     border: 2px solid var(--line-solid);
-    border-radius: 0;
+    border-radius: var(--editorial-radius-control, 3px);
     box-shadow: 3px 3px 0 var(--line-solid);
   }
 
@@ -125,12 +136,12 @@ const isExternal = target === '_blank' || (href && /^https?:\/\//.test(href));
     box-shadow: 1px 1px 0 var(--press-red);
   }
 
-  /* Primary 风格（沉墨重磅出版按纽） */
+  /* Primary 风格（沉墨重磅出版按钮） */
   .variant-primary {
     background: var(--ink-text);
     color: var(--paper-bg) !important;
     border: 2px solid var(--line-solid);
-    border-radius: 0;
+    border-radius: var(--editorial-radius-control, 3px);
     box-shadow: 3px 3px 0 var(--press-red);
   }
 
@@ -144,12 +155,12 @@ const isExternal = target === '_blank' || (href && /^https?:\/\//.test(href));
     box-shadow: 1px 1px 0 var(--press-red);
   }
 
-  /* Ghost 风格（文人隐式按纽） */
+  /* Ghost 风格（文人隐式按钮） */
   .variant-ghost {
     background: transparent;
     color: var(--ink-text);
     border: 1.5px solid transparent;
-    border-radius: 0;
+    border-radius: var(--editorial-radius-control, 3px);
     box-shadow: none;
   }
 
@@ -168,7 +179,7 @@ const isExternal = target === '_blank' || (href && /^https?:\/\//.test(href));
 
   .button-icon {
     flex-shrink: 0;
-    transition: transform 0.15s ease;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .editorial-button:hover .button-icon {
