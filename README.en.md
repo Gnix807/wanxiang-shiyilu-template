@@ -58,6 +58,7 @@ Build output is written to `dist/`. The `private: true` field in `package.json` 
 | `pnpm check:assets` | Check bundled font files and license files |
 | `pnpm check:mdx` | Check the MDX inline-style conversion dependency |
 | `pnpm commit-index` | Update the article commit history index |
+| `pnpm sync:bili` | Sync Bilibili videos and card metadata using the site configuration |
 
 ## Project structure
 
@@ -96,6 +97,12 @@ Replace the following example settings and assets before publishing:
 Create a local `.env` using [`.env.example`](.env.example) as a reference, and set production environment variables through your hosting platform. Before deployment, set `PUBLIC_SITE_URL` to the site's full HTTPS URL without a trailing slash. Replace the placeholder name, email and `example.com` values in the configuration.
 
 Do not prefix sensitive variables with `PUBLIC_`. Configure optional services such as comments and analytics in `src/config/site.ts`, and update the privacy notice when enabling them.
+
+### Bilibili videos (optional)
+
+The account and video caches are empty by default, so no Bilibili requests are made. To display videos, set `socials.bilibiliMid` and `socials.bilibili` in `src/config/site.ts`, run `pnpm sync:bili`, and review the two JSON files in `src/data/` before building.
+
+Builds use static data. The browser refreshes nearby visible cards through JSONP, reuses responses for one hour, and cleans up requests on navigation. Authored card metadata takes priority. Failed syncs preserve the existing video list.
 
 ## Writing content
 

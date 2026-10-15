@@ -10,7 +10,8 @@
     "lint": "tsc --noEmit",
     "commit-index": "node scripts/build-commit-index.mjs",
     "check:assets": "node scripts/check-assets.mjs",
-    "check:mdx": "node scripts/check-mdx-styles.mjs"
+    "check:mdx": "node scripts/check-mdx-styles.mjs",
+    "sync:bili": "node scripts/sync-bilibili.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.1",

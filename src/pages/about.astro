@@ -16,41 +16,8 @@ interface BiliVideo {
   publish_time: number;
 }
 
-let biliVideos: BiliVideo[] = [];
-if (BILIBILI_MID && process.env.BUILD_OFFLINE !== '1') try {
-  const firstRes = await fetch(`https://uapis.cn/api/v1/social/bilibili/archives?mid=${BILIBILI_MID}&ps=30`, { signal: AbortSignal.timeout(8000) });
-  if (firstRes.ok) {
-    const firstData = await firstRes.json();
-    const total = firstData.total || 0;
-    const firstBatch: BiliVideo[] = (firstData.videos || []).map((v: any) => ({
-      bvid: v.bvid,
-      title: v.title,
-      cover: v.cover,
-      duration: v.duration,
-      play_count: v.play_count,
-      publish_time: v.publish_time,
-    }));
-    biliVideos = firstBatch;
-    const totalPages = Math.ceil(total / 30);
-    for (let p = 2; p <= totalPages; p++) {
-      const res = await fetch(`https://uapis.cn/api/v1/social/bilibili/archives?mid=${BILIBILI_MID}&ps=30&pn=${p}`, { signal: AbortSignal.timeout(8000) });
-      if (res.ok) {
-        const data = await res.json();
-        const more: BiliVideo[] = (data.videos || []).map((v: any) => ({
-          bvid: v.bvid,
-          title: v.title,
-          cover: v.cover,
-          duration: v.duration,
-          play_count: v.play_count,
-          publish_time: v.publish_time,
-        }));
-        biliVideos = biliVideos.concat(more);
-      }
-    }
-  }
-} catch (e) {
-  console.error('Failed to fetch Bilibili videos', e);
-}
+import cachedVideos from '../data/bilibili-videos.json';
+const biliVideos: BiliVideo[] = [...(cachedVideos as BiliVideo[])].sort((a, b) => b.publish_time - a.publish_time);
 
 function fmtDuration(sec: number): string {
   const m = Math.floor(sec / 60);
@@ -84,7 +51,7 @@ function fmtPlayCount(n: number): string {
           <span class="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">DOSSIER NO. 01</span>
         </div>
 
-        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 sm:p-8 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm relative overflow-hidden">
+        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 sm:p-8 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-[4px] relative overflow-hidden">
           {/* 复古期刊背景水印印记 */}
           <div class="absolute -right-8 -bottom-8 select-none pointer-events-none opacity-[0.03] dark:opacity-[0.05] text-[#1a1a1a] dark:text-white font-serif font-black text-9xl leading-none">
             {siteConfig.enTitle.split(' ')[0] || 'BLOG'}
@@ -93,7 +60,7 @@ function fmtPlayCount(n: number): string {
           <div class="flex flex-col md:flex-row items-center md:items-start gap-6 sm:gap-8 relative z-10">
             {/* 头像封套 */}
             <div class="relative shrink-0">
-              <div class="w-32 h-32 md:w-40 md:h-40 rounded-sm bg-[#f4efe6] dark:bg-[#242220] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] overflow-hidden flex items-center justify-center">
+              <div class="w-32 h-32 md:w-40 md:h-40 rounded-[3px] bg-[#f4efe6] dark:bg-[#242220] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] overflow-hidden flex items-center justify-center">
                 <img 
                   src={siteConfig.avatar} 
                   alt={siteConfig.author} 
@@ -103,7 +70,7 @@ function fmtPlayCount(n: number): string {
                   class="w-full h-full object-cover" 
                 />
               </div>
-              <div class="absolute -bottom-2 -right-2 bg-[#9e2a2b] dark:bg-[#d9534f] text-white border-2 border-[#1a1a1a] dark:border-[#e8e6e3] px-2 py-0.5 text-[10px] font-mono font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3]">
+              <div class="absolute -bottom-2 -right-2 bg-[#9e2a2b] dark:bg-[#d9534f] text-white border-2 border-[#1a1a1a] dark:border-[#e8e6e3] px-2 py-0.5 text-[10px] font-mono font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] rounded-[2px]">
                 VERIFIED
               </div>
             </div>
@@ -114,13 +81,13 @@ function fmtPlayCount(n: number): string {
                 <h1 class="text-3xl sm:text-4xl font-black text-[#1a1a1a] dark:text-[#e8e6e3] tracking-wide font-serif">
                   {siteConfig.author}
                 </h1>
-                <span class="inline-flex items-center bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] text-[#9e2a2b] dark:text-[#d9534f] px-2.5 py-0.5 text-xs font-mono font-black shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3]">
+                <span class="inline-flex items-center bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] text-[#9e2a2b] dark:text-[#d9534f] px-2.5 py-0.5 text-xs font-mono font-black shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] rounded-[2px]">
                   {aboutConfig.role}
                 </span>
               </div>
 
               {/* 座右铭印章 */}
-              <div class="inline-flex items-center gap-2 mb-4 px-3 py-1 bg-[#fbfbf9] dark:bg-[#242220] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30 rounded-sm">
+              <div class="inline-flex items-center gap-2 mb-4 px-3 py-1 bg-[#fbfbf9] dark:bg-[#242220] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30 rounded-[3px]">
                 <span class="text-xs text-[#9e2a2b] dark:text-[#d9534f] font-serif">✦</span>
                 <span class="text-xs font-serif font-bold text-neutral-700 dark:text-neutral-300 italic">
                   “{siteConfig.signature}”
@@ -146,7 +113,7 @@ function fmtPlayCount(n: number): string {
           <span class="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">ABOUT ME STATEMENT</span>
         </div>
 
-        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 sm:p-10 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm">
+        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 sm:p-10 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-[4px]">
           <div class="prose max-w-none text-[#1a1a1a] dark:text-[#e8e6e3] leading-relaxed">
             <Content />
           </div>
@@ -166,7 +133,7 @@ function fmtPlayCount(n: number): string {
             <span class="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">TOPICS & GEAR</span>
           </div>
 
-          <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm flex-1 flex flex-col justify-between space-y-6">
+          <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-[4px] flex-1 flex flex-col justify-between space-y-6">
             
             {/* 上半部：关注领域 */}
             <div>
@@ -178,7 +145,7 @@ function fmtPlayCount(n: number): string {
               </div>
               <div class="flex flex-wrap gap-2">
                 {aboutConfig.focusAreas.map(tag => (
-                  <span class="bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] px-3 py-1 font-bold text-xs text-neutral-800 dark:text-neutral-200 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#9e2a2b] hover:border-[#9e2a2b] hover:text-white transition-colors cursor-default select-none font-serif">
+                  <span class="bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] px-3 py-1 font-bold text-xs text-neutral-800 dark:text-neutral-200 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] rounded-[2px] transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0px_0px_#1a1a1a] dark:hover:shadow-[3.5px_3.5px_0px_0px_#e8e6e3] cursor-default select-none font-serif">
                     {tag}
                   </span>
                 ))}
@@ -196,7 +163,7 @@ function fmtPlayCount(n: number): string {
               </div>
               <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                 {aboutConfig.dailyGear.map(gear => (
-                  <div class="p-2.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#fbfbf9] dark:bg-[#242220] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3]">
+                  <div class="p-2.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#fbfbf9] dark:bg-[#242220] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] rounded-[3px]">
                     <div class="text-[10px] font-mono text-neutral-400 dark:text-neutral-400 uppercase leading-none mb-1">
                       {gear.category}
                     </div>
@@ -219,14 +186,14 @@ function fmtPlayCount(n: number): string {
             <span class="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">PUBLIC CHANNELS</span>
           </div>
 
-          <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm flex-1 flex flex-col justify-between">
+          <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-[4px] flex-1 flex flex-col justify-between">
             <div class="space-y-2.5">
               {aboutConfig.directory.map(item => (
                 <a 
                   href={item.url} 
                   target={item.url.startsWith('http') ? '_blank' : undefined}
                   rel={item.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  class="flex items-center justify-between p-2.5 sm:p-3 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#f4efe6] dark:bg-[#242220] hover:bg-[#9e2a2b] hover:border-[#9e2a2b] hover:text-white transition-colors shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] group"
+                  class="flex items-center justify-between p-2.5 sm:p-3 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#f4efe6] dark:bg-[#242220] hover:bg-[#9e2a2b] hover:border-[#9e2a2b] hover:text-white transition-all duration-150 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3.5px_3.5px_0px_0px_#1a1a1a] dark:hover:shadow-[3.5px_3.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none rounded-[3px] group"
                 >
                   <div class="min-w-0 pr-2">
                     <div class="font-black text-sm text-neutral-900 dark:text-neutral-100 group-hover:text-white flex items-center gap-2">
@@ -263,7 +230,7 @@ function fmtPlayCount(n: number): string {
           <span class="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">WHAT I'M DOING NOW</span>
         </div>
 
-        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 sm:p-8 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm">
+        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 sm:p-8 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-[4px]">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 border-b-2 border-[#1a1a1a]/10 dark:border-[#e8e6e3]/10 pb-3">
             <div>
               <h2 class="text-xl sm:text-2xl font-black text-[#1a1a1a] dark:text-[#e8e6e3] tracking-wider font-serif">
@@ -273,7 +240,7 @@ function fmtPlayCount(n: number): string {
                 记录当下阶段的核心重心、项目进展与探索方向
               </p>
             </div>
-            <div class="inline-flex items-center gap-1.5 self-start sm:self-auto bg-[#f4efe6] dark:bg-[#242220] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30 px-2.5 py-1 text-[11px] font-mono font-bold text-neutral-600 dark:text-neutral-300">
+            <div class="inline-flex items-center gap-1.5 self-start sm:self-auto bg-[#f4efe6] dark:bg-[#242220] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30 px-2.5 py-1 text-[11px] font-mono font-bold text-neutral-600 dark:text-neutral-300 rounded-[2px]">
               <span class="w-2 h-2 rounded-full bg-[#10b981] animate-pulse"></span>
               <span>LIVE UPDATES</span>
             </div>
@@ -281,13 +248,13 @@ function fmtPlayCount(n: number): string {
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {aboutConfig.nowCards.map(item => (
-              <div class="border-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#fbfbf9] dark:bg-[#242220] p-4 sm:p-5 shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3] flex flex-col justify-between">
+              <div class="border-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#fbfbf9] dark:bg-[#242220] p-4 sm:p-5 shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3] rounded-[3px] flex flex-col justify-between">
                 <div>
                   <div class="flex items-center justify-between gap-2 mb-2">
                     <span class="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-wider">
                       {item.section}
                     </span>
-                    <span class={`text-[10px] font-mono font-black px-1.5 py-0.5 border border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3] ${
+                    <span class={`text-[10px] font-mono font-black px-1.5 py-0.5 border border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3] rounded-[2px] ${
                       item.statusColor === 'red' 
                         ? 'bg-[#9e2a2b] text-white' 
                         : 'bg-[#1a1a1a] dark:bg-[#e8e6e3] text-white dark:text-[#1a1a1a]'
@@ -318,7 +285,7 @@ function fmtPlayCount(n: number): string {
           <span class="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">BILIBILI STUDIO</span>
         </div>
 
-        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 sm:p-8 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm">
+        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-6 sm:p-8 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-[4px]">
           <div class="flex items-center justify-between mb-6 border-b-2 border-[#1a1a1a]/10 dark:border-[#e8e6e3]/10 pb-3">
             <a 
               href={BILIBILI_SPACE} 
@@ -353,10 +320,11 @@ function fmtPlayCount(n: number): string {
               ) : (
                 biliVideos.map(video => (
                   <a 
-                    href={`https://www.bilibili.com/video/${video.bvid}`} 
+                    href={`https://www.bilibili.com/video/${video.bvid}`}
+                    data-bvid={video.bvid}
                     target="_blank" 
                     rel="noopener noreferrer"
-                    class="w-60 shrink-0 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] hover:bg-[#9e2a2b] hover:border-[#9e2a2b] hover:text-white transition-colors shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] group bg-white dark:bg-[#242220] flex flex-col justify-between"
+                    class="bili-card w-60 shrink-0 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] hover:bg-[#9e2a2b] hover:border-[#9e2a2b] hover:text-white transition-colors shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] group bg-white dark:bg-[#242220] flex flex-col justify-between"
                   >
                     <div>
                       <div class="aspect-video overflow-hidden border-b-2 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#f4efe6] dark:bg-[#242220] relative">
@@ -365,11 +333,12 @@ function fmtPlayCount(n: number): string {
                           alt={video.title} 
                           width="320" 
                           height="180" 
-                          loading="lazy" 
+                          loading="lazy"
+                          decoding="async"
                           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                           referrerpolicy="no-referrer" 
                         />
-                        <div class="absolute bottom-1.5 right-1.5 bg-[#1a1a1a]/80 text-white font-mono text-[10px] px-1.5 py-0.5 rounded-xs">
+                        <div class="absolute bottom-1.5 right-1.5 bg-[#1a1a1a]/80 text-white font-mono text-[10px] px-1.5 py-0.5 rounded-[2px]">
                           {fmtDuration(video.duration)}
                         </div>
                       </div>
@@ -380,7 +349,7 @@ function fmtPlayCount(n: number): string {
                       </div>
                     </div>
                     <div class="px-3 pb-3 pt-1 flex items-center justify-between text-[10px] font-mono text-neutral-500 dark:text-neutral-400 group-hover:text-white/80 border-t border-[#1a1a1a]/10 dark:border-[#e8e6e3]/10">
-                      <span>▶ {fmtPlayCount(video.play_count)}</span>
+                      <span data-bili-views>▶ {fmtPlayCount(video.play_count)}</span>
                       <span class="group-hover:translate-x-0.5 transition-transform">观看 ↗</span>
                     </div>
                   </a>
@@ -395,7 +364,7 @@ function fmtPlayCount(n: number): string {
       {/* 底部收尾印记 · COLOPHON SEAL                                              */}
       {/* ========================================================================= */}
       <div class="pt-4 pb-8 text-center select-none">
-        <div class="inline-flex items-center gap-3 px-4 py-2 border-2 border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30 bg-[#fbfbf9] dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a]/20 dark:shadow-[2px_2px_0px_0px_#e8e6e3]/20">
+        <div class="inline-flex items-center gap-3 px-4 py-2 border-2 border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30 bg-[#fbfbf9] dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a]/20 dark:shadow-[2px_2px_0px_0px_#e8e6e3]/20 rounded-[3px]">
           <span class="text-sm font-serif font-black tracking-widest uppercase">
             {siteConfig.enTitle} · {siteConfig.author}
           </span>
@@ -409,3 +378,15 @@ function fmtPlayCount(n: number): string {
     </div>
   </div>
 </Layout>
+
+<script>
+  import { onPageReady } from '@/scripts/lifecycle';
+  import { observeBiliVideos } from '@/scripts/bilibili';
+  onPageReady(() => observeBiliVideos(
+    Array.from(document.querySelectorAll<HTMLElement>('.bili-card[data-bvid]')),
+    (card, item) => {
+      const views = card.querySelector('[data-bili-views]');
+      if (views) views.textContent = `▶ ${item.views}`;
+    },
+  ));
+</script>

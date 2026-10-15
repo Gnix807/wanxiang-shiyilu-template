@@ -58,6 +58,7 @@ pnpm preview
 | `pnpm check:assets` | 检查字体文件及许可文件是否完整 |
 | `pnpm check:mdx` | 检查 MDX 内联样式转换依赖 |
 | `pnpm commit-index` | 更新文章提交历史索引 |
+| `pnpm sync:bili` | 按配置同步 B 站视频列表与卡片缓存 |
 
 ## 项目结构
 
@@ -96,6 +97,12 @@ docs/                 # 部署与验证文档
 参考 [`.env.example`](.env.example) 创建本地 `.env`，部署时在托管平台设置环境变量。上线前必须将 `PUBLIC_SITE_URL` 设置为站点的完整 HTTPS 地址，结尾不加 `/`，并替换配置中的名称、邮箱和 `example.com` 占位值。
 
 敏感变量不得使用 `PUBLIC_` 前缀。评论、统计等可选服务通过 `src/config/site.ts` 配置，启用时应同步更新隐私说明。
+
+### B 站视频（可选）
+
+默认账号为空，视频列表与卡片缓存为空，不会自动请求 B 站。需要展示视频时，在 `src/config/site.ts` 填写 `socials.bilibiliMid` 与 `socials.bilibili`，再运行 `pnpm sync:bili`，检查 `src/data/bilibili-videos.json` 和 `src/data/bilibili-cache.json` 的变更后构建。
+
+构建直接读取静态数据，浏览器通过 JSONP 补全接近可见区域的卡片；一小时内复用缓存，切页时清理请求，手写标题、简介和封面优先保留。同步失败不会清空已有视频列表。
 
 ## 内容编写
 

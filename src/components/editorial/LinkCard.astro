@@ -1,9 +1,10 @@
 ---
 import { ExternalLink, Bookmark, Play, Film } from 'lucide-astro';
 import { BRAND_ICONS } from '@/utils/linkIcon';
+import bilibiliCache from '@/data/bilibili-cache.json';
 
 interface Props {
-  title: string;
+  title?: string;
   url?: string;
   bvid?: string;
   desc?: string;
@@ -22,11 +23,11 @@ interface Props {
 }
 
 const {
-  title,
+  title: propTitle,
   url: rawUrl,
   bvid,
-  desc,
-  author,
+  desc: propDesc,
+  author: propAuthor,
   icon,
   stamp: propStamp,
   badge: propBadge,
@@ -34,9 +35,9 @@ const {
   type = 'link',
   cover: rawCover,
   poster: rawPoster,
-  duration,
-  views,
-  danmaku,
+  duration: propDuration,
+  views: propViews,
+  danmaku: propDanmaku,
   class: className = '',
 } = Astro.props;
 
@@ -44,8 +45,49 @@ const {
 const resolvedUrl = rawUrl || (bvid ? `https://www.bilibili.com/video/${bvid}` : '#');
 const isBilibili = type === 'bilibili' || /bilibili\.com|b23\.tv/i.test(resolvedUrl) || Boolean(bvid);
 const isYouTube = /youtube\.com|youtu\.be/i.test(resolvedUrl);
-const isVideo = type === 'video' || isBilibili || isYouTube || Boolean(duration) || Boolean(rawCover) || Boolean(rawPoster);
-const resolvedCover = rawCover || rawPoster;
+
+let title = propTitle || '';
+let desc = propDesc || '';
+let author = propAuthor || '';
+let duration = propDuration || '';
+let views = propViews || '';
+let danmaku = propDanmaku || '';
+let resolvedCover = rawCover || rawPoster || '';
+
+const matchBvid = isBilibili ? (bvid || resolvedUrl.match(/(?:bilibili\.com\/video\/|b23\.tv\/)?(BV[a-zA-Z0-9]{10})/i)?.[1]) : null;
+
+// 1. 优先从本地静态缓存读取（保证本地构建速度与确定性）
+if (matchBvid && (bilibiliCache as Record<string, any>)[matchBvid]) {
+  const cached = (bilibiliCache as Record<string, any>)[matchBvid];
+  if (!title) title = cached.title || '';
+  if (!resolvedCover) resolvedCover = cached.cover || '';
+  if (!desc) desc = cached.desc || '';
+  if (!author) author = cached.author || '';
+  if (!duration) duration = cached.duration || '';
+  if (!views) views = cached.views || '';
+  if (!danmaku) danmaku = cached.danmaku || '';
+}
+
+// 元数据由 sync:bili 显式同步；构建不等待第三方接口。
+
+if (!title) {
+  title = isBilibili ? (bvid || '哔哩哔哩视频') : '链接卡片';
+}
+
+if (resolvedCover) {
+  if (resolvedCover.startsWith('//')) {
+    resolvedCover = `https:${resolvedCover}`;
+  } else if (resolvedCover.startsWith('http://')) {
+    resolvedCover = resolvedCover.replace(/^http:\/\//, 'https://');
+  }
+}
+
+const isVideo = type === 'video' || isBilibili || isYouTube || Boolean(duration) || Boolean(resolvedCover);
+const needsClientFetch = isBilibili && Boolean(matchBvid) && (!resolvedCover || !propTitle);
+const preservedFields = Object.entries({
+  title: propTitle, desc: propDesc, author: propAuthor, cover: rawCover || rawPoster,
+  duration: propDuration, views: propViews, danmaku: propDanmaku,
+}).filter(([, value]) => Boolean(value)).map(([field]) => field).join(',');
 
 // 智能默认印签
 const defaultStamp = isBilibili
@@ -78,7 +120,11 @@ if (!domainName || domainName === '#') {
   href={resolvedUrl}
   target="_blank"
   rel="noopener noreferrer"
-  class={`ex-libris-card ${isVideo ? 'is-video-card' : ''} ${isBilibili ? 'is-bilibili' : ''} ${resolvedCover ? 'has-cover' : ''} ${className}`}
+  class={`ex-libris-card not-prose ${isVideo ? 'is-video-card' : ''} ${isBilibili ? 'is-bilibili' : ''} ${resolvedCover ? 'has-cover' : ''} ${className}`}
+  data-bvid={matchBvid || undefined}
+  data-bili-preserve={preservedFields}
+  data-bili-author-prefix={authorPrefix}
+  data-needs-fetch={needsClientFetch ? 'true' : 'false'}
 >
   <div class="card-inner">
     <!-- Top Header Bar: Unified for both styles -->
@@ -110,21 +156,35 @@ if (!domainName || domainName === '#') {
     <!-- Main Content Area -->
     <div class="card-main-grid">
       <!-- Media / Icon Column -->
-      {resolvedCover ? (
-        <div class="video-cover-frame">
-          <img src={resolvedCover} alt={title} loading="lazy" class="video-cover-img" />
+      {resolvedCover || isBilibili ? (
+        <div class="video-cover-frame" data-bili-cover-frame>
+          <img
+            src={resolvedCover || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 9" width="16" height="9"/>'}
+            alt={title}
+            loading="lazy"
+            decoding="async"
+            width="480"
+            height="270"
+            referrerpolicy="no-referrer"
+            class={`video-cover-img no-zoom ${!resolvedCover ? 'is-loading' : ''}`}
+            data-bili-cover
+          />
           <div class="video-play-overlay" aria-hidden="true">
             <div class="play-circle">
               <Play size={16} fill="currentColor" class="play-icon" />
             </div>
           </div>
-          {duration && <span class="video-duration-pill font-mono">{duration}</span>}
+          <span
+            class="video-duration-pill font-mono"
+            data-bili-duration
+            style={!duration ? 'display: none;' : ''}
+          >
+            {duration || ''}
+          </span>
         </div>
       ) : (
         <div class="card-avatar-box">
-          {isBilibili ? (
-            <span class="card-brand-svg" set:html={BRAND_ICONS.bilibili} />
-          ) : isVideo ? (
+          {isVideo ? (
             <Film size={20} class="card-video-icon" />
           ) : icon ? (
             <span class="card-avatar-text font-serif">{icon}</span>
@@ -138,24 +198,28 @@ if (!domainName || domainName === '#') {
       <!-- Text & Meta Column -->
       <div class="card-content-col">
         <div class="card-text-body">
-          <h4 class="card-title font-serif" data-editorial-heading>{title}</h4>
-          {desc && <p class="card-desc font-sans">{desc}</p>}
+          <h4 class="card-title font-serif" data-editorial-heading data-bili-title>{title}</h4>
+          <p class="card-desc font-sans" data-bili-desc style={!desc ? 'display: none;' : ''}>{desc || ''}</p>
         </div>
 
-        {(author || views || danmaku || isVideo) && (
-          <div class="card-meta-row font-mono">
-            {author && (
-              <span class="meta-item author font-sans">
-                {authorPrefix}<strong>{author}</strong>
-              </span>
-            )}
-            {views && <span class="meta-item views font-sans">· {views}播放</span>}
-            {danmaku && <span class="meta-item danmaku font-sans">· {danmaku}弹幕</span>}
-            {isVideo && !resolvedCover && (
-              <span class="meta-item jump-hint font-sans">· 点击前往观影 ↗</span>
-            )}
-          </div>
-        )}
+        <div
+          class="card-meta-row font-mono"
+          data-bili-meta-row
+          style={!(author || views || danmaku || isVideo) ? 'display: none;' : ''}
+        >
+          <span class="meta-item author font-sans" data-bili-author style={!author ? 'display: none;' : ''}>
+            {authorPrefix}<strong>{author || ''}</strong>
+          </span>
+          <span class="meta-item views font-sans" data-bili-views style={!views ? 'display: none;' : ''}>
+            {views ? `· ${views}播放` : ''}
+          </span>
+          <span class="meta-item danmaku font-sans" data-bili-danmaku style={!danmaku ? 'display: none;' : ''}>
+            {danmaku ? `· ${danmaku}弹幕` : ''}
+          </span>
+          {isVideo && !resolvedCover && !matchBvid && (
+            <span class="meta-item jump-hint font-sans">· 点击前往观影 ↗</span>
+          )}
+        </div>
       </div>
     </div>
   </div>
@@ -169,7 +233,7 @@ if (!domainName || domainName === '#') {
     padding: 14px 18px 16px;
     background: var(--paper-surface);
     box-shadow: 4px 4px 0 var(--line-solid);
-    border-radius: 0;
+    border-radius: var(--editorial-radius-panel, 4px);
     transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.15s ease;
     text-indent: 0 !important;
     text-decoration: none !important;
@@ -228,7 +292,7 @@ if (!domainName || domainName === '#') {
     background: var(--press-red-soft);
     border: 1.5px solid var(--press-red);
     box-shadow: 1.5px 1.5px 0 var(--press-red);
-    border-radius: 0;
+    border-radius: var(--editorial-radius-small, 2px);
     padding: 2.5px 7.5px;
     text-transform: uppercase;
   }
@@ -299,7 +363,7 @@ if (!domainName || domainName === '#') {
     aspect-ratio: 16 / 9;
     background: var(--paper-bg);
     border: 2px solid var(--line-solid);
-    border-radius: 0;
+    border-radius: var(--editorial-radius-inner, 3px);
     overflow: hidden;
     flex-shrink: 0;
   }
@@ -316,11 +380,22 @@ if (!domainName || domainName === '#') {
   }
 
   .video-cover-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.3s ease;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    display: block !important;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .video-cover-img.is-loading {
+    opacity: 0;
   }
 
   .ex-libris-card:hover .video-cover-img {
@@ -376,7 +451,7 @@ if (!domainName || domainName === '#') {
     font-size: 10px;
     font-weight: 700;
     padding: 1px 4.5px;
-    border-radius: 0;
+    border-radius: var(--editorial-radius-small, 2px);
     user-select: none;
     line-height: 1.2;
   }
@@ -386,7 +461,7 @@ if (!domainName || domainName === '#') {
     width: 44px;
     height: 44px;
     border: 2px solid var(--line-solid);
-    border-radius: 0;
+    border-radius: var(--editorial-radius-inner, 3px);
     background: var(--paper-bg);
     display: flex;
     align-items: center;
@@ -431,7 +506,7 @@ if (!domainName || domainName === '#') {
     line-height: 1;
     background: var(--press-red);
     color: #ffffff;
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-small, 2px);
     padding: 1px 2.5px;
   }
 
@@ -514,3 +589,13 @@ if (!domainName || domainName === '#') {
     color: #fb7299;
   }
 </style>
+
+<script>
+  import { onPageReady } from '@/scripts/lifecycle';
+  import { applyBiliData, observeBiliVideos } from '@/scripts/bilibili';
+
+  onPageReady(() => observeBiliVideos(
+    Array.from(document.querySelectorAll<HTMLElement>('.ex-libris-card[data-bvid][data-needs-fetch="true"]')),
+    applyBiliData,
+  ));
+</script>
