@@ -9,7 +9,7 @@
  *    - 点击或双击图片：平滑无级放大（支持 2.5x / 100% 原始分辨率 / 最大 4.5x）
  *    - 放大状态支持鼠标/触控拖拽平移 (grab / grabbing)，视口边界智能吸附
  *    - 鼠标滚轮平滑缩放，聚焦于鼠标所在原点
- *    - 顶部磨砂悬浮胶囊：缩放切换 (+/-)、1:1 原画质像素查看、多图计数与关闭按纽 (✕)
+ *    - 顶部磨砂悬浮胶囊：缩放切换 (+/-)、1:1 原画质像素查看、多图计数与关闭按钮 (✕)
  * 4. 键盘 (Esc/方向键/加减号)、手势下滑关闭、多图画廊顺畅切换
  * 5. 全站自适应：完美支持 .prose 正文图片、<Plate> 出版物插图、Markdown 原生图片
  */
@@ -29,7 +29,7 @@
     class="fixed top-5 left-1/2 -translate-x-1/2 z-[99998] px-3.5 py-1 rounded-full text-[11px] font-mono font-bold tracking-widest text-[#1a1a1a]/80 dark:text-[#e8e6e3]/80 bg-white/70 dark:bg-neutral-800/70 backdrop-blur-xl border border-[#1a1a1a]/10 dark:border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.06)] pointer-events-none transition-all duration-200 opacity-0 -translate-y-2 flex items-center gap-1.5"
   >
     <span id="apple-lightbox-counter-text">1 / 1</span>
-    <span id="apple-lightbox-zoom-badge" class="hidden text-[9px] px-1 py-0.2 rounded-xs bg-[#1a1a1a]/10 dark:bg-white/10 font-bold">100%</span>
+    <span id="apple-lightbox-zoom-badge" class="hidden text-[9px] px-1 py-0.2 rounded-[2px] bg-[#1a1a1a]/10 dark:bg-white/10 font-bold">100%</span>
   </div>
 
   {/* 顶部右侧苹果极简悬浮工具栏 (缩放切换、1:1 查看、关闭按键) */}
@@ -120,7 +120,7 @@
         src="" 
         alt="" 
         draggable="false"
-        class="max-w-full max-h-[82vh] object-contain rounded-xl sm:rounded-2xl shadow-[0_24px_64px_-12px_rgba(0,0,0,0.28)] dark:shadow-[0_28px_72px_-12px_rgba(0,0,0,0.8)] border border-[#1a1a1a]/10 dark:border-white/15 cursor-zoom-in will-change-transform bg-white/40 dark:bg-neutral-900/40 select-none"
+        class="max-w-full max-h-[82vh] object-contain rounded-sm shadow-[0_24px_64px_-12px_rgba(0,0,0,0.28)] dark:shadow-[0_28px_72px_-12px_rgba(0,0,0,0.8)] border border-[#1a1a1a]/10 dark:border-white/15 cursor-zoom-in will-change-transform bg-white/40 dark:bg-neutral-900/40 select-none"
       />
 
       {/* 底部悬浮毛玻璃图注胶囊 */}

@@ -32,8 +32,9 @@ function toIso8601(value: unknown): string {
   return utc.toISOString();
 }
 
-function escapeXml(s: string): string {
-  return s
+function escapeXml(s: string | null | undefined): string {
+  if (s == null) return '';
+  return String(s)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')

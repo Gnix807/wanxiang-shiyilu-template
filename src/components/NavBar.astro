@@ -38,8 +38,8 @@ const isBlogStatsPage = pathname === '/blogstats';
     
     <div class="flex items-center gap-1 sm:gap-3 pb-1 -mb-1 min-w-0 justify-end relative">
       {nav[0] && (<a
-        href={nav[0].href}
-        class={`px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] flex items-center gap-0.5 sm:gap-1.5 transition-colors cursor-pointer rounded-sm font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap ${
+        href={nav[0].href} data-nav-id="home"
+        class={`px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] flex items-center gap-0.5 sm:gap-1.5 transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap ${
           isPostPage ? 'bg-[#9e2a2b] dark:bg-[#d9534f] text-white shadow-[1px_1px_0px_0px_#1a1a1a] sm:shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3]' : 'text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#e6e4df] sm:shadow-[2px_2px_0px_0px_#e6e4df] dark:shadow-[1px_1px_0px_0px_#2d2b28] bg-white dark:bg-[#1c1b1a] hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b]'
         }`}
       >
@@ -49,8 +49,8 @@ const isBlogStatsPage = pathname === '/blogstats';
         <span>{nav[0].name}</span>
       </a>)}
       {nav[1] && (<a
-        href={nav[1].href}
-        class={`px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] flex items-center gap-0.5 sm:gap-1.5 transition-colors cursor-pointer rounded-sm font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap ${
+        href={nav[1].href} data-nav-id="talks"
+        class={`px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] flex items-center gap-0.5 sm:gap-1.5 transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap ${
           isTalkPage ? 'bg-[#9e2a2b] dark:bg-[#d9534f] text-white shadow-[1px_1px_0px_0px_#1a1a1a] sm:shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3]' : 'text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#e6e4df] sm:shadow-[2px_2px_0px_0px_#e6e4df] dark:shadow-[1px_1px_0px_0px_#2d2b28] bg-white dark:bg-[#1c1b1a] hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b]'
         }`}
       >
@@ -61,8 +61,8 @@ const isBlogStatsPage = pathname === '/blogstats';
       </a>)}
       
       {nav[2] && (<a
-        href={nav[2].href}
-        class={`hidden sm:flex px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] items-center gap-0.5 sm:gap-1.5 transition-colors cursor-pointer rounded-sm font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap ${
+        href={nav[2].href} data-nav-id="friends"
+        class={`hidden sm:flex px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] items-center gap-0.5 sm:gap-1.5 transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap ${
           isFriendsPage ? 'bg-[#9e2a2b] dark:bg-[#d9534f] text-white shadow-[1px_1px_0px_0px_#1a1a1a] sm:shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3]' : 'text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#e6e4df] sm:shadow-[2px_2px_0px_0px_#e6e4df] dark:shadow-[1px_1px_0px_0px_#2d2b28] bg-white dark:bg-[#1c1b1a] hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b]'
         }`}
       >
@@ -73,8 +73,8 @@ const isBlogStatsPage = pathname === '/blogstats';
       </a>)}
 
       {nav[3] && (<a
-        href={nav[3].href}
-        class={`hidden md:flex px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] items-center gap-0.5 sm:gap-1.5 transition-colors cursor-pointer rounded-sm font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap ${
+        href={nav[3].href} data-nav-id="about"
+        class={`hidden md:flex px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] items-center gap-0.5 sm:gap-1.5 transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap ${
           isAboutPage ? 'bg-[#9e2a2b] dark:bg-[#d9534f] text-white shadow-[1px_1px_0px_0px_#1a1a1a] sm:shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3]' : 'text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#e6e4df] sm:shadow-[2px_2px_0px_0px_#e6e4df] dark:shadow-[1px_1px_0px_0px_#2d2b28] bg-white dark:bg-[#1c1b1a] hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b]'
         }`}
       >
@@ -85,8 +85,8 @@ const isBlogStatsPage = pathname === '/blogstats';
       </a>)}
 
       {nav[4] && (<a
-        href={nav[4].href}
-        class={`hidden lg:flex px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] items-center gap-0.5 sm:gap-1.5 transition-colors cursor-pointer rounded-sm font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap ${
+        href={nav[4].href} data-nav-id="posts"
+        class={`hidden lg:flex px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] items-center gap-0.5 sm:gap-1.5 transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap ${
           isArchivePage ? 'bg-[#9e2a2b] dark:bg-[#d9534f] text-white shadow-[1px_1px_0px_0px_#1a1a1a] sm:shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3]' : 'text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#e6e4df] sm:shadow-[2px_2px_0px_0px_#e6e4df] dark:shadow-[1px_1px_0px_0px_#2d2b28] bg-white dark:bg-[#1c1b1a] hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b]'
         }`}
       >
@@ -97,8 +97,8 @@ const isBlogStatsPage = pathname === '/blogstats';
       </a>)}
 
       {nav[5] && (<a
-        href={nav[5].href}
-        class={`hidden lg:flex px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] items-center gap-0.5 sm:gap-1.5 transition-colors cursor-pointer rounded-sm font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap ${
+        href={nav[5].href} data-nav-id="blogstats"
+        class={`hidden lg:flex px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] items-center gap-0.5 sm:gap-1.5 transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap ${
           isBlogStatsPage ? 'bg-[#9e2a2b] dark:bg-[#d9534f] text-white shadow-[1px_1px_0px_0px_#1a1a1a] sm:shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3]' : 'text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#e6e4df] sm:shadow-[2px_2px_0px_0px_#e6e4df] dark:shadow-[1px_1px_0px_0px_#2d2b28] bg-white dark:bg-[#1c1b1a] hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b]'
         }`}
       >
@@ -109,8 +109,8 @@ const isBlogStatsPage = pathname === '/blogstats';
       </a>)}
 
       {nav[6] && (<a
-        href={nav[6].href}
-        class={`hidden xl:flex px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] items-center gap-0.5 sm:gap-1.5 transition-colors cursor-pointer rounded-sm font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap ${
+        href={nav[6].href} data-nav-id="tags"
+        class={`hidden xl:flex px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] items-center gap-0.5 sm:gap-1.5 transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap ${
           isTagsPage ? 'bg-[#9e2a2b] dark:bg-[#d9534f] text-white shadow-[1px_1px_0px_0px_#1a1a1a] sm:shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3]' : 'text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#e6e4df] sm:shadow-[2px_2px_0px_0px_#e6e4df] dark:shadow-[1px_1px_0px_0px_#2d2b28] bg-white dark:bg-[#1c1b1a] hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b]'
         }`}
       >
@@ -125,7 +125,7 @@ const isBlogStatsPage = pathname === '/blogstats';
       {ext[0] && (<a
         href={ext[0].href}
         target="_blank" rel="noopener noreferrer"
-        class={`hidden xl:flex px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] items-center gap-0.5 sm:gap-1.5 transition-colors cursor-pointer rounded-sm font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#e6e4df] sm:shadow-[2px_2px_0px_0px_#e6e4df] dark:shadow-[1px_1px_0px_0px_#2d2b28] bg-white dark:bg-[#1c1b1a] hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b]`}
+        class={`hidden xl:flex px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] items-center gap-0.5 sm:gap-1.5 transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#e6e4df] sm:shadow-[2px_2px_0px_0px_#e6e4df] dark:shadow-[1px_1px_0px_0px_#2d2b28] bg-white dark:bg-[#1c1b1a] hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b] hover:shadow-[2px_2px_0px_0px_#1a1a1a] dark:hover:shadow-[2px_2px_0px_0px_#e8e6e3]`}
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 sm:w-4 sm:h-4 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -136,7 +136,7 @@ const isBlogStatsPage = pathname === '/blogstats';
       <button
         type="button"
         id="desktop-search-toggle"
-        class="hidden sm:flex px-2 py-0.5 sm:px-2.5 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] items-center gap-1.5 hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b] transition-colors cursor-pointer rounded-sm font-bold text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#e6e4df] sm:shadow-[2px_2px_0px_0px_#e6e4df] dark:shadow-[1px_1px_0px_0px_#2d2b28] bg-white dark:bg-[#1c1b1a]"
+        class="hidden sm:flex px-2 py-0.5 sm:px-2.5 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] items-center gap-1.5 hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b] transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0px_0px_#1a1a1a] dark:hover:shadow-[2.5px_2.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#e6e4df] sm:shadow-[2px_2px_0px_0px_#e6e4df] dark:shadow-[1px_1px_0px_0px_#2d2b28] bg-white dark:bg-[#1c1b1a]"
         aria-label="搜索 (Ctrl+K)"
         title="搜索文章与说说 (Ctrl+K)"
       >
@@ -144,13 +144,13 @@ const isBlogStatsPage = pathname === '/blogstats';
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
         <span class="hidden md:inline font-sans">搜索</span>
-        <kbd class="hidden md:inline-block text-[10px] font-mono px-1 py-0.5 bg-[#f4efe6] dark:bg-[#242220] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30 rounded-xs text-[#736f68] dark:text-[#a8a29e] shadow-[1px_1px_0px_0px_rgba(0,0,0,0.15)] leading-none">Ctrl K</kbd>
+        <kbd class="hidden md:inline-block text-[10px] font-mono px-1 py-0.5 bg-[#f4efe6] dark:bg-[#242220] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30 rounded-[2px] text-[#736f68] dark:text-[#a8a29e] shadow-[1px_1px_0px_0px_rgba(0,0,0,0.15)] leading-none">Ctrl K</kbd>
       </button>
 
       <button
         id="dark-mode-toggle"
         data-theme-toggle
-        class="px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] flex items-center gap-0.5 sm:gap-1.5 hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b] transition-colors cursor-pointer rounded-sm font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#e6e4df] sm:shadow-[2px_2px_0px_0px_#e6e4df] dark:shadow-[1px_1px_0px_0px_#2d2b28] bg-white dark:bg-[#1c1b1a]"
+        class="px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] flex items-center gap-0.5 sm:gap-1.5 hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b] transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0px_0px_#1a1a1a] dark:hover:shadow-[2.5px_2.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#e6e4df] sm:shadow-[2px_2px_0px_0px_#e6e4df] dark:shadow-[1px_1px_0px_0px_#2d2b28] bg-white dark:bg-[#1c1b1a]"
         aria-label={i18nConfig.common.toggleDarkMode}
       >
         <svg class="theme-sun w-3 h-3 sm:w-4 sm:h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -164,50 +164,50 @@ const isBlogStatsPage = pathname === '/blogstats';
       <div class="hidden sm:block relative self-center">
         <button
           id="desktop-more-toggle"
-          class="px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] flex items-center gap-0.5 sm:gap-1.5 hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b] transition-colors cursor-pointer rounded-sm font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#e6e4df] sm:shadow-[2px_2px_0px_0px_#e6e4df] dark:shadow-[1px_1px_0px_0px_#2d2b28] bg-white dark:bg-[#1c1b1a]"
+          class="px-1.5 py-0.5 sm:px-3 sm:py-1.5 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] flex items-center gap-0.5 sm:gap-1.5 hover:bg-[#f4efe6] dark:hover:bg-[#242220] hover:text-[#9e2a2b] transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[2.5px_2.5px_0px_0px_#1a1a1a] dark:hover:shadow-[2.5px_2.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-xs sm:text-sm tracking-wider shrink-0 whitespace-nowrap text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#e6e4df] sm:shadow-[2px_2px_0px_0px_#e6e4df] dark:shadow-[1px_1px_0px_0px_#2d2b28] bg-white dark:bg-[#1c1b1a]"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 sm:w-4 sm:h-4 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
           </svg>
           <span class="hidden md:inline">{i18nConfig.common.more}</span>
         </button>
-        <div id="desktop-more-dropdown" class="absolute right-0 mt-3 w-32 bg-white dark:bg-[#1c1b1a] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#2d2b28] rounded-sm p-1.5 flex flex-col gap-1.5 z-[110] transform rotate-0.5 hidden">
-          {nav[6] && (<a href={nav[6].href} class={`xl:hidden p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider select-none ${isTagsPage ? "bg-[#9e2a2b] text-white" : "bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]"}`}>
+        <div id="desktop-more-dropdown" class="absolute right-0 mt-3 w-32 bg-white dark:bg-[#1c1b1a] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#2d2b28] rounded-[3px] p-1.5 flex flex-col gap-1.5 z-[110] transform rotate-0.5 hidden">
+          {nav[6] && (<a href={nav[6].href} data-nav-id="tags" class={`xl:hidden p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider select-none ${isTagsPage ? "bg-[#9e2a2b] text-white" : "bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]"}`}>
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01" /></svg>
             {nav[6].name}
           </a>)}
-          {ext[0] && (<a href={ext[0].href} target="_blank" rel="noopener noreferrer" class="xl:hidden p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] select-none">
+          {ext[0] && (<a href={ext[0].href} target="_blank" rel="noopener noreferrer" class="xl:hidden p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:translate-x-0.5 cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] select-none">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>
             {ext[0].name}
           </a>)}
-          <a href={mob[1].href} class="md:hidden p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider select-none bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]">
+          <a href={mob[1].href} data-nav-id="about" class="md:hidden p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider select-none bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
             {mob[1].name}
           </a>
-          <a href={mob[2].href} class="lg:hidden p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider select-none bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]">
+          <a href={mob[2].href} data-nav-id="posts" class="lg:hidden p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider select-none bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
             </svg>
             {mob[2].name}
           </a>
-          <a href={mob[3].href} class="lg:hidden p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider select-none bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]">
+          <a href={mob[3].href} data-nav-id="blogstats" class="lg:hidden p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider select-none bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
             {mob[3].name}
           </a>
-          <a href={mob[5].href} class={`p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider select-none ${isBlogStatsPage ? "bg-[#9e2a2b] text-white" : "bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]"}`}>
+          <a href={mob[5].href} data-nav-id="blogstats" class={`p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider select-none ${isBlogStatsPage ? "bg-[#9e2a2b] text-white" : "bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]"}`}>
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             {mob[5].name}
           </a>
           {ext[1] && (
-            <a href={ext[1].href} target="_blank" class="p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider select-none bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]">
+            <a href={ext[1].href} target="_blank" class="p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:translate-x-0.5 cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider select-none bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
               </svg>
@@ -221,7 +221,7 @@ const isBlogStatsPage = pathname === '/blogstats';
       <div class="block sm:hidden relative self-center mr-0.5">
         <button
           id="mobile-search-toggle"
-          class="p-1 px-[5px] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] transition-all rounded-sm font-black flex items-center justify-center cursor-pointer shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none bg-white dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3]"
+          class="p-1 px-[5px] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] transition-all duration-150 rounded-[3px] font-black flex items-center justify-center cursor-pointer shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none bg-white dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3]"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -236,7 +236,7 @@ const isBlogStatsPage = pathname === '/blogstats';
           aria-expanded="false"
           aria-controls="mobile-menu-dropdown"
           aria-label={i18nConfig.common.openMenu}
-          class="p-1 px-1 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] transition-all rounded-sm font-black flex items-center justify-center cursor-pointer shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none bg-white dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3]"
+          class="p-1 px-1 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] transition-all duration-150 rounded-[3px] font-black flex items-center justify-center cursor-pointer shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none bg-white dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3]"
         >
           <svg id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -246,11 +246,11 @@ const isBlogStatsPage = pathname === '/blogstats';
           </svg>
         </button>
         
-        <div id="mobile-menu-dropdown" class="absolute right-0 mt-3 w-36 bg-white dark:bg-[#1c1b1a] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#2d2b28] rounded-sm p-1.5 flex flex-col gap-1.5 z-[110] transform rotate-0.5 hidden">
+        <div id="mobile-menu-dropdown" class="absolute right-0 mt-3 w-36 bg-white dark:bg-[#1c1b1a] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#2d2b28] rounded-[4px] p-1.5 flex flex-col gap-1.5 z-[110] transform rotate-0.5 hidden">
           <button
             id="mobile-dark-mode-toggle"
             data-theme-toggle
-            class="p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider select-none bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] w-full"
+            class="p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:translate-x-0.5 cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider select-none bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] w-full"
           >
             <svg class="theme-moon w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
@@ -261,8 +261,8 @@ const isBlogStatsPage = pathname === '/blogstats';
             <span id="mobile-dark-mode-label">{i18nConfig.common.darkMode}</span>
           </button>
           <a
-            href={mob[0].href}
-            class={`p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider select-none ${
+            href={mob[0].href} data-nav-id="friends"
+            class={`p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider select-none ${
               isFriendsPage ? "bg-[#9e2a2b] text-white" : "bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]"
             }`}
           >
@@ -271,38 +271,38 @@ const isBlogStatsPage = pathname === '/blogstats';
             </svg>
             <span>{mob[0].name}</span>
           </a>
-          <a href={mob[1].href} class={`p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider select-none ${isAboutPage ? "bg-[#9e2a2b] text-white" : "bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]"}`}>
+          <a href={mob[1].href} data-nav-id="about" class={`p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider select-none ${isAboutPage ? "bg-[#9e2a2b] text-white" : "bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]"}`}>
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>{mob[1].name}
           </a>
           {ext[0] && (<a
             href={ext[0].href}
             target="_blank"
             rel="noopener noreferrer"
-            class="p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] select-none"
+            class="p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:translate-x-0.5 cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3] select-none"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-[#9e2a2b] stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>
             <span>{ext[0].name}</span>
           </a>)}
-          <a href={mob[2].href} class={`p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider select-none ${isArchivePage ? "bg-[#9e2a2b] text-white" : "bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]"}`}>
+          <a href={mob[2].href} data-nav-id="posts" class={`p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider select-none ${isArchivePage ? "bg-[#9e2a2b] text-white" : "bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]"}`}>
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
             </svg>
             {mob[2].name}
           </a>
-          <a href={mob[3].href} class={`p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider select-none ${isBlogStatsPage ? "bg-[#9e2a2b] text-white" : "bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]"}`}>
+          <a href={mob[3].href} data-nav-id="blogstats" class={`p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider select-none ${isBlogStatsPage ? "bg-[#9e2a2b] text-white" : "bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]"}`}>
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>{mob[3].name}
           </a>
           {ext[1] && (
-            <a href={ext[1].href} target="_blank" class="p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider select-none bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]">
+            <a href={ext[1].href} target="_blank" class="p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:translate-x-0.5 cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider select-none bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>{ext[1].name}
             </a>
           )}
-          <a href={mob[4].href} class={`p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider select-none ${isTagsPage ? "bg-[#9e2a2b] text-white" : "bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]"}`}>
+          <a href={mob[4].href} data-nav-id="tags" class={`p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider select-none ${isTagsPage ? "bg-[#9e2a2b] text-white" : "bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]"}`}>
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01" /></svg>{mob[4].name}
           </a>
-          <a href={mob[5].href} class={`p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-colors cursor-pointer rounded-sm font-bold uppercase text-[11px] tracking-wider select-none ${isBlogStatsPage ? "bg-[#9e2a2b] text-white" : "bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]"}`}>
+          <a href={mob[5].href} data-nav-id="blogstats" class={`p-2 border border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 flex items-center justify-center gap-1.5 hover:bg-[#9e2a2b] hover:text-white transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer rounded-[3px] font-bold uppercase text-[11px] tracking-wider select-none ${isBlogStatsPage ? "bg-[#9e2a2b] text-white" : "bg-[#f4efe6] dark:bg-[#242220] text-[#1a1a1a] dark:text-[#e8e6e3]"}`}>
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>{mob[5].name}
           </a>
         </div>
@@ -319,7 +319,7 @@ const isBlogStatsPage = pathname === '/blogstats';
         name="q"
         placeholder={i18nConfig.search.placeholder}
         toolparamdescription="搜索关键词，支持按文章标题、描述、标签或分类进行模糊匹配"
-        class="w-full bg-[#fbfbf9] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] font-bold focus:outline-none px-4 py-2.5 rounded-sm text-sm text-[#1a1a1a] dark:text-[#e8e6e3] placeholder-stone-400 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#2d2b28] outline-none"
+        class="w-full bg-[#fbfbf9] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] font-bold focus:outline-none px-4 py-2.5 rounded-[3px] text-sm text-[#1a1a1a] dark:text-[#e8e6e3] placeholder-stone-400 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#2d2b28] transition-all duration-150 outline-none"
       />
       <div class="absolute right-4 top-1/2 -translate-y-1/2 text-[#1a1a1a] dark:text-[#e8e6e3] flex items-center gap-2">
         <button 
@@ -511,7 +511,8 @@ const isBlogStatsPage = pathname === '/blogstats';
   function setupMobileSearchInput() {
     const mobileSearchInput = document.getElementById('mobile-search-input');
     const mobileSearchClear = document.getElementById('mobile-search-clear');
-    if (!mobileSearchInput) return;
+    if (!mobileSearchInput || mobileSearchInput.dataset.searchBound === '1') return;
+    mobileSearchInput.dataset.searchBound = '1';
 
     const urlParams = new URLSearchParams(window.location.search);
     const initialQ = urlParams.get('q') || '';
@@ -549,4 +550,8 @@ const isBlogStatsPage = pathname === '/blogstats';
   }
 
   initNavBar();
+  if (!window.__navPageLoadBound) {
+    document.addEventListener('astro:page-load', initNavBar);
+    window.__navPageLoadBound = true;
+  }
 </script>

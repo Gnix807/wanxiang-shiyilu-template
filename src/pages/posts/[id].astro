@@ -93,7 +93,7 @@ const relatedPosts = (() => {
       
       {/* Main post body center panel */}
       <div class="flex-1 min-w-0 w-full space-y-8 lg:order-2 relative z-20">
-        <article class="article-paper bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-4 sm:p-6 md:p-10 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] sm:shadow-[8px_8px_0px_0px_#1a1a1a] dark:sm:shadow-[8px_8px_0px_0px_#e8e6e3] rounded-sm animate-card-entrance opacity-0">
+        <article class="article-paper bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-4 sm:p-6 md:p-10 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] sm:shadow-[8px_8px_0px_0px_#1a1a1a] dark:sm:shadow-[8px_8px_0px_0px_#e8e6e3] rounded-[4px] animate-card-entrance opacity-0">
           <div class="border-b-3 sm:border-b-4 border-[#1a1a1a] dark:border-[#e8e6e3] pb-6 mb-8 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
               <h1 class="text-xl sm:text-2xl md:text-3xl font-black text-[#1a1a1a] dark:text-[#e8e6e3] mb-4 leading-tight font-serif">{post.title}</h1>
@@ -104,7 +104,7 @@ const relatedPosts = (() => {
                 {post.category && (
                   <a 
                     href={`/category/${post.category}`} 
-                    class="bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] px-2.5 py-0.5 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] text-center font-bold text-[#9e2a2b] dark:text-[#d9534f] text-xs hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] transition-colors"
+                    class="bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[2px] px-2.5 py-0.5 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] text-center font-bold text-[#9e2a2b] dark:text-[#d9534f] text-xs hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] dark:hover:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150"
                   >
                     {post.category}
                   </a>
@@ -115,7 +115,7 @@ const relatedPosts = (() => {
                     {post.tags.map(tag => (
                       <a 
                         href={`/tag/${tag}`} 
-                        class="text-xs font-bold bg-white dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] text-neutral-700 dark:text-neutral-300 px-2.5 py-0.5 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] transition-colors"
+                        class="text-xs font-bold bg-white dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] text-neutral-700 dark:text-neutral-300 rounded-[2px] px-2.5 py-0.5 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] dark:hover:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150"
                       >
                         #{tag}
                       </a>
@@ -135,7 +135,7 @@ const relatedPosts = (() => {
 
         {/* Copyright Metadata block */}
         <div 
-          class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-5 md:p-7 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm relative transition-all duration-300 group/copyright animate-card-entrance opacity-0"
+          class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-5 md:p-7 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-[4px] relative transition-all duration-150 group/copyright animate-card-entrance opacity-0"
           id="post-copyright-card"
           style="animation-delay: 0.1s"
         >
@@ -161,7 +161,7 @@ const relatedPosts = (() => {
               </div>
             </div>
             
-            <div class="inline-block bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 px-3 py-1 rounded-sm text-xs font-bold text-[#1a1a1a] dark:text-[#e8e6e3] hover:text-[#9e2a2b] dark:hover:text-[#d9534f] transition-all break-all select-all">
+            <div class="inline-block bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 px-3 py-1 rounded-[3px] text-xs font-bold text-[#1a1a1a] dark:text-[#e8e6e3] hover:text-[#9e2a2b] dark:hover:text-[#d9534f] transition-all duration-150 break-all select-all">
               <a href={Astro.url.href} target="_blank" rel="noopener noreferrer">
                 {Astro.url.href}
               </a>
@@ -170,7 +170,7 @@ const relatedPosts = (() => {
             <div class="grid grid-cols-3 gap-3 border-t-2 border-dashed border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 pt-4 text-[11px] sm:text-xs">
               <div>
                 <div class="text-neutral-400 font-bold mb-1 uppercase tracking-wider">{i18nConfig.post.copyrightTitle}</div>
-                <div class="font-extrabold text-[#9e2a2b] dark:text-[#d9534f] hover:translate-x-0.5 transition-transform">{siteConfig.author}</div>
+                <div class="font-extrabold text-[#9e2a2b] dark:text-[#d9534f] hover:translate-x-0.5 transition-transform duration-150">{siteConfig.author}</div>
               </div>
               <div>
                 <div class="text-neutral-400 font-bold mb-1 uppercase tracking-wider">{i18nConfig.post.publishedTitle}</div>
@@ -179,7 +179,7 @@ const relatedPosts = (() => {
               <div>
                 <div class="text-neutral-400 font-bold mb-1 uppercase tracking-wider">{i18nConfig.post.licenseTitle}</div>
                 <div>
-                  <a href={contentConfig.license.url} class="font-bold text-[#9e2a2b] dark:text-[#d9534f] hover:underline transition-all">
+                  <a href={contentConfig.license.url} class="font-bold text-[#9e2a2b] dark:text-[#d9534f] hover:underline transition-all duration-150">
                     {contentConfig.license.name}
                   </a>
                 </div>
@@ -191,7 +191,7 @@ const relatedPosts = (() => {
         {/* Article history block —— 首屏只有次数与最后更改时间，明细点开才拉分片 */}
         {history && (
           <div
-            class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-4 md:p-5 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm animate-card-entrance opacity-0"
+            class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-4 md:p-5 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-[4px] animate-card-entrance opacity-0"
             style="animation-delay: 0.12s"
           >
             <div
@@ -228,7 +228,7 @@ const relatedPosts = (() => {
         {/* Related Posts */}
         {relatedPosts.length > 0 && (
           <div class="animate-card-entrance opacity-0" style="animation-delay: 0.08s" data-prefetch="post-bottom">
-            <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-4 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm">
+            <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-4 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-[4px]">
               <h3 class="font-black text-[#1a1a1a] dark:text-[#e8e6e3] text-sm mb-3 flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#9e2a2b] dark:text-[#d9534f]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
@@ -239,7 +239,7 @@ const relatedPosts = (() => {
                 {relatedPosts.map(rp => (
                   <a
                     href={`/posts/${encodeURIComponent(rp.slug)}`}
-                    class="group bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] px-3 py-2 rounded-sm shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-200 inline-flex items-center gap-2"
+                    class="group bg-[#f4efe6] dark:bg-[#242220] border-2 border-[#1a1a1a] dark:border-[#e8e6e3] px-3 py-2 rounded-[3px] shadow-[3px_3px_0px_0px_#1a1a1a] dark:shadow-[3px_3px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4.5px_4.5px_0px_0px_#1a1a1a] dark:hover:shadow-[4.5px_4.5px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 inline-flex items-center gap-2"
                   >
                     <span class="text-xs font-black text-neutral-800 dark:text-neutral-200 group-hover:text-[#9e2a2b] transition-colors whitespace-nowrap">{rp.title}</span>
                     <span class="text-[9px] font-bold text-neutral-400 font-mono shrink-0">{rp.date}</span>
@@ -255,16 +255,16 @@ const relatedPosts = (() => {
           {prevPost ? (
             <a 
               href={`/posts/${encodeURIComponent(prevPost.slug)}`}
-              class="flex-1 min-w-0 bg-white dark:bg-[#1c1b1a] hover:bg-[#f4efe6] dark:hover:bg-[#242220] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] px-4 py-3 rounded-sm shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-200 flex items-center gap-3 group text-left"
+              class="flex-1 min-w-0 bg-white dark:bg-[#1c1b1a] hover:bg-[#f4efe6] dark:hover:bg-[#242220] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] px-4 py-3 rounded-[4px] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#1a1a1a] dark:hover:shadow-[6px_6px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 flex items-center gap-3 group text-left"
             >
-              <span class="text-[#9e2a2b] dark:text-[#d9534f] group-hover:-translate-x-1 transition-transform shrink-0 font-extrabold">❮</span>
+              <span class="text-[#9e2a2b] dark:text-[#d9534f] group-hover:-translate-x-1 transition-transform duration-150 shrink-0 font-extrabold">❮</span>
               <div class="min-w-0 flex-1">
                 <div class="text-[9px] uppercase font-black tracking-widest text-neutral-400 mb-0.5">{i18nConfig.post.prevPost}</div>
                 <p class="text-xs sm:text-sm font-black text-neutral-800 dark:text-neutral-200 truncate">{prevPost.title}</p>
               </div>
             </a>
           ) : (
-            <div class="hidden sm:block flex-1 border-3 border-dashed border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 px-4 py-3 rounded-sm text-center text-xs font-black text-neutral-400 dark:text-neutral-500 bg-white/30 dark:bg-white/5">
+            <div class="hidden sm:block flex-1 border-3 border-dashed border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 px-4 py-3 rounded-[4px] text-center text-xs font-black text-neutral-400 dark:text-neutral-500 bg-white/30 dark:bg-white/5">
               {i18nConfig.post.noMorePrev}
             </div>
           )}
@@ -272,16 +272,16 @@ const relatedPosts = (() => {
           {nextPost ? (
             <a 
               href={`/posts/${encodeURIComponent(nextPost.slug)}`}
-              class="flex-1 min-w-0 bg-white dark:bg-[#1c1b1a] hover:bg-[#f4efe6] dark:hover:bg-[#242220] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] px-4 py-3 rounded-sm shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-200 flex items-center justify-between gap-3 group text-right"
+              class="flex-1 min-w-0 bg-white dark:bg-[#1c1b1a] hover:bg-[#f4efe6] dark:hover:bg-[#242220] border-3 border-[#1a1a1a] dark:border-[#e8e6e3] px-4 py-3 rounded-[4px] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_#1a1a1a] dark:hover:shadow-[6px_6px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 flex items-center justify-between gap-3 group text-right"
             >
               <div class="min-w-0 flex-1">
                 <div class="text-[9px] uppercase font-black tracking-widest text-neutral-400 mb-0.5">{i18nConfig.post.nextPost}</div>
                 <p class="text-xs sm:text-sm font-black text-neutral-800 dark:text-neutral-200 truncate">{nextPost.title}</p>
               </div>
-              <span class="text-[#9e2a2b] dark:text-[#d9534f] group-hover:translate-x-1 transition-transform shrink-0 font-extrabold">❯</span>
+              <span class="text-[#9e2a2b] dark:text-[#d9534f] group-hover:translate-x-1 transition-transform duration-150 shrink-0 font-extrabold">❯</span>
             </a>
           ) : (
-            <div class="hidden sm:block flex-1 border-3 border-dashed border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 px-4 py-3 rounded-sm text-center text-xs font-black text-neutral-400 dark:text-neutral-500 bg-white/30 dark:bg-white/5">
+            <div class="hidden sm:block flex-1 border-3 border-dashed border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 px-4 py-3 rounded-[4px] text-center text-xs font-black text-neutral-400 dark:text-neutral-500 bg-white/30 dark:bg-white/5">
               {i18nConfig.post.noMoreNext}
             </div>
           )}
@@ -298,7 +298,7 @@ const relatedPosts = (() => {
 
       {/* Right Desktop Sticky TOC Side Menu */}
       <div class="hidden lg:block w-[260px] shrink-0 sticky top-[100px] z-10 self-start lg:order-3">
-        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-5 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-sm max-h-[calc(100vh-120px)] flex flex-col">
+        <div class="bg-white dark:bg-[#1c1b1a] border-3 sm:border-4 border-[#1a1a1a] dark:border-[#e8e6e3] p-5 shadow-[6px_6px_0px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_0px_#e8e6e3] rounded-[4px] max-h-[calc(100vh-120px)] flex flex-col">
           <h3 class="font-black text-[#1a1a1a] dark:text-[#e8e6e3] text-lg mb-4 flex items-center gap-2 shrink-0 font-serif">
             {i18nConfig.post.tocTitle}
           </h3>
@@ -334,9 +334,12 @@ const relatedPosts = (() => {
 </Layout>
 
 <script>
-
+  import { onPageReady } from '../../scripts/lifecycle';
 
   function setupPostDetail() {
+    if (!document.querySelector('article.article-paper')) return;
+    let disposed = false;
+    let navigationTimeout: ReturnType<typeof setTimeout>;
     // Render image captions for images with alt text
     function setupImageCaptions() {
       const content = document.querySelector('.prose');
@@ -373,7 +376,7 @@ const relatedPosts = (() => {
         
         // Create container
         const container = document.createElement('div');
-        container.className = 'my-8 relative border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm overflow-hidden bg-[#1c1b1a] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] group animate-card-entrance';
+        container.className = 'my-8 relative border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[4px] overflow-hidden bg-[#1c1b1a] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] group animate-card-entrance';
         
         // Header
         const header = document.createElement('div');
@@ -385,7 +388,7 @@ const relatedPosts = (() => {
             <div class="w-2.5 h-2.5 rounded-full bg-[#9e2a2b]"></div>
           </div>
           <div class="font-mono text-[10px] font-black text-[#1a1a1a] dark:text-[#e8e6e3] uppercase tracking-[0.2em] opacity-80">${language}</div>
-          <button class="copy-btn text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] transition-all p-1 border border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm bg-white dark:bg-[#1c1b1a] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:shadow-none translate-x-[-1px] translate-y-[-1px] hover:translate-x-0 hover:translate-y-0" title="复制代码">
+          <button class="copy-btn text-[#1a1a1a] dark:text-[#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] transition-all duration-150 p-1 border border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] bg-white dark:bg-[#1c1b1a] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] dark:hover:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none" title="复制代码">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
           </button>
         `;
@@ -418,12 +421,12 @@ const relatedPosts = (() => {
         // Folding logic
         const lines = pre.innerText.split('\n').filter(l => l.trim()).length;
         if (lines > 40) {
-          scrollArea.classList.add('max-h-[600px]', 'transition-all', 'duration-500');
+          scrollArea.classList.add('max-h-[600px]', 'transition-all', 'duration-200');
           
           const overlay = document.createElement('div');
           overlay.className = 'absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#1c1b1a] via-[#1c1b1a]/90 to-transparent flex items-end justify-center pb-4 z-10 fold-overlay';
           overlay.innerHTML = `
-            <button class="expand-btn bg-[#9e2a2b] border border-[#1a1a1a] dark:border-[#e8e6e3] text-white font-black px-4 py-1.5 flex items-center gap-2 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all text-xs rounded-sm uppercase tracking-wider scale-90">
+            <button class="expand-btn bg-[#9e2a2b] border border-[#1a1a1a] dark:border-[#e8e6e3] text-white font-black px-4 py-1.5 flex items-center gap-2 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 text-xs rounded-[3px] uppercase tracking-wider scale-90">
               展开代码 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
             </button>
           `;
@@ -439,7 +442,7 @@ const relatedPosts = (() => {
             const footer = document.createElement('div');
             footer.className = 'border-t-2 border-dashed border-[#1a1a1a]/20 dark:border-[#e8e6e3]/20 bg-[#1c1b1a]/50 p-2 flex justify-center collapse-footer';
             footer.innerHTML = `
-              <button class="collapse-btn bg-white dark:bg-[#242220] border border-[#1a1a1a] dark:border-[#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] font-black px-4 py-1 flex items-center gap-2 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all text-[10px] rounded-sm uppercase tracking-wider">
+              <button class="collapse-btn bg-white dark:bg-[#242220] border border-[#1a1a1a] dark:border-[#e8e6e3] text-[#1a1a1a] dark:text-[#e8e6e3] font-black px-4 py-1 flex items-center gap-2 shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] dark:hover:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all duration-150 text-[10px] rounded-[3px] uppercase tracking-wider">
                 收起代码 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
               </button>
             `;
@@ -483,7 +486,7 @@ const relatedPosts = (() => {
     });
 
     function updateTOCHighlight(id) {
-      if (!id || id === activeId) return;
+      if (disposed || !id || id === activeId) return;
       activeId = id;
 
       tocNavLinks.forEach(link => {
@@ -539,18 +542,6 @@ const relatedPosts = (() => {
       }
     }, observerOptions);
 
-    // 断开旧的 observer 和 scroll 监听（View Transitions 重进文章页时避免重复注册）
-    const w = window as any;
-    if (w.__tocObserver) {
-      try { w.__tocObserver.disconnect(); } catch (_) {}
-      w.__tocObserver = null;
-    }
-    if (w.__tocScrollHandler) {
-      try { window.removeEventListener('scroll', w.__tocScrollHandler); } catch (_) {}
-      w.__tocScrollHandler = null;
-    }
-    w.__tocObserver = headingObserver;
-
     articleHeadings.forEach(h => headingObserver.observe(h));
 
     // Fallback scroll listener for cases where observer might be sluggish
@@ -568,11 +559,10 @@ const relatedPosts = (() => {
         if (current) updateTOCHighlight(current);
       }, 50);
     };
-    w.__tocScrollHandler = tocScrollHandler;
     window.addEventListener('scroll', tocScrollHandler, { passive: true });
 
     // Initial detection
-    setTimeout(() => {
+    const initialTimeout = setTimeout(() => {
       const scrollPos = window.scrollY + 130;
       let current = '';
       for (const heading of articleHeadings) {
@@ -599,23 +589,25 @@ const relatedPosts = (() => {
             });
             
             window.history.pushState(null, '', '#' + id);
-            setTimeout(() => { isNavigating = false; }, 1000);
+            clearTimeout(navigationTimeout);
+            navigationTimeout = setTimeout(() => { isNavigating = false; }, 1000);
           }
         });
       });
     }
 
     setupLinksClick(tocNavLinks);
+    return () => {
+      disposed = true;
+      clearTimeout(initialTimeout);
+      clearTimeout(navigationTimeout);
+      clearTimeout(scrollTimeout);
+      headingObserver.disconnect();
+      window.removeEventListener('scroll', tocScrollHandler);
+    };
   }
 
-  // Initial run
-  requestAnimationFrame(setupPostDetail);
-
-  // Re-run on page transitions (guard against duplicates)
-  if (!window._postDetailListenersInited) {
-    document.addEventListener('astro:page-load', () => requestAnimationFrame(setupPostDetail));
-    window._postDetailListenersInited = true;
-  }
+  onPageReady(setupPostDetail);
 
   /* ================= 文章历史（点开才拉分片） ================= */
   function setupPostHistory() {
@@ -702,11 +694,7 @@ const relatedPosts = (() => {
     });
   }
 
-  requestAnimationFrame(setupPostHistory);
-  if (!window._postHistoryInited) {
-    document.addEventListener('astro:page-load', () => requestAnimationFrame(setupPostHistory));
-    window._postHistoryInited = true;
-  }
+  onPageReady(setupPostHistory);
 </script>
 
 <style is:global>
@@ -714,8 +702,8 @@ const relatedPosts = (() => {
     border-left-width: 3px;
     border-color: #9e2a2b;
     background-color: rgba(158, 42, 43, 0.08);
-    border-top-right-radius: 0.25rem;
-    border-bottom-right-radius: 0.25rem;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
     color: #9e2a2b;
     font-weight: 800;
     transform: scale(1.01);

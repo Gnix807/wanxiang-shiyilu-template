@@ -331,7 +331,7 @@ const isMusicPage = false; // 音乐页已归档禁用
       <span id="resource-progress-meta" hidden>0 / 0 · 0%</span>
     </div>
     <!-- Skip to content for keyboard users -->
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:bg-[#1a1a1a] dark:focus:bg-[#e8e6e3] focus:text-white dark:focus:text-[#1a1a1a] focus:px-4 focus:py-2 focus:rounded-sm focus:font-black focus:text-sm focus:shadow-[4px_4px_0px_0px_#9e2a2b] focus:no-underline focus:outline-none">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:bg-[#1a1a1a] dark:focus:bg-[#e8e6e3] focus:text-white dark:focus:text-[#1a1a1a] focus:px-4 focus:py-2 focus:rounded-[3px] focus:duration-150 focus:font-black focus:text-sm focus:shadow-[4px_4px_0px_0px_#9e2a2b] focus:no-underline focus:outline-none">
       跳转到主要内容
     </a>
     {/* Global reading progress bar */}
@@ -362,7 +362,8 @@ const isMusicPage = false; // 音乐页已归档禁用
       var panel = document.getElementById('cache-panel');
       var statsEl = document.getElementById('cache-panel-stats');
       var toast = document.getElementById('cache-toast');
-      if (!panel || !statsEl || !toast) return;
+      if (!panel || !statsEl || !toast || window.__cacheDebugStarted) return;
+      window.__cacheDebugStarted = true;
 
       // 更新面板内容
       function updatePanel() {
@@ -532,7 +533,7 @@ const isMusicPage = false; // 音乐页已归档禁用
               href="https://astro.build" 
               target="_blank" 
               rel="noopener noreferrer" 
-              class="group inline-flex items-center gap-1.5 px-3 py-1 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm bg-[#ffffff] dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] dark:hover:bg-[#d9534f] dark:hover:border-[#d9534f] hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] active:translate-y-0 active:shadow-[1px_1px_0px_0px_#1a1a1a] transition-all font-mono font-bold text-xs"
+              class="group inline-flex items-center gap-1.5 px-3 py-1 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] bg-[#ffffff] dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[2px_2px_0px_0px_#1a1a1a] dark:shadow-[2px_2px_0px_0px_#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] dark:hover:bg-[#d9534f] dark:hover:border-[#d9534f] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_0px_#1a1a1a] dark:hover:shadow-[3px_3px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_0px_#1a1a1a] transition-all duration-150 font-mono font-bold text-xs"
               title="Astro: The web framework for content-driven websites"
             >
               <svg class="w-3.5 h-3.5 text-[#ff5d01] group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -769,7 +770,7 @@ const isMusicPage = false; // 音乐页已归档禁用
     {/* Floating Back To Top button */}
     <button
       id="back-to-top-btn"
-      class="fixed bottom-24 right-6 z-[95] w-12 h-12 rounded-sm border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#ffffff] dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] flex items-center justify-center cursor-pointer shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] dark:hover:bg-[#d9534f] dark:hover:border-[#d9534f] hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#1a1a1a] active:translate-y-0 active:shadow-none transition-all duration-150 opacity-0 pointer-events-none"
+      class="fixed bottom-24 right-6 z-[95] w-12 h-12 rounded-[4px] border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] bg-[#ffffff] dark:bg-[#1c1b1a] text-[#1a1a1a] dark:text-[#e8e6e3] flex items-center justify-center cursor-pointer shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] hover:bg-[#9e2a2b] hover:text-white hover:border-[#9e2a2b] dark:hover:bg-[#d9534f] dark:hover:border-[#d9534f] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#1a1a1a] dark:hover:shadow-[6px_6px_0px_0px_#e8e6e3] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all duration-150 opacity-0 pointer-events-none"
       aria-label="回到顶部"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-[3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -804,7 +805,8 @@ const isMusicPage = false; // 音乐页已归档禁用
 
   function setupBackToTop() {
     const backToTopBtn = document.getElementById('back-to-top-btn');
-    if (!backToTopBtn) return;
+    if (!backToTopBtn || backToTopBtn.dataset.bound === '1') return;
+    backToTopBtn.dataset.bound = '1';
 
     if (!window.__backToTopScrollSetup) {
       window.__backToTopScrollSetup = true;
@@ -862,7 +864,7 @@ const isMusicPage = false; // 音乐页已归档禁用
       wrapper.setAttribute('data-codeblock', 'true');
 
       const innerBox = document.createElement('div');
-      innerBox.className = 'border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] overflow-hidden bg-[#faf8f5] dark:bg-[#141413]';
+      innerBox.className = 'border-2 sm:border-3 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[4px] shadow-[4px_4px_0px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_0px_#e8e6e3] overflow-hidden bg-[#faf8f5] dark:bg-[#141413]';
 
       const header = document.createElement('div');
       header.className = 'flex flex-wrap gap-2 items-center justify-between px-3.5 py-2 bg-[#f0ebe1] dark:bg-[#242220] border-b-2 sm:border-b-3 border-[#1a1a1a] dark:border-[#e8e6e3] text-xs font-mono select-none';
@@ -873,11 +875,11 @@ const isMusicPage = false; // 音乐页已归档禁用
             <span class="w-2.5 h-2.5 rounded-full bg-[#eab308] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30"></span>
             <span class="w-2.5 h-2.5 rounded-full bg-[#22c55e] border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30"></span>
           </div>
-          <span class="font-bold px-1.5 py-0.5 rounded-xs bg-[#1a1a1a] dark:bg-[#e8e6e3] text-white dark:text-[#1a1a1a] text-[10px] tracking-wider uppercase font-mono">${lang.toUpperCase()}</span>
+          <span class="font-bold px-1.5 py-0.5 rounded-[2px] bg-[#1a1a1a] dark:bg-[#e8e6e3] text-white dark:text-[#1a1a1a] text-[10px] tracking-wider uppercase font-mono">${lang.toUpperCase()}</span>
         </div>
         <div class="flex items-center gap-2 shrink-0">
-          <button type="button" class="code-wrap-btn px-2 py-0.5 border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30 rounded-xs bg-white/70 dark:bg-transparent hover:bg-[#1a1a1a] hover:text-white dark:hover:bg-[#e8e6e3] dark:hover:text-[#1a1a1a] transition-colors text-[10px] font-bold text-[#1a1a1a] dark:text-[#e8e6e3] cursor-pointer" title="切换自动换行">换行</button>
-          <button type="button" class="code-copy-btn px-2.5 py-0.5 border border-[#1a1a1a] dark:border-[#e8e6e3] rounded-xs bg-white dark:bg-[#1c1b1a] hover:bg-[#9e2a2b] hover:text-white dark:hover:bg-[#d9534f] transition-all text-[11px] font-bold text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center gap-1" title="复制代码">
+          <button type="button" class="code-wrap-btn px-2 py-0.5 border border-[#1a1a1a]/30 dark:border-[#e8e6e3]/30 rounded-[3px] bg-white/70 dark:bg-transparent hover:bg-[#1a1a1a] hover:text-white dark:hover:bg-[#e8e6e3] dark:hover:text-[#1a1a1a] transition-colors text-[10px] font-bold text-[#1a1a1a] dark:text-[#e8e6e3] cursor-pointer" title="切换自动换行">换行</button>
+          <button type="button" class="code-copy-btn px-2.5 py-0.5 border border-[#1a1a1a] dark:border-[#e8e6e3] rounded-[3px] bg-white dark:bg-[#1c1b1a] hover:bg-[#9e2a2b] hover:text-white dark:hover:bg-[#d9534f] transition-all text-[11px] font-bold text-[#1a1a1a] dark:text-[#e8e6e3] shadow-[1px_1px_0px_0px_#1a1a1a] dark:shadow-[1px_1px_0px_0px_#e8e6e3] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer flex items-center gap-1" title="复制代码">
             <svg class="copy-icon w-3 h-3 stroke-[2.5]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
@@ -984,10 +986,89 @@ const isMusicPage = false; // 音乐页已归档禁用
     });
   }
 
+  // 全局注解与浮层独占排他性管理器（侧注、文内引用、文献卡片统一状态单例）
+  const AnnotationManager = window.__editorialAnnotationManager || (window.__editorialAnnotationManager = {
+    _leaveTimer: null,
+    _activeHoverAnchor: null,
+
+    getPinned() {
+      return document.querySelector('.footnote-anchor.pinned');
+    },
+    syncState() {
+      if (!this.getPinned()) {
+        document.documentElement.classList.remove('has-pinned-annotation');
+      } else {
+        document.documentElement.classList.add('has-pinned-annotation');
+      }
+    },
+    closeAll(exceptAnchor = null) {
+      this.cancelLeaveTimer();
+      if (this._activeHoverAnchor !== exceptAnchor) this._activeHoverAnchor = null;
+      document.querySelectorAll('.footnote-anchor').forEach((a) => {
+        if (a === exceptAnchor) return;
+        a.classList.remove('pinned', 'is-hovering');
+        a.classList.add('is-closed');
+        const tr = a.querySelector('.footnote-trigger');
+        if (tr) tr.setAttribute('aria-expanded', 'false');
+      });
+      this.syncState();
+    },
+    pin(anchor, trigger) {
+      this.cancelLeaveTimer();
+      this.closeAll(anchor);
+      anchor.classList.remove('is-closed');
+      anchor.classList.add('pinned');
+      if (trigger) trigger.setAttribute('aria-expanded', 'true');
+      document.documentElement.classList.add('has-pinned-annotation');
+      adjustPopoverPlacement(anchor);
+    },
+    unpin(anchor, trigger) {
+      this.cancelLeaveTimer();
+      if (this._activeHoverAnchor === anchor) this._activeHoverAnchor = null;
+      anchor.classList.remove('pinned', 'is-hovering');
+      anchor.classList.add('is-closed');
+      if (trigger) trigger.setAttribute('aria-expanded', 'false');
+      this.syncState();
+    },
+    cancelLeaveTimer() {
+      if (this._leaveTimer) {
+        clearTimeout(this._leaveTimer);
+        this._leaveTimer = null;
+      }
+    },
+    hover(anchor) {
+      this.cancelLeaveTimer();
+      // 若当前已有固定的卡片，严禁任何其他浮层被鼠标划过意外唤起
+      const currentPinned = this.getPinned();
+      if (currentPinned) {
+        if (currentPinned !== anchor) return;
+      }
+      this._activeHoverAnchor = anchor;
+      this.closeAll(anchor);
+      anchor.classList.add('is-hovering');
+      anchor.classList.remove('is-closed');
+      adjustPopoverPlacement(anchor);
+    },
+    leave(anchor, delay = 240) {
+      if (!anchor || anchor.classList.contains('pinned')) return;
+      this.cancelLeaveTimer();
+      this._leaveTimer = setTimeout(() => {
+        if (!anchor.classList.contains('pinned')) {
+          anchor.classList.remove('is-hovering', 'is-closed');
+          if (this._activeHoverAnchor === anchor) {
+            this._activeHoverAnchor = null;
+          }
+        }
+        this._leaveTimer = null;
+      }, delay);
+    }
+  });
+
   // 全局边注角标与悬浮框交互管理器
   function setupFootnoteInteractions() {
     if (window._editorialFootnoteInitialized) return;
     window._editorialFootnoteInitialized = true;
+    document.addEventListener('astro:before-swap', () => AnnotationManager.closeAll());
 
     document.addEventListener('click', (e) => {
       const target = e.target;
@@ -999,10 +1080,8 @@ const isMusicPage = false; // 音乐页已归档禁用
         e.preventDefault();
         const anchor = closeBtn.closest('.footnote-anchor');
         if (anchor) {
-          anchor.classList.remove('pinned');
-          anchor.classList.add('is-closed');
           const trigger = anchor.querySelector('.footnote-trigger');
-          if (trigger) trigger.setAttribute('aria-expanded', 'false');
+          AnnotationManager.unpin(anchor, trigger);
         }
         return;
       }
@@ -1014,30 +1093,32 @@ const isMusicPage = false; // 音乐页已归档禁用
         const anchor = trigger.closest('.footnote-anchor');
         if (anchor) {
           const isPinned = anchor.classList.contains('pinned');
-          document.querySelectorAll('.footnote-anchor.pinned').forEach((a) => {
-            a.classList.remove('pinned');
-            const tr = a.querySelector('.footnote-trigger');
-            if (tr) tr.setAttribute('aria-expanded', 'false');
-          });
-          if (!isPinned) {
-            anchor.classList.remove('is-closed');
-            anchor.classList.add('pinned');
-            trigger.setAttribute('aria-expanded', 'true');
-            adjustPopoverPlacement(anchor);
+          if (isPinned) {
+            AnnotationManager.unpin(anchor, trigger);
           } else {
-            anchor.classList.add('is-closed');
+            AnnotationManager.pin(anchor, trigger);
           }
         }
         return;
       }
 
       if (!target.closest('.footnote-popover')) {
-        document.querySelectorAll('.footnote-anchor').forEach((a) => {
-          a.classList.remove('pinned');
-          a.classList.remove('is-closed');
-          const tr = a.querySelector('.footnote-trigger');
-          if (tr) tr.setAttribute('aria-expanded', 'false');
-        });
+        AnnotationManager.closeAll();
+      }
+    });
+
+    document.addEventListener('mouseover', (e) => {
+      const target = e.target;
+      if (!(target instanceof HTMLElement)) return;
+      const anchor = target.closest('.footnote-anchor');
+      if (anchor) {
+        AnnotationManager.cancelLeaveTimer();
+        const trigger = target.closest('.footnote-trigger');
+        if (trigger) {
+          AnnotationManager.hover(anchor);
+        } else if (anchor.classList.contains('is-hovering')) {
+          AnnotationManager.cancelLeaveTimer();
+        }
       }
     });
 
@@ -1048,19 +1129,14 @@ const isMusicPage = false; // 音乐页已归档禁用
       if (anchor) {
         const related = e.relatedTarget;
         if (!(related instanceof Node) || !anchor.contains(related)) {
-          anchor.classList.remove('is-closed');
+          AnnotationManager.leave(anchor, 240);
         }
       }
     });
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        document.querySelectorAll('.footnote-anchor').forEach((a) => {
-          a.classList.remove('pinned');
-          a.classList.add('is-closed');
-          const tr = a.querySelector('.footnote-trigger');
-          if (tr) tr.setAttribute('aria-expanded', 'false');
-        });
+        AnnotationManager.closeAll();
       } else if (e.key === 'Enter' || e.key === ' ') {
         const activeEl = document.activeElement;
         if (activeEl && activeEl.classList.contains('footnote-trigger')) {
@@ -1070,18 +1146,14 @@ const isMusicPage = false; // 音乐页已归档禁用
       }
     });
 
-    document.addEventListener('mouseover', (e) => {
-      const target = e.target;
-      if (!(target instanceof HTMLElement)) return;
-      const anchor = target.closest('.footnote-anchor');
-      if (anchor) {
-        adjustPopoverPlacement(anchor);
-      }
+    window.addEventListener('resize', () => {
+      document.querySelectorAll('.footnote-anchor.pinned, .footnote-anchor.is-hovering').forEach(adjustPopoverPlacement);
     });
 
-    window.addEventListener('resize', () => {
-      document.querySelectorAll('.footnote-anchor.pinned').forEach(adjustPopoverPlacement);
-    });
+    window.addEventListener('scroll', (event) => {
+      if (event.target instanceof Element && event.target.closest('.footnote-popover')) return;
+      document.querySelectorAll('.footnote-anchor.pinned, .footnote-anchor.is-hovering').forEach(adjustPopoverPlacement);
+    }, { passive: true, capture: true });
   }
 
   function adjustPopoverPlacement(anchor) {
@@ -1094,6 +1166,8 @@ const isMusicPage = false; // 音乐页已归档禁用
     const bounds = pane ? pane.getBoundingClientRect() : (articlePaper ? articlePaper.getBoundingClientRect() : null);
     const left = Math.max(margin, (bounds?.left ?? 0) + margin);
     const right = Math.min(window.innerWidth - margin, (bounds?.right ?? window.innerWidth) - margin);
+
+    // 重置计算约束，精准测量未受限制的自然尺寸
     popover.style.transform = '';
     popover.style.left = '50%';
     popover.style.top = '';
@@ -1101,14 +1175,44 @@ const isMusicPage = false; // 音乐页已归档禁用
     popover.style.maxHeight = 'none';
     popover.style.overflowY = '';
     popover.style.maxWidth = `${Math.max(0, right - left)}px`;
+
+    const contentEl = popover.querySelector('.citation-content');
+    if (contentEl) {
+      contentEl.style.maxHeight = 'none';
+      contentEl.style.overflowY = '';
+    }
+
     const anchorRect = anchor.getBoundingClientRect();
-    const navHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height')) || 0;
-    const top = pane ? Math.max(navHeight + margin, bounds.top + margin) : (navHeight + margin);
-    const bottom = pane ? Math.min(window.innerHeight - margin, bounds.bottom - margin) : (window.innerHeight - margin);
-    const above = Math.max(0, anchorRect.top - top - 16);
-    const below = Math.max(0, bottom - anchorRect.bottom - 16);
-    const height = popover.offsetHeight;
-    const placeBelow = height > above && below > above;
+    const navHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height')) || 52;
+    const minTop = Math.max(navHeight + 8, pane ? bounds.top + 8 : 0);
+    const maxBottom = Math.min(window.innerHeight - 8, pane ? bounds.bottom - 8 : window.innerHeight);
+
+    // 上下方可用净高度（扣除 16px 浮层位移间隙）
+    const above = Math.max(0, anchorRect.top - 16 - minTop);
+    const below = Math.max(0, maxBottom - (anchorRect.bottom + 16));
+
+    // 浮层卡片的真实自然高度
+    const naturalHeight = popover.offsetHeight;
+
+    // 上下两侧空间完整容纳判断
+    const fitsAbove = above >= naturalHeight;
+    const fitsBelow = below >= naturalHeight;
+
+    let placeBelow = false;
+    if (fitsAbove && fitsBelow) {
+      // 两侧皆充裕：若上方过于紧凑且下方空间显著更宽裕，优先在下方展开；否则保持传统上方展示
+      placeBelow = (below > above + 80) && (above < naturalHeight + 32);
+    } else if (fitsBelow) {
+      // 上方空间不够容纳完整卡片，而下方空间足够容纳 -> 智能翻转至下方，避免滚动条
+      placeBelow = true;
+    } else if (fitsAbove) {
+      // 上方足够容纳而下方不够 -> 保持在上方
+      placeBelow = false;
+    } else {
+      // 上下两侧皆无法完整容纳 -> 严格切换至可用净高度更大的一侧
+      placeBelow = below > above;
+    }
+
     const availableHeight = placeBelow ? below : above;
     popover.dataset.placement = placeBelow ? 'below' : 'above';
     if (placeBelow) {
@@ -1118,15 +1222,32 @@ const isMusicPage = false; // 音乐页已归档禁用
       popover.style.top = 'auto';
       popover.style.bottom = 'calc(100% + 16px)';
     }
-    if (height > availableHeight) {
-      popover.style.maxHeight = `${availableHeight}px`;
-      popover.style.overflowY = 'auto';
+
+    // 仅在当前侧确实容纳不下完整自然高度时，才施加滚动约束
+    if (naturalHeight > availableHeight) {
+      if (contentEl) {
+        // 测量实际边框、页眉、页脚与内边距，避免估算尺寸挤出视口。
+        const chromeHeight = naturalHeight - contentEl.offsetHeight;
+        if (availableHeight > chromeHeight) {
+          contentEl.style.maxHeight = `${Math.max(0, Math.floor(availableHeight - chromeHeight))}px`;
+          contentEl.style.overflowY = 'auto';
+        } else {
+          // 极矮视口连卡片外框都放不下时，允许整张卡片滚动。
+          popover.style.maxHeight = `${Math.floor(availableHeight)}px`;
+          popover.style.overflowY = 'auto';
+        }
+      } else {
+        popover.style.maxHeight = `${availableHeight}px`;
+        popover.style.overflowY = 'auto';
+      }
     }
+
     if (arrow) {
       arrow.style.top = placeBelow ? '-6px' : '';
       arrow.style.bottom = placeBelow ? 'auto' : '';
     }
-    // Anchor geometry is stable while the popover's transform is animating.
+
+    // 横向水平居中与边界防溢出纠偏
     const naturalLeft = anchorRect.left + anchorRect.width / 2 - popover.offsetWidth / 2;
     const shift = Math.max(left, Math.min(naturalLeft, right - popover.offsetWidth)) - naturalLeft;
     popover.style.left = `calc(50% + ${shift}px)`;
@@ -1169,6 +1290,7 @@ const isMusicPage = false; // 音乐页已归档禁用
       // 克隆内容以保持原书目干净
       const clone = contentEl.cloneNode(true);
       clone.querySelectorAll('a').forEach((a) => {
+        a.classList.add('citation-source-link');
         a.setAttribute('target', '_blank');
         a.setAttribute('rel', 'noopener noreferrer');
         a.addEventListener('click', (e) => e.stopPropagation());
@@ -1194,30 +1316,12 @@ const isMusicPage = false; // 音乐页已归档禁用
       // 彻底移除 href 属性，杜绝一切浏览器底层原生锚点跳转
       link.removeAttribute('href');
 
-      // 悬停延迟保护定时器（解决指针从链接移入浮层时的瞬时断连）
-      let hoverTimer = null;
-      const clearHoverTimer = () => {
-        if (hoverTimer) {
-          clearTimeout(hoverTimer);
-          hoverTimer = null;
-        }
-      };
-
       anchor.addEventListener('mouseenter', () => {
-        clearHoverTimer();
-        document.querySelectorAll('.footnote-anchor.is-hovering').forEach((a) => {
-          if (a !== anchor) a.classList.remove('is-hovering');
-        });
-        anchor.classList.add('is-hovering');
-        anchor.classList.remove('is-closed');
-        adjustPopoverPlacement(anchor);
+        AnnotationManager.hover(anchor);
       });
 
       anchor.addEventListener('mouseleave', () => {
-        clearHoverTimer();
-        hoverTimer = setTimeout(() => {
-          anchor.classList.remove('is-hovering');
-        }, 200);
+        AnnotationManager.leave(anchor, 240);
       });
 
       // 绑定直接点击事件，固定 (pinned) 浮层状态
@@ -1226,27 +1330,16 @@ const isMusicPage = false; // 音乐页已归档禁用
         e.stopPropagation();
 
         const isPinned = anchor.classList.contains('pinned');
-        document.querySelectorAll('.footnote-anchor.pinned').forEach((a) => {
-          a.classList.remove('pinned');
-          const tr = a.querySelector('.footnote-trigger');
-          if (tr) tr.setAttribute('aria-expanded', 'false');
-        });
-
         if (!isPinned) {
-          anchor.classList.remove('is-closed');
-          anchor.classList.add('pinned');
-          link.setAttribute('aria-expanded', 'true');
-          adjustPopoverPlacement(anchor);
+          AnnotationManager.pin(anchor, link);
         } else {
-          anchor.classList.add('is-closed');
-          anchor.classList.remove('pinned', 'is-hovering');
-          link.setAttribute('aria-expanded', 'false');
+          AnnotationManager.unpin(anchor, link);
         }
       });
 
       // 创建浮层弹窗
       const popover = document.createElement('span');
-      popover.className = 'footnote-popover citation-popover font-serif';
+      popover.className = 'footnote-popover citation-popover font-sans';
       popover.setAttribute('role', 'dialog');
       popover.setAttribute('aria-modal', 'false');
 
@@ -1275,7 +1368,7 @@ const isMusicPage = false; // 音乐页已归档禁用
           </button>
         </span>
         <div class="citation-content-wrapper">
-          <span class="popover-content citation-content font-serif">
+          <span class="popover-content citation-content font-sans">
             ${citationHtml}
           </span>
         </div>
@@ -1299,9 +1392,7 @@ const isMusicPage = false; // 音乐页已归档禁用
         closeBtn.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
-          anchor.classList.remove('pinned', 'is-hovering');
-          anchor.classList.add('is-closed');
-          link.setAttribute('aria-expanded', 'false');
+          AnnotationManager.unpin(anchor, link);
         });
       }
 
@@ -1315,10 +1406,8 @@ const isMusicPage = false; // 音乐页已归档禁用
           const returnAnchor = anchor;
           const citeLabel = link.textContent?.trim() || '';
 
-          // 关闭浮层
-          anchor.classList.remove('pinned', 'is-hovering');
-          anchor.classList.add('is-closed');
-          link.setAttribute('aria-expanded', 'false');
+          // 关闭所有浮层
+          AnnotationManager.closeAll();
 
           // 若目标在折叠面板内则自动展开
           const details = targetEl.closest('details');
@@ -1341,7 +1430,7 @@ const isMusicPage = false; // 音乐页已归档禁用
           // 在文末书目条目处添加内联“返回正文引用处”按钮
           document.querySelectorAll('.biblio-inline-return').forEach((el) => el.remove());
           const returnBar = document.createElement('div');
-          returnBar.className = 'biblio-inline-return font-mono';
+          returnBar.className = 'biblio-inline-return font-sans';
           returnBar.innerHTML = `
             <button type="button" class="biblio-inline-return-btn" title="点击返回正文阅读位置">
               <span>↩ 返回正文引用处</span>
@@ -1382,7 +1471,7 @@ const isMusicPage = false; // 音乐页已归档禁用
 
     pill = document.createElement('div');
     pill.id = 'citation-return-pill';
-    pill.className = 'citation-return-pill font-mono';
+    pill.className = 'citation-return-pill font-sans';
 
     pill.innerHTML = `
       <button type="button" class="pill-return-action" title="点击返回正文阅读位置">
@@ -1410,6 +1499,7 @@ const isMusicPage = false; // 音乐页已归档禁用
 
   // 执行页面级增强函数
   function runPageEnhancements() {
+    AnnotationManager.closeAll();
     setupBackToTop();
     setupUnifiedCodeBlocks();
     setupFootnoteInteractions();
@@ -1418,14 +1508,17 @@ const isMusicPage = false; // 音乐页已归档禁用
 
   // 1. 同步执行或在 DOM 就绪后立即执行
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', runPageEnhancements);
+    document.addEventListener('DOMContentLoaded', runPageEnhancements, { once: true });
   } else {
     runPageEnhancements();
   }
 
   // 2. Astro ClientRouter 客户端路由切页与视图更新全生命周期
-  document.addEventListener('astro:page-load', runPageEnhancements);
-  document.addEventListener('astro:after-swap', runPageEnhancements);
+  if (!window.__pageEnhancementListenersBound) {
+    document.addEventListener('astro:page-load', runPageEnhancements);
+    document.addEventListener('astro:after-swap', runPageEnhancements);
+    window.__pageEnhancementListenersBound = true;
+  }
 
   // 3. 挂载到全局 window 供页面组件主动调用
   window.__setupUnifiedCodeBlocks = setupUnifiedCodeBlocks;

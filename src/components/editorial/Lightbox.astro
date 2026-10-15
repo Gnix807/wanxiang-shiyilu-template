@@ -5,7 +5,7 @@
   <!-- 沉浸式暗黑遮罩 -->
   <div class="lightbox-backdrop" id="lightbox-backdrop" title="点击背景关闭 (Esc)"></div>
 
-  <!-- 悬浮顶栏：计数、缩放切换与极简关闭按纽 -->
+  <!-- 悬浮顶栏：计数、缩放切换与极简关闭按钮 -->
   <header class="lightbox-header">
     <div class="lightbox-counter font-mono" id="lightbox-counter">1 / 1</div>
     <div class="lightbox-actions">
@@ -32,7 +32,7 @@
     </div>
   </header>
 
-  <!-- 左右切换按纽 (仅在多图且非缩放态时显示) -->
+  <!-- 左右切换按钮 (仅在多图且非缩放态时显示) -->
   <button type="button" id="lightbox-prev-btn" class="lightbox-nav-btn prev" aria-label="上一张 (←)" title="上一张 (←)">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <polyline points="15 18 9 12 15 6"></polyline>
@@ -175,7 +175,7 @@
     width: auto;
     height: auto;
     object-fit: contain;
-    border-radius: 2px;
+    border-radius: var(--editorial-radius-inner, 3px);
     box-shadow: 0 12px 48px rgba(0, 0, 0, 0.7);
     cursor: zoom-in;
     user-select: none;
