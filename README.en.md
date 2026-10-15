@@ -1,134 +1,154 @@
-# Wanxiang Shiyilu · Astro Blog Template
+<a name="readme-top"></a>
 
-[简体中文](README.md) · [Deployment guide](docs/deployment.md) · [Component examples](src/content/posts/2026-09-22-editorial-components.mdx) · [Issues](https://github.com/Gnix807/wanxiang-shiyilu-template/issues)
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-cover-dark.svg" />
+    <img src="docs/images/readme-cover.svg" alt="Wanxiang Shiyilu · An Astro blog template with editorial typography" width="100%" />
+  </picture>
+</p>
 
-An Astro blog template for technical articles, essays and everyday notes. The reading interface combines paper-inspired surfaces, serif typography and vermilion accents. Content is written in Markdown / MDX and can be deployed to Cloudflare Pages or other static hosting platforms.
+<p align="center"><strong>An Astro blog template with the character of a printed journal.</strong></p>
 
-This project is derived from [ImUpXuu/xuhome](https://github.com/ImUpXuu/xuhome) and adapted from the Wanxiang Shiyilu personal blog into a reusable template.
+<p align="center">
+  <a href="https://github.com/Gnix807/wanxiang-shiyilu-template/generate"><img src="https://img.shields.io/badge/Use_this_template-9e2a2b?style=for-the-badge&amp;logo=github&amp;logoColor=fffdf8" alt="Use this GitHub template" /></a>
+  <a href="https://github.com/Gnix807/wanxiang-shiyilu-template/actions/workflows/build.yml"><img src="https://img.shields.io/github/actions/workflow/status/Gnix807/wanxiang-shiyilu-template/build.yml?branch=main&amp;style=for-the-badge&amp;logo=githubactions&amp;logoColor=fffdf8&amp;label=build&amp;labelColor=242220" alt="Build status on main" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/Code-MIT-9e2a2b?style=for-the-badge&amp;labelColor=242220" alt="MIT code license" /></a>
+</p>
 
-![Desktop preview](docs/images/preview-desktop.png)
+<p align="center">
+  <a href="package.json"><img src="https://img.shields.io/badge/Astro-7-9e2a2b?style=flat-square&amp;logo=astro&amp;logoColor=fffdf8&amp;labelColor=242220" alt="Astro 7" /></a>
+  <a href="tsconfig.json"><img src="https://img.shields.io/badge/TypeScript-5.8-6a6257?style=flat-square&amp;logo=typescript&amp;logoColor=fffdf8&amp;labelColor=242220" alt="TypeScript 5.8" /></a>
+  <a href="package.json"><img src="https://img.shields.io/badge/Tailwind-4-6a6257?style=flat-square&amp;logo=tailwindcss&amp;logoColor=fffdf8&amp;labelColor=242220" alt="Tailwind 4" /></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/Node.js-24-6a6257?style=flat-square&amp;logo=nodedotjs&amp;logoColor=fffdf8&amp;labelColor=242220" alt="Node.js 24" /></a>
+  <a href="package.json"><img src="https://img.shields.io/badge/pnpm-11.2.2-6a6257?style=flat-square&amp;logo=pnpm&amp;logoColor=fffdf8&amp;labelColor=242220" alt="pnpm 11.2.2" /></a>
+</p>
 
-[View the mobile preview](docs/images/preview-mobile.png)
+<p align="center">
+  <a href="https://omnigazette.dev">Author&#x27;s blog</a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#editorial-components">Components</a> ·
+  <a href="#deploy-to-cloudflare-pages">Deployment</a> ·
+  <a href="#faq">FAQ</a> ·
+  <a href="README.md">简体中文</a>
+</p>
 
-## Features
+Wanxiang Shiyilu brings journal-style headings, red labels, sidenotes and figures to a static blog. Use it for tutorials, essays, reading notes and everyday writing. Start from the example site, write in Markdown or MDX, and shape the pages as you go.
 
-- **Content management:** Markdown / MDX articles, short posts, categories, tags and archives.
-- **Editorial typography:** Components for quotations, sidenotes, figures, tabs, steps, notebooks and seals.
-- **Reading tools:** Site search, theme switching and an image lightbox.
-- **Subscriptions:** RSS / Atom feeds.
-- **Local fonts:** Bundled Inter, Noto Serif SC, Noto Sans SC and JetBrains Mono, with license files.
-- **Static deployment:** Cloudflare Pages configuration and GitHub Actions build checks.
+## Reading view
 
-The template uses Astro, TypeScript, React, Svelte and Tailwind CSS. It includes two example articles, one short post and SVG placeholder artwork. Comments, analytics, weather and personal profile requests are disabled by default.
+<a href="docs/images/preview-desktop.png"><img src="docs/images/preview-desktop.png" alt="Desktop home page of the Paper Journal example site" width="100%" /></a>
+
+<details>
+<summary>View the mobile layout</summary>
+
+<p align="center"><img src="docs/images/preview-mobile.png" alt="Mobile home page of the Paper Journal example site" width="360" /></p>
+
+</details>
+
+<p align="center"><sub>The included Paper Journal example site · <a href="https://omnigazette.dev">Visit the author's blog ↗</a></sub></p>
+
+## Writing and reading
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**Editorial layout**
+
+Add quotes, sidenotes, figures, tabs and steps in MDX. Keep background material close to the text it supports.
+
+[Explore the components →](#editorial-components)
+
+</td>
+<td width="50%" valign="top">
+
+**Reading experience**
+
+Themes, a table of contents, site search and an image lightbox support reading on desktop and mobile.
+
+[See the reading view →](#reading-view)
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+**Content organisation**
+
+Articles and short posts have their own sections, with categories, tags, archives, a writing calendar and RSS / Atom feeds.
+
+[Write your first article →](#write-your-first-article)
+
+</td>
+<td width="50%" valign="top">
+
+**Static publishing**
+
+Build pages from Markdown / MDX, use the bundled local fonts and publish to Cloudflare Pages.
+
+[Read the deployment guide →](#deploy-to-cloudflare-pages)
+
+</td>
+</tr>
+</table>
+
+> [!NOTE]
+> The template includes two articles, one short post and SVG artwork. Comments, analytics, weather and profile requests stay off until you configure them.
 
 ## Quick start
 
-### Requirements
+Use **Node.js 24** and **pnpm 11.2.2** to match CI.
 
-Use **Node.js 24** and **pnpm 11.2.2** to match the CI environment. Dependency versions are pinned in `pnpm-lock.yaml`.
-
-### Create a site
-
-1. Select **Use this template** on GitHub to create your own repository.
-2. Clone the new repository and open its root directory.
-3. Install dependencies and start the development server:
+1. Select [Use this template](https://github.com/Gnix807/wanxiang-shiyilu-template/generate) to create your repository.
+2. Clone that repository and open its root directory.
+3. Install dependencies and start the site:
 
 ```sh
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open the development URL printed in the terminal. After configuring the site and replacing the example content, build and preview it:
+Open the local URL printed in the terminal. Update the site details, replace the examples, then build and publish.
 
-```sh
-pnpm build
-pnpm preview
-```
+### Make it yours
 
-Build output is written to `dist/`. The `private: true` field in `package.json` prevents npm publication; it does not affect GitHub's template feature.
-
-### Commands
-
-| Command | Description |
+| Location | What to change |
 | --- | --- |
-| `pnpm dev` | Start the development server |
-| `pnpm build` | Check MDX style conversion and font assets, generate the commit index and build the site |
-| `pnpm preview` | Preview the generated static site |
-| `pnpm lint` | Run TypeScript type checking |
-| `pnpm check:assets` | Check bundled font files and license files |
-| `pnpm check:mdx` | Check the MDX inline-style conversion dependency |
-| `pnpm commit-index` | Update the article commit history index |
-| `pnpm sync:bili` | Sync Bilibili videos and card metadata using the site configuration |
+| [src/config/site.ts](src/config/site.ts) | Site name, author, navigation, social links and optional services |
+| [src/config/about.md](src/config/about.md) | About page text |
+| [src/config/friends.json](src/config/friends.json) | Friend links; empty by default |
+| [public/avatar.svg](public/avatar.svg) | Site and author avatar |
+| [src/content/posts](src/content/posts), [src/content/talks](src/content/talks) | Example articles and short posts |
+| [.env.example](.env.example) | Use this file to create `.env` and set your `PUBLIC_SITE_URL` |
 
-## Project structure
+Use a full HTTPS URL for `PUBLIC_SITE_URL`, without a trailing slash. Replace the example name, email and `example.com` values before launch. Use your own domain if you add a Sitemap entry to [robots.txt](public/robots.txt).
 
-```text
-src/
-├── components/       # Page and interactive components
-│   └── editorial/    # Editorial typography components
-├── config/           # Site, author, about page and friend links
-├── content/
-│   ├── posts/        # Markdown / MDX articles
-│   └── talks/        # Short posts
-├── data/             # Structured page data
-├── layouts/          # Page layouts
-├── pages/            # Routes and feeds
-├── plugins/          # Markdown / MDX processing plugins
-└── styles/           # Global styles and font definitions
-public/               # Static images, fonts and other assets
-scripts/              # Build checks and data generation
-docs/                 # Deployment and validation documentation
-```
+Enable comments and analytics as needed, and update the [privacy notice](src/pages/privacy.astro). Do not prefix secrets with `PUBLIC_`.
 
-## Configuration
+## Editorial components
 
-Replace the following example settings and assets before publishing:
+<p align="center"><a href="docs/images/preview-editorial.jpg"><img src="docs/images/preview-editorial.jpg" alt="Note and PullQuote components rendered in the example article" width="618" /></a></p>
 
-| Location | Purpose |
+<p align="center"><sub>Note and PullQuote in the example article · <a href="src/content/posts/2026-09-22-editorial-components.mdx">View the example source ↗</a></sub></p>
+
+| Content | Components |
 | --- | --- |
-| [`src/config/site.ts`](src/config/site.ts) | Site name, author profile, navigation, social links, content license and optional services |
-| [`src/config/about.md`](src/config/about.md) | About page content |
-| [`src/config/friends.json`](src/config/friends.json) | Friend links; empty by default |
-| [`public/avatar.svg`](public/avatar.svg) | Site and author avatar |
-| `src/content/posts/`, `src/content/talks/` | Example articles and short posts |
-| [`public/robots.txt`](public/robots.txt) | Crawler rules; use the actual domain if adding a Sitemap directive |
-| [`src/pages/privacy.astro`](src/pages/privacy.astro) | Privacy notice for the services you enable |
+| Quotes, sidenotes and callouts | `PullQuote`, `Sidenote`, `Note` |
+| Figures, image groups and references | `Plate`, `ImageGrid`, `LinkCard`, `SmartLink` |
+| Guides, processes and timelines | `Tabs`, `Steps`, `Timeline` |
+| Notes, poetry and dialogue | `Notebook`, `Poetry`, `Dialogue`, `Chat` |
+| Inline labels and controls | `Badge`, `Kbd`, `Spoiler`, `Button` |
 
-Create a local `.env` using [`.env.example`](.env.example) as a reference, and set production environment variables through your hosting platform. Before deployment, set `PUBLIC_SITE_URL` to the site's full HTTPS URL without a trailing slash. Replace the placeholder name, email and `example.com` values in the configuration.
-
-Do not prefix sensitive variables with `PUBLIC_`. Configure optional services such as comments and analytics in `src/config/site.ts`, and update the privacy notice when enabling them.
-
-### Bilibili videos (optional)
-
-The account and video caches are empty by default, so no Bilibili requests are made. To display videos, set `socials.bilibiliMid` and `socials.bilibili` in `src/config/site.ts`, run `pnpm sync:bili`, and review the two JSON files in `src/data/` before building.
-
-Builds use static data. The browser refreshes nearby visible cards through JSONP, reuses responses for one hour, and cleans up requests on navigation. Authored card metadata takes priority. Failed syncs preserve the existing video list.
-
-## Writing content
-
-### Articles and metadata
-
-Place articles in `src/content/posts/` using `.md` or `.mdx`. The recommended naming convention is `YYYY-MM-DD-slug.mdx`. Start each file with Frontmatter:
-
-```yaml
----
-title: My first article
-description: A short article summary.
-date: '2026-09-22'
-tags: [Notes]
-category: Life
-preserveHeadingLevels: true
----
-```
-
-The page layout renders the article title. Start body headings at H2 (`##`), followed by H3 and H4 as needed. `preserveHeadingLevels: true` preserves the source heading levels; legacy articles without this setting retain the compatibility behavior that shifts headings down one level. Chinese prose uses 「」 and 『』 for quotations.
-
-### Editorial components
-
-Import components after the Frontmatter in an MDX file:
+Import what you need after the Frontmatter in an MDX file:
 
 ```mdx
-import { PullQuote, Sidenote, Plate } from '../../components/editorial';
+import { Note, PullQuote } from '../../components/editorial';
+
+<Note title="Reading note">
+
+Put useful background here and let the main text move on.
+
+</Note>
 
 <PullQuote source="Example">
 
@@ -137,13 +157,37 @@ Leave room for the words, and time for the reader.
 </PullQuote>
 ```
 
-See the [Editorial example article](src/content/posts/2026-09-22-editorial-components.mdx) and [component directory](src/components/editorial) for usage. Both standard Markdown images and `Plate` figures support the image lightbox.
+Both Markdown images and `Plate` figures support the lightbox. See the [component directory](src/components/editorial) for all exports.
 
-Short posts belong in `src/content/talks/` and use Markdown with Frontmatter. See the [example short post](src/content/talks/2026-09-22-hello.md).
+### Write your first article
 
-## Deploying to Cloudflare Pages
+Create a `.md` or `.mdx` file in `src/content/posts/`. Use a name such as `YYYY-MM-DD-slug.mdx` and add Frontmatter:
 
-Connect your GitHub repository to Cloudflare Pages with the following settings:
+```yaml
+---
+title: My first article
+description: A short article summary.
+date: '2026-10-15'
+tags: [Notes]
+category: Life
+preserveHeadingLevels: true
+---
+```
+
+The layout shows the article title, so start body headings at H2 (`##`). Set `preserveHeadingLevels: true` to keep source heading levels. Older articles without this field retain the rule that shifts headings down one level. Chinese prose uses 「」 and 『』 for quotations.
+
+Short posts go in `src/content/talks/`. Start from the [example short post](src/content/talks/2026-09-22-hello.md).
+
+## Deploy to Cloudflare Pages
+
+Build and preview the site locally:
+
+```sh
+pnpm build
+pnpm preview
+```
+
+Once the pages look right, connect your GitHub repository to Cloudflare Pages:
 
 | Setting | Value |
 | --- | --- |
@@ -151,34 +195,96 @@ Connect your GitHub repository to Cloudflare Pages with the following settings:
 | Framework preset | Astro |
 | Build command | `pnpm build` |
 | Output directory | `dist` |
-| Node.js | `24` |
-| pnpm | `11.2.2` |
-| `PUBLIC_SITE_URL` | The site's public URL |
+| Node.js / pnpm | `24` / `11.2.2` |
+| `PUBLIC_SITE_URL` | Your public site URL |
 
-[`wrangler.toml`](wrangler.toml) defines the static output directory; update its project name before use. GitHub Actions checks the build and uploads the static output. The connected Pages project handles automatic deployment.
+[wrangler.toml](wrangler.toml) sets the static output directory. Change its project name before use. GitHub Actions checks the build and saves its output; the connected Pages project handles deployment. See the [deployment guide](docs/deployment.md) for the full steps.
 
-See the [deployment guide](docs/deployment.md) for full instructions and optional build variables.
+## Optional Bilibili videos
 
-## Maintenance and contributions
+Set `socials.bilibiliMid` and `socials.bilibili` in `src/config/site.ts`, then run:
 
-Use [Issues](https://github.com/Gnix807/wanxiang-shiyilu-template/issues) to report bugs or suggest improvements. Include reproduction steps, environment details and relevant logs when reporting a problem.
+```sh
+pnpm sync:bili
+```
 
-This repository also accepts [friend-link requests for Wanxiang Shiyilu](https://github.com/Gnix807/wanxiang-shiyilu-template/issues/new?template=friend-request.yml). When creating your own site from this template, update the site details in `.github/ISSUE_TEMPLATE/friend-request.yml` and the application link on the friends page.
+Review `src/data/bilibili-videos.json` and `src/data/bilibili-cache.json` before building. Both caches and the account are empty by default, so no Bilibili requests are made.
 
-Run `pnpm lint` and `pnpm build` before submitting code changes in a pull request. Include desktop and mobile screenshots for changes to the interface or article typography. The [validation record](docs/validation.md) documents the existing checks.
+Builds read static data. The browser refreshes cards near the viewport through JSONP, reuses results for one hour and cleans up requests on navigation. Authored titles, descriptions and covers take priority. Failed syncs keep the existing list.
 
-Keep `src/data/commit-index.json` in version control: pages depend on this data, and the build updates it from the current repository. Supplementing commit history through the GitHub API is disabled by default.
+<details>
+<summary>Command reference and project layout</summary>
 
-After withdrawing an article locally, build into a new output directory or manually remove its old output to avoid stale preview pages. CI and Pages use clean checkouts.
+| Command | Purpose |
+| --- | --- |
+| `pnpm dev` | Start local development |
+| `pnpm build` | Check MDX and fonts, update the commit index and build |
+| `pnpm preview` | Preview the build |
+| `pnpm lint` | Run TypeScript checks |
+| `pnpm check:assets` | Check font files and licenses |
+| `pnpm check:mdx` | Check the MDX style dependency |
+| `pnpm commit-index` | Update the article commit index |
+| `pnpm sync:bili` | Sync videos for the configured account |
 
-## Attribution and acknowledgements
+The stack uses Astro, TypeScript, React, Svelte and Tailwind CSS.
 
-[ImUpXuu/xuhome](https://github.com/ImUpXuu/xuhome) is the upstream codebase and primary design reference for this project. Thanks to [ImUpXuu](https://github.com/ImUpXuu) and the upstream contributors for their open-source work.
+```text
+src/components/   Page and Editorial components
+src/config/       Site, author, about page and friend links
+src/content/      Articles and short posts
+src/layouts/      Page layouts
+src/pages/        Routes and feeds
+src/styles/       Styles and font definitions
+public/           Images, fonts and other static files
+scripts/          Build checks and data generation
+docs/             Deployment and validation notes
+```
 
-This project builds on that foundation with revised visual styling and article typography, Editorial MDX components, example content and Cloudflare Pages configuration. Original attribution and third-party license notices are retained.
+Build output goes to `dist/`. Keep `src/data/commit-index.json` in version control because pages use it. Builds update it from the current repository. GitHub API history fetching is off by default.
 
-## License
+After removing an article locally, use a new output directory or remove its old output by hand. This avoids stale preview pages. CI and Pages use clean checkouts.
 
-Application code is licensed under the [MIT License](LICENSE). Some files and assets carry separate licenses: `src/types.ts` retains its Apache-2.0 notice, and bundled fonts use the SIL Open Font License. See [NOTICE.md](NOTICE.md) for details.
+</details>
 
-The included example articles, short post, about page and original SVG artwork are provided under MIT. Users determine the licenses for content they add. See the [content license](CONTENT_LICENSE.md).
+## FAQ
+
+<details>
+<summary>Can I write in plain Markdown?</summary>
+
+Yes. Articles can use `.md` or `.mdx`. Use Markdown for regular posts and MDX when you need components such as quotes or sidenotes. See [your first article](#write-your-first-article).
+
+</details>
+
+<details>
+<summary>Do I need a database or a server to maintain?</summary>
+
+Articles and short posts live in the repository. Builds produce static pages that Cloudflare Pages can host. External services such as comments and analytics are optional; the example site runs without them.
+
+</details>
+
+<details>
+<summary>Why does an open-source template set private: true?</summary>
+
+The `private: true` flag in `package.json` prevents accidental npm publication. It does not affect the open-source code, the GitHub template feature or site deployment.
+
+</details>
+
+## Help and contributions
+
+Report problems through [Issues](https://github.com/Gnix807/wanxiang-shiyilu-template/issues). Include steps to reproduce, your environment and relevant logs. Screenshots help with layout issues.
+
+Run `pnpm lint` and `pnpm build` before opening a pull request. Include desktop and mobile screenshots for visual changes. The [validation record](docs/validation.md) describes the checks so far.
+
+This repository also accepts [friend-link requests for the author's blog](https://github.com/Gnix807/wanxiang-shiyilu-template/issues/new?template=friend-request.yml). When you create your own site, update `.github/ISSUE_TEMPLATE/friend-request.yml` and the link on the friends page.
+
+## Credits and license
+
+This project builds on [ImUpXuu/xuhome](https://github.com/ImUpXuu/xuhome). Thanks to [ImUpXuu](https://github.com/ImUpXuu) and the upstream contributors for the code and design reference. Original credits and third-party notices remain in place.
+
+Code uses the [MIT License](LICENSE). `src/types.ts` keeps its Apache-2.0 notice, and bundled fonts use the SIL Open Font License. See [NOTICE.md](NOTICE.md).
+
+The example articles, short post, about page and original SVG artwork are also provided under MIT. Choose your own license for the content you add. See the [content license](CONTENT_LICENSE.md).
+
+---
+
+<p align="center"><sub><a href="#readme-top">Back to top ↑</a> · <a href="README.md">简体中文</a> · <a href="https://github.com/Gnix807/wanxiang-shiyilu-template/issues">Report an issue</a></sub></p>
