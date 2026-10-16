@@ -1,0 +1,63 @@
+/* One continuous filled/stroked outline; slices cross only straight, solid regions.
+   100x64 SVG, 2px border, 4px outer corners, tail tip 19px below the top.
+   Keep the native border/background: missing images or unsupported border images
+   must fall back to a closed, readable rectangle. CSS border shorthand resets
+   border-image, so the frame selectors also outrank the reader's base border.
+   https://www.w3.org/TR/css-backgrounds-3/#border-image-source */
+.im-message-row .im-bubble-container {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  border: 2px solid #1a1a1a;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #1a1a1a;
+  filter: drop-shadow(2.5px 2.5px 0 #1a1a1a);
+}
+.im-message-row .im-bubble-container.im-bubble-left,
+.im-message-row .im-bubble-container.im-bubble-right {
+  border-image-repeat: stretch;
+}
+.im-message-row .im-bubble-container.im-bubble-left {
+  border-image-slice: 28 6 6 14 fill;
+  border-image-width: 28px 6px 6px 14px;
+  border-image-outset: 0 0 0 8px;
+  border-image-source: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%2264%22%20viewBox%3D%220%200%20100%2064%22%3E%3Cpath%20d%3D%22M%2012%201%20H%2096%20A%203%203%200%200%201%2099%204%20V%2060%20A%203%203%200%200%201%2096%2063%20H%2012%20A%203%203%200%200%201%209%2060%20V%2026%20L%202%2019%20L%209%2012%20V%204%20A%203%203%200%200%201%2012%201%20Z%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%231a1a1a%22%20stroke-width%3D%222%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+}
+.im-message-row .im-bubble-container.im-bubble-right {
+  border-image-slice: 28 14 6 6 fill;
+  border-image-width: 28px 14px 6px 6px;
+  border-image-outset: 0 8px 0 0;
+}
+.im-message-row .im-bubble-container.im-wechat-right {
+  background-color: #95ec69;
+  color: #111;
+  border-image-source: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%2264%22%20viewBox%3D%220%200%20100%2064%22%3E%3Cpath%20d%3D%22M%204%201%20H%2088%20A%203%203%200%200%201%2091%204%20V%2012%20L%2098%2019%20L%2091%2026%20V%2060%20A%203%203%200%200%201%2088%2063%20H%204%20A%203%203%200%200%201%201%2060%20V%204%20A%203%203%200%200%201%204%201%20Z%22%20fill%3D%22%2395ec69%22%20stroke%3D%22%231a1a1a%22%20stroke-width%3D%222%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+}
+.im-message-row .im-bubble-container.im-qq-right {
+  background-color: #12b7f5;
+  color: #fff;
+  border-image-source: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%2264%22%20viewBox%3D%220%200%20100%2064%22%3E%3Cpath%20d%3D%22M%204%201%20H%2088%20A%203%203%200%200%201%2091%204%20V%2012%20L%2098%2019%20L%2091%2026%20V%2060%20A%203%203%200%200%201%2088%2063%20H%204%20A%203%203%200%200%201%201%2060%20V%204%20A%203%203%200%200%201%204%201%20Z%22%20fill%3D%22%2312b7f5%22%20stroke%3D%22%231a1a1a%22%20stroke-width%3D%222%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+}
+.dark .im-message-row .im-bubble-container,
+[data-theme="dark"] .im-message-row .im-bubble-container {
+  border-color: #e8e6e3;
+  filter: drop-shadow(2.5px 2.5px 0 #e8e6e3);
+}
+.dark .im-message-row .im-bubble-container.im-bubble-left,
+[data-theme="dark"] .im-message-row .im-bubble-container.im-bubble-left {
+  background-color: #2c2c2c;
+  color: #e8e6e3;
+  border-image-source: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%2264%22%20viewBox%3D%220%200%20100%2064%22%3E%3Cpath%20d%3D%22M%2012%201%20H%2096%20A%203%203%200%200%201%2099%204%20V%2060%20A%203%203%200%200%201%2096%2063%20H%2012%20A%203%203%200%200%201%209%2060%20V%2026%20L%202%2019%20L%209%2012%20V%204%20A%203%203%200%200%201%2012%201%20Z%22%20fill%3D%22%232c2c2c%22%20stroke%3D%22%23e8e6e3%22%20stroke-width%3D%222%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+}
+.dark .im-message-row .im-bubble-container.im-wechat-right,
+[data-theme="dark"] .im-message-row .im-bubble-container.im-wechat-right {
+  background-color: #2b7a2d;
+  color: #fff;
+  border-image-source: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%2264%22%20viewBox%3D%220%200%20100%2064%22%3E%3Cpath%20d%3D%22M%204%201%20H%2088%20A%203%203%200%200%201%2091%204%20V%2012%20L%2098%2019%20L%2091%2026%20V%2060%20A%203%203%200%200%201%2088%2063%20H%204%20A%203%203%200%200%201%201%2060%20V%204%20A%203%203%200%200%201%204%201%20Z%22%20fill%3D%22%232b7a2d%22%20stroke%3D%22%23e8e6e3%22%20stroke-width%3D%222%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+}
+.dark .im-message-row .im-bubble-container.im-qq-right,
+[data-theme="dark"] .im-message-row .im-bubble-container.im-qq-right {
+  background-color: #0288d1;
+  color: #fff;
+  border-image-source: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%2264%22%20viewBox%3D%220%200%20100%2064%22%3E%3Cpath%20d%3D%22M%204%201%20H%2088%20A%203%203%200%200%201%2091%204%20V%2012%20L%2098%2019%20L%2091%2026%20V%2060%20A%203%203%200%200%201%2088%2063%20H%204%20A%203%203%200%200%201%201%2060%20V%204%20A%203%203%200%200%201%204%201%20Z%22%20fill%3D%22%230288d1%22%20stroke%3D%22%23e8e6e3%22%20stroke-width%3D%222%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+}

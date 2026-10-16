@@ -86,15 +86,11 @@ try {
       await page.evaluate(theme => { document.documentElement.classList.toggle('dark', theme === 'dark'); document.documentElement.dataset.theme = theme; }, theme);
       const scheme = await page.evaluate(() => getComputedStyle(document.documentElement).colorScheme);
       check(`${width}px ${theme} scheme`, () => assert.ok(scheme.includes(theme), 'the browser color scheme must match the selected site theme'));
-      const seams = await page.locator('.im-chat-window .im-bubble-container').evaluateAll(bubbles => bubbles.map(bubble => {
-        const tail = bubble.querySelector('.im-bubble-tail');
-        const b = bubble.getBoundingClientRect();
-        const t = tail.getBoundingClientRect();
+      const frames = await page.locator('.im-chat-window .im-bubble-container').evaluateAll(bubbles => bubbles.map(bubble => {
         const style = getComputedStyle(bubble);
-        const right = tail.classList.contains('tail-right');
-        return right ? t.left - (b.right - parseFloat(style.borderRightWidth) / 2) : t.right - (b.left + parseFloat(style.borderLeftWidth) / 2);
+        return { source: style.borderImageSource, legacyTail: !!bubble.querySelector('.im-bubble-tail'), outset: style.borderImageOutset.split(/\s+/).map(value => parseFloat(value)), right: bubble.classList.contains('im-bubble-right') };
       }));
-      check(width + 'px ' + theme + ' tail seam', () => assert.ok(seams.every(offset => Math.abs(offset) < 0.1), 'SVG joins must meet the bubble border center: ' + seams.join(', ')));
+      check(width + 'px ' + theme + ' complete outline', () => assert.ok(frames.length > 0 && frames.every(frame => !frame.legacyTail && frame.source !== 'none' && frame.outset.length === 4 && frame.outset.every((value, index) => value === (index === (frame.right ? 1 : 3) ? 8 : 0))), 'one border image must supply the complete bubble and its outward tail'));
       const original = await page.locator('.im-chat-window .im-message-row').first().evaluate(row => row.innerHTML);
       await page.locator('.im-chat-window .im-message-row').first().evaluate(row => {
         row.querySelector('.im-header-row span').textContent = 'VeryLongSpeakerName'.repeat(12);

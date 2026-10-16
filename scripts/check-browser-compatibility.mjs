@@ -50,10 +50,7 @@ try{
    loadingHidden:getComputedStyle(document.getElementById('resource-progress')).display==='none',
    chatGaps:[...document.querySelectorAll('.im-chat-window .im-message-row')].map(row=>{const avatar=row.querySelector('.im-avatar').getBoundingClientRect(),bubble=row.querySelector('.im-bubble-container').getBoundingClientRect();return row.querySelector('.im-bubble-right')?avatar.left-bubble.right:bubble.left-avatar.right;}),
    spacerHeight:document.querySelector('.navbar-spacer').getBoundingClientRect().height,
-   seams:[...document.querySelectorAll('.im-chat-window .im-bubble-container')].map(bubble=>{
-    const tail=bubble.querySelector('.im-bubble-tail');const b=bubble.getBoundingClientRect(),t=tail.getBoundingClientRect();const style=getComputedStyle(bubble);
-    return tail.classList.contains('tail-right')?t.left-(b.right-parseFloat(style.borderRightWidth)/2):t.right-(b.left+parseFloat(style.borderLeftWidth)/2);
-   }),
+   frames:[...document.querySelectorAll('.im-chat-window .im-bubble-container')].map(bubble=>({source:getComputedStyle(bubble).borderImageSource,oldTail:!!bubble.querySelector('.im-bubble-tail'),border:parseFloat(getComputedStyle(bubble).borderLeftWidth)})),
    nav:[...document.querySelectorAll('.compat-reader-nav a')].map(link=>({href:link.getAttribute('href'),visible:link.getBoundingClientRect().width>0})),
   }));
   check(profile.name+' content',!!state.heading&&state.panes.length>0,'article heading and tabs must be present');
@@ -67,7 +64,7 @@ try{
   check(profile.name+' loading overlay',state.loadingHidden,'loading overlays must not cover the reader');
   check(profile.name+' header spacer',state.spacerHeight===0,'fixed navigation spacer must collapse in reading mode');
   check(profile.name+' chat spacing',state.chatGaps.every(gap=>Math.abs(gap-10)<0.2),'avatar spacing must not stack native gap with fallback margins');
-  check(profile.name+' chat joins',state.seams.every(offset=>Math.abs(offset)<0.15),'chat tails must stay anchored to their bubble borders');
+  check(profile.name+' chat outlines',state.frames.every(frame=>!frame.oldTail&&frame.source!=='none'&&frame.border===2),'chat bubbles must retain their complete outline without overlay patches');
   check(profile.name+' layout',state.overflow<=1,'horizontal page overflow '+state.overflow+'px');
   check(profile.name+' navigation',state.nav.some(link=>link.visible&&link.href.startsWith('/posts')),'plain article archive link must be visible');
   if(profile.dark)check(profile.name+' theme',state.dark,'saved dark preference must be retained');

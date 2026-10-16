@@ -84,11 +84,6 @@ body > a[href="#main-content"]:focus { position: static; width: auto; height: au
 .im-bubble-left { background: #fff; }
 .im-wechat-right { background: #95ec69; color: #111; }
 .im-qq-right { background: #12b7f5; color: #fff; }
-.im-bubble-tail { width: 8px !important; height: 14px !important; }
-.im-bubble-tail .tail-path { fill: #1a1a1a; }
-.im-bubble-left .tail-fill { fill: #fff; }
-.im-wechat-right .tail-fill { fill: #95ec69; }
-.im-qq-right .tail-fill { fill: #12b7f5; }
 footer { max-width: 800px; margin: 0 auto; padding: 20px 16px; font-size: 13px; }
 footer a { display: inline-block; margin: 4px 8px 4px 0; }
 .dark body { background: #141413; color: #e8e6e3; }
@@ -102,10 +97,6 @@ footer a { display: inline-block; margin: 4px 8px 4px 0; }
 .dark .im-bubble-left { background: #2c2c2c; color: #e8e6e3; }
 .dark .im-wechat-right { background: #2b7a2d; color: #fff; }
 .dark .im-qq-right { background: #0288d1; }
-.dark .im-bubble-tail .tail-path { fill: #e8e6e3; }
-.dark .im-bubble-left .tail-fill { fill: #2c2c2c; }
-.dark .im-wechat-right .tail-fill { fill: #2b7a2d; }
-.dark .im-qq-right .tail-fill { fill: #0288d1; }
 @media (max-width: 480px) {
   #main-content { padding: 10px !important; }
   #main-content article { padding: 12px; }

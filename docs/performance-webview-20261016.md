@@ -7,3 +7,5 @@
 主站测得的请求与流量减少记录见 [主仓库测量](https://github.com/Gnix807/wanxiang-shiyilu/blob/main/docs/performance-webview-20261016.md)。该数字来自主站文章集，不作为模板自身的性能测量。
 
 模板的完整构建、八类阅读降级、导航、预取与验证边界详见 [浏览器兼容记录](browser-compatibility.md)。默认示例没有聊天文章，加载脚本明确报告跳过聊天；可配置 `CHAT_PATH` 验证使用者自己的聊天页面。
+
+后续尖角绘制结构已由独立补片改为整体轮廓，见 [2026-10-16 后续修复](chat-bubble-rendering.md)。本页保留首轮定位与加载测量记录。

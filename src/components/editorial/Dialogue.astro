@@ -1,5 +1,6 @@
 ---
 import { siteConfig } from '../../config/site';
+import '../../styles/editorial/chat-bubble.css';
 
 interface Props {
   speaker?: string | boolean;
@@ -102,19 +103,7 @@ const hasHeader = (speaker !== false && cleanSpeaker) || role || badge || time;
           : 'bg-[#95ec69] dark:bg-[#2b7a2d] text-[#111111] dark:text-[#ffffff] im-bubble-right im-wechat-right'
         : 'bg-white dark:bg-[#2c2c2c] text-[#1a1a1a] dark:text-[#e8e6e3] im-bubble-left'
     }`}>
-      {/* 内外闭合轮廓对齐 2px 边框两侧；45° 斜边按 √2 偏移，消除描线端点台阶。 */}
-      {isRight ? (
-        <svg class="im-bubble-tail tail-right" viewBox="0 0 8 14" fill="none" aria-hidden="true">
-          <path d="M -3 -3 H 1 V -0.414214 L 7.707107 6.292893 A 1 1 0 0 1 7.707107 7.707107 L 1 14.414214 V 17 H -3 Z" class="tail-path" />
-          <path d="M -3 -3 H -1 V 0.414214 L 5.585786 7 L -1 13.585786 V 17 H -3 Z" class="tail-fill" />
-        </svg>
-      ) : (
-        <svg class="im-bubble-tail tail-left" viewBox="0 0 8 14" fill="none" aria-hidden="true">
-          <path d="M 11 -3 H 7 V -0.414214 L 0.292893 6.292893 A 1 1 0 0 0 0.292893 7.707107 L 7 14.414214 V 17 H 11 Z" class="tail-path" />
-          <path d="M 11 -3 H 9 V 0.414214 L 2.414214 7 L 9 13.585786 V 17 H 11 Z" class="tail-fill" />
-        </svg>
-      )}
-
+      {/* The border image paints the entire outline, including the tail. */}
       <div class="im-bubble-content font-sans">
         <slot />
       </div>
@@ -138,67 +127,6 @@ const hasHeader = (speaker !== false && cleanSpeaker) || role || badge || time;
   .im-header-row > span {
     min-width: 0;
     max-width: 100%;
-  }
-
-  /* 统一全局硬质投影：通过 drop-shadow 作用于气泡矩形与尖角合并轮廓 */
-  .im-bubble-container {
-    min-width: 0;
-    overflow-wrap: anywhere;
-    filter: drop-shadow(2.5px 2.5px 0 #1a1a1a);
-  }
-
-  :global(:is(.dark, [data-theme="dark"])) .im-bubble-container {
-    filter: drop-shadow(2.5px 2.5px 0 #e8e6e3);
-  }
-
-  /* Closed SVG contours meet both edges of the bubble's 2px border. */
-  .im-bubble-tail {
-    position: absolute;
-    top: 10px;
-    width: 8px;
-    height: 14px;
-    pointer-events: none;
-    overflow: visible;
-  }
-
-  .tail-left {
-    left: -9px;
-  }
-
-  .tail-right {
-    right: -9px;
-  }
-
-  /* 外轮廓作为实心边框绘制，避免独立 stroke 的端点突出。 */
-  .tail-path {
-    fill: #1a1a1a;
-  }
-  :global(:is(.dark, [data-theme="dark"])) .tail-path {
-    fill: #e8e6e3;
-  }
-
-  /* 左侧气泡填充色 */
-  .im-bubble-left .tail-fill {
-    fill: #ffffff;
-  }
-  :global(:is(.dark, [data-theme="dark"])) .im-bubble-left .tail-fill {
-    fill: #2c2c2c;
-  }
-
-  /* 微信右侧绿色气泡填充色 */
-  .im-wechat-right .tail-fill {
-    fill: #95ec69;
-  }
-  :global(:is(.dark, [data-theme="dark"])) .im-wechat-right .tail-fill {
-    fill: #2b7a2d;
-  }
-
-  /* QQ右侧蓝色气泡填充色 */
-  .im-qq-right .tail-fill {
-    fill: #12b7f5;
-  }
-  :global(:is(.dark, [data-theme="dark"])) .im-qq-right .tail-fill {
-    fill: #0288d1;
   }
 
   /* 消除正文在聊天气泡中的巨幅行距与底边距 */
