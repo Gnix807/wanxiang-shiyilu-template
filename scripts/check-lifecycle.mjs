@@ -25,6 +25,22 @@ try {
   doc.body = {};
   doc.dispatchEvent(new Event('astro:page-load'));
   assert.equal(mounts, 2, 'disposed entry must not remount');
+  let mode = 'compat';
+  doc.documentElement = { getAttribute: () => mode };
+  let readerMounts = 0;
+  let readerCleanups = 0;
+  const stopReader = onPageReady(() => { readerMounts++; return () => { readerCleanups++; }; });
+  doc.dispatchEvent(new Event('astro:page-load'));
+  assert.equal(readerMounts, 0, 'compatibility reading must not start enhancements');
+  mode = 'standard';
+  doc.dispatchEvent(new Event('astro:page-load'));
+  assert.equal(readerMounts, 1);
+  mode = 'compat';
+  doc.dispatchEvent(new Event('blog:reading-mode'));
+  assert.equal(readerCleanups, 1, 'entering reading mode must release enhancements');
+  doc.dispatchEvent(new Event('astro:page-load'));
+  assert.equal(readerMounts, 1);
+  stopReader();
 } finally {
   if (previousDocument === undefined) delete globalThis.document;
   else globalThis.document = previousDocument;

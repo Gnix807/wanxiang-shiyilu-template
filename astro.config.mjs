@@ -21,6 +21,8 @@ import { rehypeTableWrapper } from './src/plugins/rehype-table-wrapper.mjs';
 // https://astro.build/config
 export default defineConfig({
   output: 'static',
+  // The bounded, intent-aware site prefetchers own these requests.
+  prefetch: false,
   outDir: process.env.BUILD_OUT_DIR || 'dist',
   build: {
     inlineStylesheets: 'never',
@@ -54,19 +56,14 @@ export default defineConfig({
     },
   },
   vite: {
-    build: { emptyOutDir: false },
-    plugins: [tailwindcss({
-      lightningcss: {
-        targets: {
-          chrome: 49,
-          android: 49,
-          ios_saf: 10,
-          safari: 10,
-          firefox: 68,
-          edge: 79,
-        },
-      },
-    })],
+    // Syntax lowering does not polyfill DOM APIs or Tailwind's runtime CSS.
+    // https://vite.dev/config/build-options.html#build-target
+    build: {
+      emptyOutDir: false,
+      target: ['chrome80', 'edge80', 'firefox78', 'safari14'],
+      cssTarget: 'chrome80',
+    },
+    plugins: [tailwindcss()],
     ssr: {
       noExternal: ['@fancyapps/ui', '@google/generative-ai']
     }

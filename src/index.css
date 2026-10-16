@@ -4,6 +4,9 @@
 @plugin "@tailwindcss/typography";
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Shown only by the independent compatibility/no-script stylesheet. */
+.compat-reader-nav { display: none; }
+
 /* Dark mode icons: show/hide based on .dark class */
 .theme-sun { display: none; }
 .theme-moon { display: block; }
@@ -18,6 +21,8 @@
 
 /* Design tokens for layout consistency & mature editorial palette */
 :root {
+  /* Keep WebView automatic darkening from repainting our explicit light theme. */
+  color-scheme: only light;
   --navbar-height: 52px;
   --z-back-to-top: 95;
   --z-navbar: 100;
@@ -69,6 +74,7 @@
 
 .dark,
 [data-theme="dark"] {
+  color-scheme: dark;
   --paper-bg: #141413;
   --paper-surface: #1c1b1a;
   --ink-text: #e8e6e3;

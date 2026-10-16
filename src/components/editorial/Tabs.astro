@@ -234,6 +234,7 @@ if (slotContent && !slotContent.includes('class="tab-pane active')) {
 
 <script>
   function initAllTabs() {
+    if (document.documentElement.getAttribute('data-reading-mode') === 'compat') return;
     document.querySelectorAll('[data-tabs-container]').forEach((container) => {
       if (container.getAttribute('data-tabs-ready') === 'true') return;
       container.setAttribute('data-tabs-ready', 'true');

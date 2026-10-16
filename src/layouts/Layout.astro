@@ -3,6 +3,7 @@ import { siteConfig, footerConfig } from '../config/site';
 import { infoConfig } from '../config/info';
 import { seoConfig } from '../config/seo';
 import { ClientRouter } from 'astro:transitions';
+import BrowserCompatibility from '../components/BrowserCompatibility.astro';
 import NavBar from '../components/NavBar.astro';
 import PrefetchLinks from '../components/PrefetchLinks.svelte';
 import { PageBanner } from '../components/PageBanner';
@@ -76,9 +77,11 @@ const isMusicPage = false; // 音乐页已归档禁用
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-reading-mode="standard">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="renderer" content="webkit" />
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
     <meta name="keywords" content={pageKeywords.join(", ")} />
@@ -89,6 +92,8 @@ const isMusicPage = false; // 音乐页已归档禁用
     <meta name="baiduspider" content="index, follow" />
     <link rel="canonical" href={canonicalURL} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <BrowserCompatibility />
     <meta name="msvalidate.01" content="8814B55DAA53801F47B998FE06421544" />
 
     <!-- Geo Tags -->
@@ -350,7 +355,9 @@ const isMusicPage = false; // 音乐页已归档禁用
     <script is:inline>
     (function () {
       // 不开 debug 就什么都不运行
-      if (sessionStorage.getItem('cacheDebug') !== '1') {
+      var debugEnabled = false;
+      try { debugEnabled = sessionStorage.getItem('cacheDebug') === '1'; } catch (error) { return; }
+      if (!debugEnabled) {
         // 只在 /cachelog 路径开启
         if (window.location.pathname === '/cachelog' || window.location.pathname === '/cachelog/') {
           try { sessionStorage.setItem('cacheDebug', '1'); } catch {}
@@ -435,6 +442,16 @@ const isMusicPage = false; // 音乐页已归档禁用
     {/* 暂时禁用：<WelcomeToast /> */}
     <div class={isMusicPage ? 'flex flex-col h-[100dvh] overflow-hidden' : 'flex flex-col min-h-screen'}>
       <NavBar />
+    <nav class="compat-reader-nav" aria-label="兼容阅读导航">
+      <a href="/" class="reader-site-title">{siteConfig.title}</a>
+      <a href="/">首页</a>
+      <a href="/posts">全部文章</a>
+      <a href="/tags">标签</a>
+      <a href="/about">关于</a>
+      <button type="button" data-reader-theme>切换明暗</button>
+      <a href="?reader=0" data-reader-toggle data-astro-reload>标准阅读</a>
+    </nav>
+
       
       {!isAboutPage ? (
         <div 
@@ -475,7 +492,7 @@ const isMusicPage = false; // 音乐页已归档禁用
           </div>
         </div>
       ) : (
-        <main class="flex-1">
+        <main id="main-content" class="flex-1">
           <slot />
         </main>
       )}
@@ -491,6 +508,7 @@ const isMusicPage = false; // 音乐页已归档禁用
                 {link.name}
               </a>
             ))}
+            <a href="?reader=1" data-reader-toggle data-astro-reload class="px-3 py-1 border-2 border-[#1a1a1a] dark:border-[#e8e6e3] rounded-sm font-black text-xs bg-white dark:bg-[#1c1b1a]">兼容阅读</a>
           </div>
           {/* 版权 + 备案 */}
           <div class="font-bold">
@@ -830,6 +848,7 @@ const isMusicPage = false; // 音乐页已归档禁用
 
   // 全局出版级统一代码视窗增强器
   function setupUnifiedCodeBlocks() {
+    if (document.documentElement.getAttribute('data-reading-mode') === 'compat') return;
     // 1. 处理所有原生 Markdown 代码块 <pre>
     document.querySelectorAll('pre').forEach((pre) => {
       // 若已增强或位于已存在的代码块容器内，则跳过
@@ -1066,6 +1085,7 @@ const isMusicPage = false; // 音乐页已归档禁用
 
   // 全局边注角标与悬浮框交互管理器
   function setupFootnoteInteractions() {
+    if (document.documentElement.getAttribute('data-reading-mode') === 'compat') return;
     if (window._editorialFootnoteInitialized) return;
     window._editorialFootnoteInitialized = true;
     document.addEventListener('astro:before-swap', () => AnnotationManager.closeAll());
@@ -1260,6 +1280,7 @@ const isMusicPage = false; // 音乐页已归档禁用
 
   // 全局文献引用即时浮层 (Citation Popover & Archival Card System)
   function setupCitationPopovers() {
+    if (document.documentElement.getAttribute('data-reading-mode') === 'compat') return;
     const refLinks = document.querySelectorAll('article a[href^="#ref-"], .prose a[href^="#ref-"], .article-paper a[href^="#ref-"]');
     if (!refLinks.length) return;
 
@@ -1499,6 +1520,7 @@ const isMusicPage = false; // 音乐页已归档禁用
 
   // 执行页面级增强函数
   function runPageEnhancements() {
+    if (document.documentElement.getAttribute('data-reading-mode') === 'compat') return;
     AnnotationManager.closeAll();
     setupBackToTop();
     setupUnifiedCodeBlocks();
@@ -1515,6 +1537,7 @@ const isMusicPage = false; // 音乐页已归档禁用
 
   // 2. Astro ClientRouter 客户端路由切页与视图更新全生命周期
   if (!window.__pageEnhancementListenersBound) {
+    document.addEventListener('blog:reading-mode', () => AnnotationManager.closeAll());
     document.addEventListener('astro:page-load', runPageEnhancements);
     document.addEventListener('astro:after-swap', runPageEnhancements);
     window.__pageEnhancementListenersBound = true;

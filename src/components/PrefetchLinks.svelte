@@ -1,96 +1,86 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { onPageReady } from '../scripts/lifecycle';
 
-  const MAX_PREFETCH_REQUESTS = 6;
-  const attemptedUrls = new Set<string>();
-  const queuedUrls = new Set<string>();
-  const inflightUrls = new Set<string>();
+  // Delegate intent events so links added after hydration work without rescans.
+  onMount(() => onPageReady(() => {
+    const controller = new AbortController();
+    const attempted = new Set<string>();
+    const queued = new Set<string>();
+    let inflight = 0;
+    let hoverTimer: number | undefined;
 
-  function getConnection() {
-    return (navigator as Navigator & {
-      connection?: { saveData?: boolean; effectiveType?: string };
-    }).connection;
-  }
-
-  function getMaxConcurrentPrefetches() {
-    const connection = getConnection();
-    if (connection?.saveData) return 0;
-    if (/^(slow-)?2g$/.test(connection?.effectiveType || '')) return 0;
-    if (connection?.effectiveType === '3g') return 1;
-    return MAX_PREFETCH_REQUESTS;
-  }
-
-  function sameOriginUrl(href: string) {
-    try {
-      const url = new URL(href, window.location.href);
-      return url.origin === window.location.origin ? url : null;
-    } catch {
-      return null;
+    function concurrency() {
+      const connection = (navigator as Navigator & {
+        connection?: { saveData?: boolean; effectiveType?: string };
+      }).connection;
+      if (!navigator.onLine || connection?.saveData || /^(slow-)?2g$/.test(connection?.effectiveType || '')) return 0;
+      return connection?.effectiveType === '3g' ? 1 : 2;
     }
-  }
 
-  async function prefetchPage(url: string) {
-    try {
-      const response = await fetch(url, {
-        credentials: 'same-origin',
-        redirect: 'follow',
-        priority: 'low',
-      } as RequestInit);
-      if (response.ok) await response.arrayBuffer();
-    } catch {
-      // Prefetch failures are silent; the real click still works normally.
-    } finally {
-      inflightUrls.delete(url);
-      drainPrefetchQueue();
+    function drain() {
+      if (controller.signal.aborted) return;
+      for (const url of queued) {
+        if (inflight >= concurrency()) break;
+        queued.delete(url);
+        inflight++;
+        void fetch(url, {
+          credentials: 'same-origin',
+          priority: 'low',
+          signal: controller.signal,
+        } as RequestInit)
+          .then(response => response.ok ? response.arrayBuffer() : undefined)
+          .catch(() => { /* A failed speculative request must not affect a real click. */ })
+          .finally(() => { inflight--; drain(); });
+      }
     }
-  }
 
-  function drainPrefetchQueue() {
-    const limit = Math.max(0, getMaxConcurrentPrefetches() - inflightUrls.size);
-    for (const url of Array.from(queuedUrls).slice(0, limit)) {
-      queuedUrls.delete(url);
-      inflightUrls.add(url);
-      void prefetchPage(url);
+    function queue(link: HTMLAnchorElement) {
+      if (controller.signal.aborted || concurrency() === 0 || link.hasAttribute('download') || link.target === '_blank') return;
+      try {
+        const url = new URL(link.href, location.href);
+        if (url.origin !== location.origin || url.hash || url.href === location.href || attempted.has(url.href)) return;
+        attempted.add(url.href);
+        queued.add(url.href);
+        drain();
+      } catch { /* Ignore malformed or non-HTTP links. */ }
     }
-  }
 
-  function queuePrefetch(href: string) {
-    const url = sameOriginUrl(href);
-    if (!url || url.hash) return;
-    const key = url.href;
-    if (key === window.location.href) return;
-    if (attemptedUrls.has(key) || queuedUrls.has(key) || inflightUrls.has(key)) return;
+    function targetLink(event: Event) {
+      if (!(event.target instanceof Element)) return null;
+      return event.target.closest<HTMLAnchorElement>('[data-prefetch] a[href]');
+    }
 
-    attemptedUrls.add(key);
-    queuedUrls.add(key);
-    drainPrefetchQueue();
-  }
+    function onHover(event: PointerEvent) {
+      if (event.pointerType !== 'mouse') return;
+      const link = targetLink(event);
+      if (!link || (event.relatedTarget instanceof Node && link.contains(event.relatedTarget))) return;
+      window.clearTimeout(hoverTimer);
+      hoverTimer = window.setTimeout(() => queue(link), 80);
+    }
 
-  function scanPrefetchScopes() {
-    document.querySelectorAll<HTMLElement>('[data-prefetch]').forEach(scope => {
-      scope.querySelectorAll<HTMLAnchorElement>('a[href]').forEach(link => {
-        queuePrefetch(link.href);
-      });
-    });
-  }
+    function cancelHover(event: PointerEvent) {
+      const link = targetLink(event);
+      if (link && !(event.relatedTarget instanceof Node && link.contains(event.relatedTarget))) window.clearTimeout(hoverTimer);
+    }
 
-  function resetForPage() {
-    attemptedUrls.clear();
-    queuedUrls.clear();
-    inflightUrls.clear();
-  }
+    function onIntent(event: Event) {
+      const link = targetLink(event);
+      if (link) queue(link);
+    }
 
-  onMount(() => {
-    const timer = window.setTimeout(scanPrefetchScopes, 0);
-    document.addEventListener('astro:page-load', scanPrefetchScopes);
-    document.addEventListener('astro:before-swap', resetForPage);
+    const options = { passive: true, signal: controller.signal };
+    document.addEventListener('pointerover', onHover, options);
+    document.addEventListener('pointerout', cancelHover, options);
+    document.addEventListener('focusin', onIntent, options);
+    document.addEventListener('touchstart', onIntent, options);
 
     return () => {
-      window.clearTimeout(timer);
-      document.removeEventListener('astro:page-load', scanPrefetchScopes);
-      document.removeEventListener('astro:before-swap', resetForPage);
+      controller.abort();
+      window.clearTimeout(hoverTimer);
+      queued.clear();
     };
-  });
+  }));
 </script>
 
-<!-- no visible UI; only prefetches marked links -->
+<!-- no visible UI; only prefetches marked links after user intent -->

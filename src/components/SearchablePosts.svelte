@@ -26,8 +26,8 @@
   let feedEl: HTMLElement;
 
   // Keep client bandwidth predictable: at most two article HTML requests run together.
-  const MAX_PREFETCH_REQUESTS = 6;
-  const PREFETCH_ROOT_MARGIN = '800px';
+  const MAX_PREFETCH_REQUESTS = 2;
+  const PREFETCH_ROOT_MARGIN = '200px';
   const CACHE_NAME = 'xuhome-article-cache-v1';
   const CACHE_TTL = 30 * 60 * 1000; // 30 分钟
   const prefetchedUrls = new Set<string>();
@@ -35,6 +35,10 @@
   const inflightUrls = new Set<string>();
   let prefetchObserver: IntersectionObserver | null = null;
   let prefetchAbortController: AbortController | null = null;
+  let prefetchDisposed = false;
+  let prefetchStartTimer: number | undefined;
+  let prefetchHoverTimer: number | undefined;
+  const completionTimers = new Set<number>();
 
   // 预加载进度状态：link.href → 0~100（Svelte 响应式，用于卡片进度条）
   let prefetchProgress = new Map<string, number>();
@@ -90,16 +94,18 @@
   }
 
   async function prefetchArticle(url: string) {
-    if (!prefetchAbortController) return;
+    const controller = prefetchAbortController;
+    if (!controller || controller.signal.aborted) return;
 
     try {
       const response = await fetch(url, {
-        signal: prefetchAbortController.signal,
+        signal: controller.signal,
         credentials: 'same-origin',
         redirect: 'follow',
         priority: 'low',
       } as RequestInit);
 
+      if (controller.signal.aborted) return;
       if (!response.ok || !response.body) {
         inflightUrls.delete(url);
         prefetchProgress.delete(url);
@@ -139,28 +145,37 @@
       let html = '';
       for (const chunk of chunks) html += decoder.decode(chunk, { stream: true });
       html += decoder.decode();
+      if (controller.signal.aborted) return;
       await storeCachedArticle(url, html);
+      if (controller.signal.aborted) return;
 
       prefetchProgress.set(url, 100);
       prefetchProgress = prefetchProgress;
       updatePanel();
       // 完成后短暂展示满条，再淡出清除（视觉上"预加载完成"的提示）
-      setTimeout(() => {
+      const timer = window.setTimeout(() => {
+        completionTimers.delete(timer);
+        if (controller.signal.aborted) return;
         prefetchProgress.delete(url);
         prefetchProgress = prefetchProgress;
         updatePanel();
       }, 400);
+      completionTimers.add(timer);
     } catch {
+      if (controller.signal.aborted) return;
       // A failed prefetch must never turn into a visible homepage error.
       prefetchProgress.delete(url);
       prefetchProgress = prefetchProgress;
     } finally {
-      inflightUrls.delete(url);
-      drainPrefetchQueue();
+      if (prefetchAbortController === controller) {
+        inflightUrls.delete(url);
+        drainPrefetchQueue();
+      }
     }
   }
 
   function drainPrefetchQueue() {
+    if (!prefetchAbortController || prefetchAbortController.signal.aborted) return;
     const limit = Math.max(0, getMaxConcurrentPrefetches() - inflightUrls.size);
     const urls = Array.from(queuedUrls).slice(0, limit);
 
@@ -172,7 +187,10 @@
   }
 
   function queuePrefetch(link: HTMLAnchorElement) {
-    const url = link.href;
+    if (!prefetchAbortController || prefetchAbortController.signal.aborted || !navigator.onLine || getMaxConcurrentPrefetches() === 0) return;
+    const target = new URL(link.href, location.href);
+    if (target.origin !== location.origin || target.hash || link.hasAttribute('download')) return;
+    const url = target.href;
     if (
       prefetchedUrls.has(url) ||
       queuedUrls.has(url) ||
@@ -183,18 +201,6 @@
     prefetchedUrls.add(url);
     queuedUrls.add(url);
     drainPrefetchQueue();
-  }
-
-  function addPrefetchLink(href: string) {
-    if (prefetchedUrls.has(href)) return;
-    const existing = document.querySelector(`link[rel="prefetch"][href="${href}"]`);
-    if (existing) return;
-    const link = document.createElement('link');
-    link.rel = 'prefetch';
-    link.href = href;
-    link.as = 'document';
-    link.crossOrigin = 'anonymous';
-    document.head.appendChild(link);
   }
 
   function scanPrefetchTargets(root: HTMLElement) {
@@ -208,7 +214,6 @@
         prefetchedUrls.has(url.href)
       ) continue;
 
-      addPrefetchLink(url.href);
       prefetchObserver.observe(link);
     }
   }
@@ -226,17 +231,56 @@
   }
 
   function setupPrefetcher() {
-    if (!feedEl || prefetchObserver) return;
-
+    if (document.documentElement.getAttribute('data-reading-mode') === 'compat') return;
+    if (!feedEl || prefetchAbortController || prefetchDisposed) return;
     prefetchAbortController = new AbortController();
-    prefetchObserver = new IntersectionObserver(handlePrefetchEntries, {
-      rootMargin: PREFETCH_ROOT_MARGIN,
-      threshold: 0,
-    });
-    scanPrefetchTargets(feedEl);
+    const controller = prefetchAbortController;
+    const options = { passive: true, signal: controller.signal };
+
+    const handleIntent = (event: Event) => {
+      if (!(event.target instanceof Element)) return;
+      const link = event.target.closest<HTMLAnchorElement>('a[href^="/posts/"]');
+      if (!link) return;
+      if (event instanceof PointerEvent) {
+        if (event.pointerType !== 'mouse') return;
+        if (event.relatedTarget instanceof Node && link.contains(event.relatedTarget)) return;
+        window.clearTimeout(prefetchHoverTimer);
+        prefetchHoverTimer = window.setTimeout(() => queuePrefetch(link), 80);
+      } else {
+        queuePrefetch(link);
+      }
+    };
+    feedEl.addEventListener('pointerover', handleIntent, options);
+    feedEl.addEventListener('pointerout', (event: PointerEvent) => {
+      const link = (event.target as Element)?.closest('a');
+      if (link && !(event.relatedTarget instanceof Node && link.contains(event.relatedTarget))) window.clearTimeout(prefetchHoverTimer);
+    }, options);
+    feedEl.addEventListener('focusin', handleIntent, options);
+    feedEl.addEventListener('touchstart', handleIntent, options);
+
+    // Touch screens prefetch only on intent. Desktop proximity work waits for load.
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches || typeof IntersectionObserver === 'undefined') return;
+    const startObserving = () => {
+      prefetchStartTimer = window.setTimeout(() => {
+        if (controller.signal.aborted) return;
+        prefetchObserver = new IntersectionObserver(handlePrefetchEntries, {
+          rootMargin: PREFETCH_ROOT_MARGIN,
+          threshold: 0,
+        });
+        scanPrefetchTargets(feedEl);
+      }, 200);
+    };
+    if (document.readyState === 'complete') startObserving();
+    else window.addEventListener('load', startObserving, { once: true, signal: controller.signal });
   }
 
   function teardownPrefetcher() {
+    // Svelte can flush a queued afterUpdate between before-swap and destruction.
+    prefetchDisposed = true;
+    window.clearTimeout(prefetchStartTimer);
+    window.clearTimeout(prefetchHoverTimer);
+    for (const timer of completionTimers) window.clearTimeout(timer);
+    completionTimers.clear();
     prefetchObserver?.disconnect();
     prefetchObserver = null;
     prefetchAbortController?.abort();
@@ -251,6 +295,7 @@
 
   // React to search queries sent from navbar
   onMount(() => {
+    if (document.documentElement.getAttribute('data-reading-mode') === 'compat') return;
     // Populate from URL query parameter
     const urlParams = new URLSearchParams(window.location.search);
     const initialQ = urlParams.get('q') || '';
@@ -272,6 +317,8 @@
     };
 
     window.addEventListener('blog-search', handleGlobalSearch);
+    document.addEventListener('astro:before-swap', teardownPrefetcher);
+    document.addEventListener('blog:reading-mode', teardownPrefetcher);
 
     // 点击追踪：判断 HIT/MISS（不阻止导航）
     // 提到具名变量，cleanup 中一并移除，避免 View Transitions 换页后堆积
@@ -309,6 +356,8 @@
 
     return () => {
       window.removeEventListener('blog-search', handleGlobalSearch);
+      document.removeEventListener('astro:before-swap', teardownPrefetcher);
+      document.removeEventListener('blog:reading-mode', teardownPrefetcher);
       document.removeEventListener('click', handleClickTrack, true);
       teardownPrefetcher();
     };

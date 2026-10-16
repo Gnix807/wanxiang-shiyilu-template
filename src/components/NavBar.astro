@@ -336,7 +336,7 @@ const isBlogStatsPage = pathname === '/blogstats';
   </div>
 </div>
 {/* Spacer to prevent content from going under the fixed navbar */}
-<div style="height: var(--navbar-height)"></div>
+<div class="navbar-spacer" style="height: var(--navbar-height)"></div>
 
 <script is:inline data-astro-rerun define:vars={{
   openMenuText: i18nConfig.common.openMenu,
@@ -544,6 +544,7 @@ const isBlogStatsPage = pathname === '/blogstats';
   }
 
   function initNavBar() {
+    if (document.documentElement.getAttribute('data-reading-mode') === 'compat') return;
     closeNavDropdowns();
     setupMobileSearchInput();
     initThemeUI();

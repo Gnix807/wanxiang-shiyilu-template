@@ -12,6 +12,7 @@ export function onPageReady(setup: () => void | Dispose): Dispose {
   }
 
   function mount() {
+    if (document.documentElement && document.documentElement.getAttribute('data-reading-mode') === 'compat') return;
     if (!document.body || mountedBody === document.body) return;
     unmount();
     mountedBody = document.body;
@@ -25,11 +26,13 @@ export function onPageReady(setup: () => void | Dispose): Dispose {
   }
   document.addEventListener('astro:page-load', mount);
   document.addEventListener('astro:before-swap', unmount);
+  document.addEventListener('blog:reading-mode', unmount);
 
   return () => {
     unmount();
     document.removeEventListener('DOMContentLoaded', mount);
     document.removeEventListener('astro:page-load', mount);
     document.removeEventListener('astro:before-swap', unmount);
+    document.removeEventListener('blog:reading-mode', unmount);
   };
 }

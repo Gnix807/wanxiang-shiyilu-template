@@ -1,0 +1,6 @@
+---
+import readerStylesheet from '../styles/compat-reader.css?url';
+import readerBootstrap from '../scripts/compat-reader.js?raw';
+---
+<script is:inline data-reader-stylesheet={readerStylesheet} set:html={readerBootstrap}></script>
+<noscript><link rel="stylesheet" href={readerStylesheet} /></noscript>

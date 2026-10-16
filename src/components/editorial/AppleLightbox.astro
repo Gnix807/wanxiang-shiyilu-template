@@ -166,6 +166,7 @@
 (() => {
   // 全局 Apple 风格灯箱交互管理器
   function initAppleLightbox() {
+    if (document.documentElement.getAttribute('data-reading-mode') === 'compat') return;
     const root = document.getElementById('apple-lightbox-root');
     const backdrop = document.getElementById('apple-lightbox-backdrop');
     const stage = document.getElementById('apple-lightbox-stage');
@@ -784,7 +785,19 @@
     });
 
     // 全局委托代理所有正文及图版图片的点击事件
+    document.addEventListener('blog:reading-mode', () => {
+      if (activeSourceImg) activeSourceImg.style.opacity = '1';
+      root.classList.add('hidden');
+      root.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      document.body.classList.remove('apple-lightbox-zoomed', 'apple-lightbox-dragging');
+      cloneImg.removeAttribute('src');
+      isOpen = false;
+      isAnimating = false;
+    });
+
     document.addEventListener('click', (e) => {
+      if (document.documentElement.getAttribute('data-reading-mode') === 'compat') return;
       const target = e.target;
       if (!(target instanceof HTMLElement)) return;
 
